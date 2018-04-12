@@ -11,6 +11,14 @@
     src: url(fonts/mario-kart-ds.ttf) format("truetype");
 }
 
+@font-face {
+    font-family: "timer";
+    src: url(fonts/upheavtt.ttf) format("truetype");
+}
+
+
+
 body{
+    margin: 0px;
     background: #262626;
 }

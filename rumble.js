@@ -11,10 +11,13 @@ var selectedScene = 0;
 var miniGame = 0;
 var showingOpeningAnimation = false;
 var score = 0;
+var openingAnimationDuration = 15;
+var gameLength = 5; // Seconds
+var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = ["neon_bg.jpg"]
+var textureNames = ["neon_bg.jpg", "stopwatch.png"]
 var textures = new Object();
 
 var keys = {
@@ -28,18 +31,25 @@ var keys = {
 
 
 
-var menuRender =  /* Main Menu render and Logic (index: 0) */ {
+var menuRender = /* Main Menu render and Logic (index: 0) */ {
     lastUpdate: Date.now(),
-    buttonColors: [[255,0,0],[200,55,0],[150,105,0]],
+    buttonColors: [
+        [255, 0, 0],
+        [200, 55, 0],
+        [150, 105, 0]
+    ],
     buttonTitles: ["Play", "Options", "Exit"],
     selectedButton: 0,
     progress: 0,
-    buttonPositions: {x: -60, y: 150},
+    buttonPositions: {
+        x: -50,
+        y: 150
+    },
     buttonSpacing: 100,
-    paint: function(){
+    paint: function () {
         /* Fade colors for buttons */
-        for(let j = 0; j < 5; j++){
-            for(let i = 0; i < this.buttonColors.length; i++){
+        for (let j = 0; j < 5; j++) {
+            for (let i = 0; i < this.buttonColors.length; i++) {
                 this.buttonColors[i] = fadeColor(this.buttonColors[i][0], this.buttonColors[i][1], this.buttonColors[i][2]);
             }
         }
@@ -47,99 +57,105 @@ var menuRender =  /* Main Menu render and Logic (index: 0) */ {
         /* Draw background */
         ctx.drawImage(textures["neon_bg"], 0, 0)
         ctx.fillStyle = "rgba(17, 17, 17,0.8)";
-        ctx.fillRect(0,0,canvas.width, canvas.height);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         /* Draw buttons */
-        for(let i = 0; i < 3; i++){
+        for (let i = 0; i < 3; i++) {
             var tilt = 0;
-            if(this.selectedButton % this.buttonColors.length == i) tilt = 50;
+            if (this.selectedButton % this.buttonColors.length == i) tilt = 50;
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
-            ctx.fillRect(this.buttonPositions.x+tilt-50, this.buttonPositions.y+(i*this.buttonSpacing)+10, 450, 80);
-            if(this.selectedButton == i){
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450, 80);
+            if (this.selectedButton == i) {
                 ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
                 ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
-            ctx.fillRect(this.buttonPositions.x+tilt-50, this.buttonPositions.y+(i*this.buttonSpacing)+10, 450, 80);
-            
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450, 80);
+
             /* Draw button */
-            if(this.selectedButton % this.buttonColors.length == i){
+            if (this.selectedButton % this.buttonColors.length == i) {
                 ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
                 ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
-            ctx.fillRect(this.buttonPositions.x+tilt, this.buttonPositions.y+(i*this.buttonSpacing), 400, 80);
-            
+            ctx.fillRect(this.buttonPositions.x + tilt, this.buttonPositions.y + (i * this.buttonSpacing), 400, 80);
+
             /* Draw button-text */
-            ctx.font="55px mario-kart";
+            ctx.font = "55px mario-kart";
             ctx.fillStyle = "white";
-            var globalOffset = 0;
-            
+            var globalOffset = -30;
+
             var text = this.buttonTitles[i].toUpperCase();
-            for(let j = 0; j < text.length; j++){
+            for (let j = 0; j < text.length; j++) {
                 var jump = 0;
-                if(this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10; 
-                ctx.fillText(text[j], tilt+this.buttonPositions.x+(j*40)-globalOffset+80, this.buttonPositions.y+(i*this.buttonSpacing)-jump+53);
-                if(text[j] == "I") globalOffset += 12;
+                if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
+                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40) - globalOffset + 80, this.buttonPositions.y + (i * this.buttonSpacing) - jump + 53);
+                if (text[j] == "I") globalOffset += 12;
             }
 
             var hopSpeed = 50; // ms
             var maxHopLength = this.buttonTitles[this.selectedButton % this.buttonTitles.length].length + 10; // chars
-            if(Date.now() - this.lastUpdate > hopSpeed){
-                this.progress+=1;
+            if (Date.now() - this.lastUpdate > hopSpeed) {
+                this.progress += 1;
                 this.lastUpdate = Date.now();
-                if(this.progress > maxHopLength) this.progress = 0;
+                if (this.progress > maxHopLength) this.progress = 0;
             }
-            
+
         }
-    }, 
-    logic: function(key) {
-        if(key == 40) this.selectedButton++;
-        if(key == 38){
+    },
+    logic: function (key) {
+        if (key == 40) this.selectedButton++;
+        if (key == 38) {
             this.selectedButton--;
-            if(this.selectedButton < 0) this.selectedButton = this.buttonColors.length-1;
+            if (this.selectedButton < 0) this.selectedButton = this.buttonColors.length - 1;
         }
-        if(keys.action.indexOf(key) != -1){
-            if(this.selectedButton == 0) startGame(); /* Play button */
+        if (keys.action.indexOf(key) != -1) {
+            if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
         }
     }
 }
 
 var renders = [menuRender];
 
-window.onload = ()=>{
+window.onload = () => {
     importTextures();
     render();
 }
 
 
-function t(name){
+function t(name) {
     return textures[name];
 }
 
-function fadeColor(r,g,b){
-    if(r > 0 && b == 0){
+function fadeColor(r, g, b) {
+    if (r > 0 && b == 0) {
         r--;
         g++;
-      }
-      if(g > 0 && r == 0){
+    }
+    if (g > 0 && r == 0) {
         g--;
         b++;
-      }
-      if(b > 0 && g == 0){
+    }
+    if (b > 0 && g == 0) {
         r++;
         b--;
-      }
-      return [r,g,b];
-      //return "rgb("+r+","+g+","+b+")";
+    }
+    return [r, g, b];
 }
 
 
 
 function importTextures() {
     /* Import all textures */
+    miniGames.forEach(minigame => {
+        if (minigame.textures != false) {
+            minigame.textures.forEach(texture => {
+                textureNames.push(texture);
+            })
+        }
+    });
     textureNames.forEach(texture => {
         var textureName = texture.substr(0, texture.indexOf("."));
         textures[textureName] = new Image();
@@ -148,72 +164,127 @@ function importTextures() {
 }
 
 var keysDown = new Array();
-function keyDown(keys){
-    if(!isNaN(keys)) keys = [keys];
-    for(let i = 0; i < keysDown.length; i++){
-        if(keys.indexOf(keysDown[i]) != -1) return true;
+
+function keyDown(keys) {
+    if (!isNaN(keys)) keys = [keys];
+    for (let i = 0; i < keysDown.length; i++) {
+        if (keys.indexOf(keysDown[i]) != -1) return true;
     }
     return false;
 }
 
-function startGame(){
+
+function startGame() {
+    /* First start of the game, total reset. */
     score = 0;
-    miniGame = miniGames[0];
-    inGame = true;
-    showingOpeningAnimation = true;    
+    window.difficulty = 0;
+    newGame();
     drawOpening();
-    miniGame.init(1);
 }
 
-
+function newGame(){
+    /* For each start of a new mini-game. */
+    difficulty++;
+    drawOpening();
+    miniGame = miniGames[Math.floor(Math.random() * miniGames.length)];
+    inGame = true;
+}
 
 document.addEventListener("keydown", e => {
-    if(!inGame) renders[selectedScene].logic(e.keyCode);
-    if(!keyDown(e.keyCode)){
+    if (!inGame) renders[selectedScene].logic(e.keyCode);
+    if (inGame && !showingOpeningAnimation) miniGame.logic(e.keyCode);
+    if (!keyDown(e.keyCode)) {
         keysDown.push(e.keyCode);
     }
-
 });
 
+function cleared(){
+    newGame();
+}
+
 document.addEventListener("keyup", e => {
-    while(keyDown(e.keyCode)){
-        for(let i = 0; i < keysDown.length; i++){
-            if(keysDown[i] == e.keyCode) keysDown.splice(i, 1);
+    while (keyDown(e.keyCode)) {
+        for (let i = 0; i < keysDown.length; i++) {
+            if (keysDown[i] == e.keyCode) keysDown.splice(i, 1);
         }
     }
 })
 
-function drawOpening(){
+function drawOpening() {
     showingOpeningAnimation = true;
     window.openingProgress = 0;
     window.lastOpeningDate = Date.now(); // Throttle
 }
 
+function drawTimer() {
+
+    var timePassed = (Date.now() - timer) / 1000;
+    var timeLeft = Math.ceil(gameLength - timePassed);
+    if(timeLeft < 0){
+
+    }
+
+    var stopwatch = {
+        width: textures["stopwatch"].width,
+        height: textures["stopwatch"].height
+    }
+    ctx.drawImage(textures["stopwatch"], 500, 350, stopwatch.width / 2, stopwatch.height / 2)
+    ctx.textAlign = "center";
+    ctx.font = "80px timer";
+    text = {
+        x: 552,
+        y: 418,
+        type: timeLeft.toString()
+    }
+    /* Shadow */
+    ctx.fillStyle = "#111";
+    var offsets = timeLeft;
+    ctx.fillText(text.type, text.x + offsets, text.y + offsets);
+    ctx.fillText(text.type, text.x - offsets, text.y - offsets);
+    /* Text */
+    ctx.fillStyle = "white";
+    ctx.fillText(text.type, text.x, text.y);
+
+
+}
+
+function startOpeningAnimation() {
+    showingOpeningAnimation = true;
+    openingProgress = 0;
+    lastOpeningDate = Date.now();
+}
+
 function render() {
+    
     if (!inGame) {
         renders[selectedScene].paint(); // Paint menu
     }
-    if(inGame && !showingOpeningAnimation){
-        miniGames[miniGame].loop()
-        miniGames[miniGame].paint()
+    if (inGame && !showingOpeningAnimation) {
+        miniGame.loop()
+        miniGame.paint()
+        drawTimer(); // Draw timer on top (aka last)
     }
-    if(showingOpeningAnimation){
+    if (showingOpeningAnimation) {
         ctx.fillStyle = "#111";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "white";
         ctx.textAlign = "center";
         var maxSize = 70;
         var size = openingProgress * 10;
-        if(size > maxSize) size = maxSize;
-        ctx.font = size + "px mario-kart" 
-        var text = miniGame.introText
-        ctx.fillText(text.substr(0, openingProgress), (canvas.width/2), canvas.height/2)
-        if(Date.now() - lastOpeningDate > 50){
+        if (size > maxSize) size = maxSize;
+        ctx.font = size + "px mario-kart"
+        var text = miniGame.introText.toUpperCase();
+        ctx.fillText(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2)
+        if (Date.now() - lastOpeningDate > 50) {
             openingProgress++;
             lastOpeningDate = Date.now();
         }
-        
+        if (openingProgress > openingAnimationDuration) {
+            /* Close opening animation */
+            showingOpeningAnimation = false;
+            timer = Date.now();
+            miniGame.init(difficulty);
+        }
     }
     requestAnimationFrame(render);
 }
-
