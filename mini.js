@@ -9,21 +9,29 @@
      init: function(dif){
         /* Run on initiation */
         this.dif = dif;
-        this.sandwichLength = dif*5;
+        this.sandwichLength = (dif*3) + 3;
         this.sandwich = ["sandwich_front", "sandwich_back"];
         for(let i = 0; i < this.sandwichLength; i++){
             this.sandwich.splice(1, 0, "sandwich_center");
         }
         this.nextKey = undefined;
+        this.openKey = undefined;
+        this.etika = {
+            texture: textures["etika_open"],
+            x: 10,
+            y: 5,
+            scale: 0.9
+        }
      },
      paint: function(){
         /* Paint method, runs every frame. */
-        ctx.fillStyle = "#111";
+        ctx.fillStyle = "#a3a1a1";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         var buttonPositions = {x: 330, y: 10, scale: 0.7};
         var x = "up";
         var z = "up";
+        
 
         if(this.nextKey == "x") z = "down";
         if(this.nextKey == "z") x = "down";
@@ -38,13 +46,8 @@
             var texture = textures[this.sandwich[i]]; 
             ctx.drawImage(texture, sandwichStartPos.x + ((texture.width * scale) * i), sandwichStartPos.y, texture.width * scale, texture.height * scale)
         }
-        var etika = {
-            texture: textures["etika_open"],
-            x: 10,
-            y: 5,
-            scale: 0.9
-        }
-        ctx.drawImage(etika.texture, etika.x, etika.y, etika.texture.width * etika.scale, etika.texture.height * etika.scale);
+        
+        ctx.drawImage(this.etika.texture, this.etika.x, this.etika.y, this.etika.texture.width * this.etika.scale, this.etika.texture.height * this.etika.scale);
 
      },
      loop: function(){
@@ -58,17 +61,37 @@
      },
      /* Move variables */
      logic: function(key){
+
+        
         if((keys.action.indexOf(key) != -1 && this.nextKey == "x") || this.nextKey == undefined){
             // Action, aka X key
+            if(this.openKey == undefined) this.openKey = "z"
             this.nextKey = "z";
-            this.sandwich.splice(0, 1);
+
+            if(this.openKey == "x"){
+                // Open mouth
+                this.etika.texture = textures["etika_open"]
+            } else {
+                // Open mouth
+                this.etika.texture = textures["etika_closed"]
+                this.sandwich.splice(0, 1); // Chew
+            }
+            
         } 
         if((keys.back.indexOf(key) != -1 && this.nextKey == "z") || this.nextKey == undefined){
             // Back, aka Z key
+            if(this.openKey == undefined) this.openKey = "x"
             this.nextKey = "x";
-            this.sandwich.splice(0, 1);
+            
+            if(this.openKey == "z"){
+                // Close mouth
+                this.etika.texture = textures["etika_closed"]
+                this.sandwich.splice(0, 1); // Chew
+            } else {
+                // Open mouth
+                this.etika.texture = textures["etika_open"]
+            }
         }
-        
      }
  }
 

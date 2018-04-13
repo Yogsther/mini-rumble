@@ -15,6 +15,10 @@
     font-family: "timer";
     src: url(fonts/upheavtt.ttf) format("truetype");
 }
+@font-face {
+    font-family: "mario-maker";
+    src: url(fonts/mario-maker.ttf) format("truetype");
+}
 
 
 
