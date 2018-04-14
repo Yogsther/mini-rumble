@@ -22,6 +22,8 @@ Currently the game is avalible to play online, but will later also be avalible a
 
 - [ ] Add more minigames
 
+- [ ] Controller Support
+
 - [ ] Package Electron app
 
 - [ ] Publish documentation and API 

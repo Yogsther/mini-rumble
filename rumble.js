@@ -30,7 +30,6 @@ var keys = {
 }
 
 
-
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     lastUpdate: Date.now(),
     buttonColors: [
@@ -107,12 +106,12 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
     },
     logic: function (key) {
-        if (key == 40) this.selectedButton++;
-        if (key == 38) {
+        if (key.code == 40) this.selectedButton++;
+        if (key.code == 38) {
             this.selectedButton--;
             if (this.selectedButton < 0) this.selectedButton = this.buttonColors.length - 1;
         }
-        if (keys.action.indexOf(key) != -1) {
+        if (key.is(keys.action)) {
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
         }
     }
@@ -122,7 +121,18 @@ var renders = [menuRender];
 
 window.onload = () => {
     importTextures();
+    readyOverlay();
     render();
+}
+
+var overlaySprites = new Array();
+function readyOverlay() {
+    for (let i = 0; i < 20; i++) {
+        var number = i.toString();
+        if (number.length < 2) number = "0" + number;
+        overlaySprites.push("overlay_" + number);
+        importTexture("overlay/overlay_" + number + ".png");
+    }
 }
 
 
@@ -146,7 +156,9 @@ function fadeColor(r, g, b) {
     return [r, g, b];
 }
 
+function importSpriteSheet(path, amount){
 
+}
 
 function importTextures() {
     /* Import all textures */
@@ -158,10 +170,16 @@ function importTextures() {
         }
     });
     textureNames.forEach(texture => {
-        var textureName = texture.substr(0, texture.indexOf("."));
-        textures[textureName] = new Image();
-        textures[textureName].src = "textures/" + texture;
+        importTexture(texture);
     })
+}
+
+function importTexture(texture) {
+    var textureName = texture.substr(texture.lastIndexOf("/") + 1);
+        textureName = textureName.substr(0, textureName.indexOf("."));
+    
+    textures[textureName] = new Image();
+    textures[textureName].src = "textures/" + texture;
 }
 
 var keysDown = new Array();
@@ -184,10 +202,10 @@ function startGame() {
         window.difficulty = 0;
         newGame();
     }, 1000)
-    
+
 }
 
-function newGame(){
+function newGame() {
     /* For each start of a new mini-game. */
     drawOpening();
     miniGame = miniGames[Math.floor(Math.random() * miniGames.length)];
@@ -195,28 +213,40 @@ function newGame(){
 }
 
 document.addEventListener("keydown", e => {
-    
-    if (!inGame) renders[selectedScene].logic(e.keyCode);
-    if (inGame && !showingOpeningAnimation) miniGame.logic(e.keyCode);
+    var key = {
+        code: e.keyCode,
+        is: function (type) {
+            if (type == undefined) return false;
+            if (type.constructor != Array) return this.code == type;
+            return type.indexOf(this.code) != -1;
+        }
+    };
+
+    if (!inGame) renders[selectedScene].logic(key);
+
+    if (inGame && !showingOpeningAnimation) miniGame.logic(key);
+
     if (!keyDown(e.keyCode)) {
         keysDown.push(e.keyCode);
     }
 });
 
-function cleared(){
+function cleared() {
     score++;
-    showClearedScreen("Cleared!", "#38ed4a");
-    setTimeout(()=> {
-        if(score % 3 == 0){
-            difficulty++;
-            showClearedScreen("Faster!", "#ffe226");
-            setTimeout(() => {
-                newGame()
-            }, 1000)
-        } else {
-            newGame();
+    var display = {
+        text: "Cleared!",
+        color: "#38ed4a"
+    }
+    if (score % 3 == 0) {
+        difficulty++;
+        display = {
+            text: "Faster!",
+            color: "#ffe226"
         }
-    //newGame();
+    }
+    showClearedScreen(display.text, display.color);
+    setTimeout(() => {
+        newGame();
     }, 1000);
 }
 
@@ -235,34 +265,28 @@ function drawOpening() {
     window.lastOpeningDate = Date.now(); // Throttle
 }
 
-function drawTimer() {
+var overlayProgress = 0;
+
+function drawOverlay() {
 
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
-    if(timeLeft < 0){
+    if (timeLeft < 0) {
+        showClearedScreen("Game Over!", "#8c2424");
+        inGame = false;
+    }
+    overlayProgress+=0.4; // Speed
+    ctx.drawImage(textures[overlaySprites[Math.round(overlayProgress) % overlaySprites.length]], 0, 0);
 
-    }
-
-    var stopwatch = {
-        width: textures["stopwatch"].width,
-        height: textures["stopwatch"].height
-    }
-    ctx.drawImage(textures["stopwatch"], 500, 350, stopwatch.width / 2, stopwatch.height / 2)
-    ctx.textAlign = "center";
-    ctx.font = "80px timer";
-    text = {
-        x: 552,
-        y: 418,
-        type: timeLeft.toString()
-    }
-    /* Shadow */
-    ctx.fillStyle = "#111";
-    var offsets = timeLeft;
-    ctx.fillText(text.type, text.x + offsets, text.y + offsets);
-    ctx.fillText(text.type, text.x - offsets, text.y - offsets);
-    /* Text */
     ctx.fillStyle = "white";
-    ctx.fillText(text.type, text.x, text.y);
+    ctx.textAlign = "center";
+    ctx.font = "30px mario-maker"
+    ctx.fillText(timeLeft.toString(), 591, 440)
+
+    ctx.fillStyle = "#f4d942",
+    ctx.textAlign = "left";
+    ctx.fillText(score.toString(), 418, 440)
+
 
 
 }
@@ -275,13 +299,14 @@ function startOpeningAnimation() {
 
 
 var showingClearedScreen = false;
-function showClearedScreen(text, color){
+
+function showClearedScreen(text, color) {
     window.clearedProgress = 0;
     window.lastClearedProgressIncrease = Date.now();
     window.clearedColor = color;
     window.clearedText = text;
     window.clearedStartTime = Date.now();
-    showingClearedScreen = true;   
+    showingClearedScreen = true;
 }
 
 var fps = 0;
@@ -291,15 +316,15 @@ var frameScoreCached = new Array();
 
 function render() {
 
-    if(Date.now() - lastCountedFPS > 50){
+    if (Date.now() - lastCountedFPS > 50) {
         frameScoreCached.push(frames); // Add new package
-        if(frameScoreCached.length > 20) frameScoreCached.splice(0, 1); // Remove first in order
+        if (frameScoreCached.length > 20) frameScoreCached.splice(0, 1); // Remove first in order
         var totalFrames = 0;
-        for(let i = 0; i < frameScoreCached.length; i++){
-            totalFrames+=frameScoreCached[i];
+        for (let i = 0; i < frameScoreCached.length; i++) {
+            totalFrames += frameScoreCached[i];
         }
         fps = (totalFrames / frameScoreCached.length) * 20
-        frames = 0;     
+        frames = 0;
         lastCountedFPS = Date.now();
     }
     frames++;
@@ -310,7 +335,7 @@ function render() {
     if (inGame && !showingOpeningAnimation && !showingClearedScreen) {
         miniGame.loop()
         miniGame.paint()
-        drawTimer(); // Draw timer on top (aka last)
+        drawOverlay(); // Draw overlay last (on top)
     }
     if (showingOpeningAnimation) {
         ctx.fillStyle = "#111";
@@ -335,7 +360,7 @@ function render() {
         }
     }
 
-    if(showingClearedScreen){
+    if (showingClearedScreen) {
         // Cleared animation
         var pins = 20;
         var pinOffset = 3;
@@ -347,22 +372,22 @@ function render() {
         var curtainSpeed = 30;
         var textDisplayTimeout = 1.5;
 
-        
-        clearedProgress+=speed;
+
+        clearedProgress += speed;
         ctx.fillStyle = "#111";
-        if(x < 0 || x == undefined){
+        if (x < 0 || x == undefined) {
             var x = (canvas.width * -1) + (clearedProgress * curtainSpeed)
-        if(x > 0) x = 0;
-        }  
+            if (x > 0) x = 0;
+        }
         ctx.fillRect(x, 0, canvas.width, canvas.height);
-      
+
         ctx.fillStyle = clearedColor;
-        for(let i = 0; i < pins; i++){
+        for (let i = 0; i < pins; i++) {
             var pinWidth = canvas.width / pins;
-            var localProgress = clearedProgress - (i*pinOffset)
+            var localProgress = clearedProgress - (i * pinOffset)
             var height = localProgress * 10;
-            if(localProgress > maxHeight){
-                height = maxHeight*10;
+            if (localProgress > maxHeight) {
+                height = maxHeight * 10;
                 height += (dampedSin((localProgress - maxHeight) / bounceSpeed) * bounceScale)
             }
             //if()
@@ -373,14 +398,14 @@ function render() {
         var textOffset = 10;
         var textSpacing = 50;
         ctx.font = "50px mario-maker"
-        for(let i = 0; i < (clearedProgress / textDisplayTimeout)-text.length; i++){
-            if(i < text.length){
-            var localProgress = clearedProgress - (i*textOffset)
-            ctx.fillStyle = "white";
-            ctx.fillText(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing /2) + 25, 10 + canvas.height / 2 + (dampedSin((localProgress-(i+100))*0.02)));
+        for (let i = 0; i < (clearedProgress / textDisplayTimeout) - text.length; i++) {
+            if (i < text.length) {
+                var localProgress = clearedProgress - (i * textOffset)
+                ctx.fillStyle = "white";
+                ctx.fillText(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing / 2) + 25, 10 + canvas.height / 2 + (dampedSin((localProgress - (i + 100)) * 0.02)));
             }
         }
-        if(Date.now() - clearedStartTime >= duration) showingClearedScreen = false;
+        if (Date.now() - clearedStartTime >= duration) showingClearedScreen = false;
     }
 
     // Render FPS
@@ -391,11 +416,11 @@ function render() {
     requestAnimationFrame(render);
 }
 
-function dampedSin(t){
-    return Math.pow(Math.E, t * (-1)) * Math.cos(2 * Math.PI * t); 
+function dampedSin(t) {
+    return Math.pow(Math.E, t * (-1)) * Math.cos(2 * Math.PI * t);
 }
 
 //showClearedScreen();/* 
 /* setInterval(()=> {
     showClearedScreen();
-}, 1000000) */ 
+}, 1000000) */

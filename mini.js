@@ -8,6 +8,7 @@
      introText: "Eat!", /* Intro text is the text displayed before the mini-game, should contain a short instruction for the minigame. */
      init: function(dif){
         /* Run on initiation */
+
         this.dif = dif;
         this.sandwichLength = (dif*3) + 3;
         this.sandwich = ["sandwich_front", "sandwich_back"];
@@ -16,6 +17,8 @@
         }
         this.nextKey = undefined;
         this.openKey = undefined;
+        this.previousKey = undefined;
+        this.mouthOpen = true;
         this.etika = {
             texture: textures["etika_open"],
             x: 10,
@@ -62,34 +65,24 @@
      /* Move variables */
      logic: function(key){
 
-        
-        if((keys.action.indexOf(key) != -1 && this.nextKey == "x") || this.nextKey == undefined){
-            // Action, aka X key
-            if(this.openKey == undefined) this.openKey = "z"
-            this.nextKey = "z";
+        if(key.is(keys.action) || key.is(keys.back)){
+            
+            if(key.is(this.previousKey)) return;
+            this.previousKey = key.code;
 
-            if(this.openKey == "x"){
-                // Open mouth
-                this.etika.texture = textures["etika_open"]
+            if(key.is(keys.action)){
+                this.nextKey = "z"
             } else {
-                // Open mouth
-                this.etika.texture = textures["etika_closed"]
-                this.sandwich.splice(0, 1); // Chew
+                this.nextKey = "x";
             }
-            
-        } 
-        if((keys.back.indexOf(key) != -1 && this.nextKey == "z") || this.nextKey == undefined){
-            // Back, aka Z key
-            if(this.openKey == undefined) this.openKey = "x"
-            this.nextKey = "x";
-            
-            if(this.openKey == "z"){
-                // Close mouth
+
+            if(this.mouthOpen){
                 this.etika.texture = textures["etika_closed"]
                 this.sandwich.splice(0, 1); // Chew
+                this.mouthOpen = false;
             } else {
-                // Open mouth
                 this.etika.texture = textures["etika_open"]
+                this.mouthOpen = true;
             }
         }
      }
