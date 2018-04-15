@@ -6,6 +6,30 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+/* Debug options */
+
+var disableGameOver = false;
+var logCoordinates = false;
+
+var globalOptions = {
+    displayFPS: false,
+    devTools: false,
+    disableSound: false
+}
+
+loadSettings();
+
+function loadSettings() {
+    var settings = localStorage.getItem("globalOptions");
+    if (settings == undefined) return;
+    globalOptions = JSON.parse(settings);
+}
+
+function saveSettings() {
+    var settings = JSON.stringify(globalOptions);
+    localStorage.setItem("globalOptions", settings);
+}
+
 var inGame = false;
 var selectedScene = 0;
 var miniGame = 0;
@@ -30,12 +54,115 @@ var keys = {
 }
 
 
+var optionsRender = {
+    buttonZoom: 10,
+    buttonStyles: {
+        height: 60,
+        width: 400
+    },
+    buttonPositions: {
+        x: 0,
+        y: 100
+    },
+    buttonSpacing: 20,
+    selectedOption: 0,
+    options: [{
+        text: "Display FPS",
+        source: "displayFPS"
+    }, {
+        text: "Enable Dev-tools",
+        source: "devTools"
+    }, {
+        text: "Disable sound",
+        source: "disableSound"
+    }, {
+        text: "Placeholder",
+        source: "disableSound"
+    }],
+    paint: function () {
+
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        for (let i = 0; i < this.options.length; i++) {
+            var button = {
+                x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
+                y: this.buttonPositions.y + (i * (this.buttonSpacing + this.buttonStyles.height)),
+                width: this.buttonStyles.width,
+                height: this.buttonStyles.height,
+                color: "#353535"
+            }
+
+            var text = {
+                display: this.options[i].text,
+                state: this.options[i].source,
+                x: button.x + 30,
+                y: button.y + 36,
+                scale: 1,
+                otherScale: 1
+            }
+
+            if (this.selectedOption % this.options.length == i) {
+                // Selected button
+                button.x -= this.buttonZoom;
+                button.y -= this.buttonZoom;
+                button.width += this.buttonZoom * 2;
+                button.height += this.buttonZoom * 2;
+                // Text
+                text.scale = 1.15;
+                text.x -= 10;
+                text.y -= -1;
+                text.otherScale = 1.1;
+            }
+
+            ctx.fillStyle = button.color;
+            ctx.fillRect(button.x, button.y, button.width, button.height);
+            ctx.fillStyle = "white";
+            ctx.font = (20 * text.scale) + "px mario-maker";
+            ctx.textAlign = "left";
+            ctx.fillText(text.display + ":", text.x, text.y);
+            // Status
+            var statusText = {
+                text: "No",
+                color: "#912f2f"
+            };
+            if (eval("globalOptions." + this.options[i].source)) statusText = {
+                text: "Yes",
+                color: "#2f9146"
+            };
+            ctx.textAlign = "right";
+            ctx.fillStyle = statusText.color;
+            ctx.fillText(statusText.text, text.x + 340 * (text.otherScale), text.y)
+
+        }
+        ctx.fillStyle = "white";
+        ctx.font = "20px mario-maker",
+            ctx.textAlign = "right";
+        ctx.fillText("Z: Back X: Select", 630, 470);
+    },
+    logic: function (key) {
+        if (key.code == 40) this.selectedOption++;
+        if (key.code == 38) {
+            this.selectedOption--;
+            if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
+        }
+        if (key.is(keys.action)) {
+            // Toggle option
+            eval("globalOptions." + this.options[this.selectedOption % this.options.length].source + "= !globalOptions." + this.options[this.selectedOption % this.options.length].source);
+            saveSettings();
+        }
+        if (key.is(keys.back)) {
+            // Go back to manu
+            selectedScene = 0;
+        }
+    }
+}
+
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     lastUpdate: Date.now(),
     buttonColors: [
-        [255, 0, 0],
-        [200, 55, 0],
-        [150, 105, 0]
+        [209, 66, 66],
+        [209, 83, 66],
+        [209, 104, 66]
     ],
     buttonTitles: ["Play", "Options", "Exit"],
     selectedButton: 0,
@@ -44,6 +171,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         x: -50,
         y: 150
     },
+    buttonExtention: [0, 0, 0],
     buttonSpacing: 100,
     paint: function () {
         ctx.textAlign = "left"
@@ -55,14 +183,16 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
 
         /* Draw background */
-        ctx.drawImage(textures["neon_bg"], 0, 0)
-        ctx.fillStyle = "rgba(17, 17, 17,0.8)";
+        ctx.fillStyle = "rgba(17, 17, 17, 1)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
-            var tilt = 0;
-            if (this.selectedButton % this.buttonColors.length == i) tilt = 50;
+            var tilt = 50;
+            var tiltSpeed = 10;
+            if (this.selectedButton % this.buttonColors.length == i && this.buttonExtention[i] < tilt) this.buttonExtention[i]+=tiltSpeed;
+            if(this.selectedButton % this.buttonColors.length != i && this.buttonExtention[i] > 0) this.buttonExtention[i]-=tiltSpeed;
+            tilt = this.buttonExtention[i];
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
@@ -113,11 +243,16 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
         if (key.is(keys.action)) {
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
+            if (this.selectedButton % this.buttonColors.length == 1){
+                selectedScene = 1; /* Display options */
+                optionsRender.selectedOption = 0;
+            }
+            
         }
     }
 }
 
-var renders = [menuRender];
+
 
 window.onload = () => {
     importTextures();
@@ -126,13 +261,9 @@ window.onload = () => {
 }
 
 var overlaySprites = new Array();
+
 function readyOverlay() {
-    for (let i = 0; i < 20; i++) {
-        var number = i.toString();
-        if (number.length < 2) number = "0" + number;
-        overlaySprites.push("overlay_" + number);
-        importTexture("overlay/overlay_" + number + ".png");
-    }
+    overlaySprites = importSpriteSheet("overlay/overlay_XX.png", 20);
 }
 
 
@@ -141,24 +272,42 @@ function t(name) {
 }
 
 function fadeColor(r, g, b) {
-    if (r > 0 && b == 0) {
+    if (r > 66 && b == 66) {
         r--;
         g++;
     }
-    if (g > 0 && r == 0) {
+    if (g > 66 && r == 66) {
         g--;
         b++;
     }
-    if (b > 0 && g == 0) {
+    if (b > 66 && g == 66) {
         r++;
         b--;
     }
     return [r, g, b];
 }
 
-function importSpriteSheet(path, amount){
+function importSpriteSheet(path, amount) {
 
+    /*  If the path is: "textures/overlay/overlay_00.png => overlay_19.png"
+        Then expected input path is: "overlay/overlay_XX.png", amount: 20
+    */
+    var count = 0;
+    var totalSprites = new Array();
+    path.split("").forEach(l => {
+        if (l == "X") count++;
+    })
+    for (let i = 0; i < amount; i++) {
+        var number = i.toString();
+        if (number.length < count) number = "0" + number;
+        var importPath = path.substr(0, path.indexOf("X")) + number + path.substr(path.lastIndexOf("X") + 1, path.length)
+        var texture = importTexture(importPath);
+        totalSprites.push(texture);
+    }
+    return totalSprites;
 }
+
+
 
 function importTextures() {
     /* Import all textures */
@@ -176,10 +325,11 @@ function importTextures() {
 
 function importTexture(texture) {
     var textureName = texture.substr(texture.lastIndexOf("/") + 1);
-        textureName = textureName.substr(0, textureName.indexOf("."));
-    
+    textureName = textureName.substr(0, textureName.indexOf("."));
+
     textures[textureName] = new Image();
     textures[textureName].src = "textures/" + texture;
+    return textures[textureName];
 }
 
 var keysDown = new Array();
@@ -195,14 +345,13 @@ function keyDown(keys) {
 
 function startGame() {
     /* First start of the game, total reset. */
-    inGame = false;
+    inGame = true;
     showClearedScreen("Ready? Go!", "#66a0ff");
     setTimeout(() => {
         score = 0;
         window.difficulty = 0;
         newGame();
     }, 1000)
-
 }
 
 function newGame() {
@@ -212,7 +361,19 @@ function newGame() {
     inGame = true;
 }
 
+
+
+canvas.addEventListener("click", e => {
+    var rect = canvas.getBoundingClientRect();
+    var x = Math.round(e.clientX - rect.left);
+    var y = Math.round(e.clientY - rect.top);
+
+    if (logCoordinates) console.log("X: ", x, "Y: ", y);
+})
+
+
 document.addEventListener("keydown", e => {
+    if (disableInputs) return;
     var key = {
         code: e.keyCode,
         is: function (type) {
@@ -223,9 +384,9 @@ document.addEventListener("keydown", e => {
     };
 
     if (!inGame) renders[selectedScene].logic(key);
-
-    if (inGame && !showingOpeningAnimation) miniGame.logic(key);
-
+    try {
+        if (inGame && !showingOpeningAnimation) miniGame.logic(key);
+    } catch (e) {};
     if (!keyDown(e.keyCode)) {
         keysDown.push(e.keyCode);
     }
@@ -265,31 +426,47 @@ function drawOpening() {
     window.lastOpeningDate = Date.now(); // Throttle
 }
 
+function drawGameOver() {
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
 var overlayProgress = 0;
 
-function drawOverlay() {
 
+function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
-    if (timeLeft < 0) {
-        showClearedScreen("Game Over!", "#8c2424");
-        inGame = false;
+    if (timeLeft < 0 && !disableGameOver && timed) {
+  
+            failed();
+       
     }
-    overlayProgress+=0.4; // Speed
-    ctx.drawImage(textures[overlaySprites[Math.round(overlayProgress) % overlaySprites.length]], 0, 0);
+    overlayProgress += 0.4; // Speed
+    ctx.drawImage(overlaySprites[Math.round(overlayProgress) % overlaySprites.length], 0, 0);
 
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
     ctx.font = "30px mario-maker"
-    ctx.fillText(timeLeft.toString(), 591, 440)
+    var timePrint = timeLeft.toString();
+    if (timeLeft < 0) timePrint = "0";
+    if (!timed) timePrint = "?";
+    ctx.fillText(timePrint, 591, 440)
 
     ctx.fillStyle = "#f4d942",
     ctx.textAlign = "left";
     ctx.fillText(score.toString(), 418, 440)
-
-
-
 }
+
+function failed(){
+    disableInputs = true;
+    showClearedScreen("Game Over!", "#8c2424");
+    inGame = false;
+    setTimeout(() => {
+        disableInputs = false
+    }, 400);
+}
+
 
 function startOpeningAnimation() {
     showingOpeningAnimation = true;
@@ -309,12 +486,20 @@ function showClearedScreen(text, color) {
     showingClearedScreen = true;
 }
 
+var disableInputs = false;
 var fps = 0;
 var frames = 0;
 var lastCountedFPS = Date.now();
 var frameScoreCached = new Array();
 
+var renders = [menuRender, optionsRender];
+
 function render() {
+
+    if (globalOptions.devTools) {
+        disableGameOver = true;
+        logCoordinates = true;
+    }
 
     if (Date.now() - lastCountedFPS > 50) {
         frameScoreCached.push(frames); // Add new package
@@ -356,6 +541,7 @@ function render() {
             /* Close opening animation */
             showingOpeningAnimation = false;
             timer = Date.now();
+            window.timed = miniGame.timed;
             miniGame.init(difficulty);
         }
     }
@@ -409,16 +595,22 @@ function render() {
     }
 
     // Render FPS
-    ctx.font = "20px mario-maker";
-    ctx.fillStyle = "white";
-    ctx.textAlign = "right";
-    ctx.fillText("fps: " + Math.round(fps), 630, 20);
+    if (globalOptions.displayFPS) {
+        ctx.font = "20px mario-maker";
+        ctx.fillStyle = "white";
+        ctx.textAlign = "right";
+        ctx.fillText("fps: " + Math.round(fps), 630, 20);
+    }
+
+
     requestAnimationFrame(render);
 }
 
 function dampedSin(t) {
     return Math.pow(Math.E, t * (-1)) * Math.cos(2 * Math.PI * t);
 }
+
+
 
 //showClearedScreen();/* 
 /* setInterval(()=> {
