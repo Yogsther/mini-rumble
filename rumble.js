@@ -17,6 +17,10 @@ var globalOptions = {
     disableSound: false
 }
 
+var backgroundSound = undefined;
+
+var titleSounds = ["granddad-dino.mp3", "bonus-challenge.mp3", "mario-bonus-level.mp3"];
+
 loadSettings();
 
 function loadSettings() {
@@ -43,6 +47,7 @@ var timer = 0;
 /* All texture name to be imported during the importTextures process. */
 var textureNames = ["neon_bg.jpg", "stopwatch.png"]
 var textures = new Object();
+var sounds = new Object();
 
 var keys = {
     action: [88, 32, 13],
@@ -320,6 +325,9 @@ function importTextures() {
     });
     textureNames.forEach(texture => {
         importTexture(texture);
+    });
+    titleSounds.forEach(sound => {
+        importSound(sound);
     })
 }
 
@@ -331,6 +339,40 @@ function importTexture(texture) {
     textures[textureName].src = "textures/" + texture;
     return textures[textureName];
 }
+
+
+function importSound(sound){
+    var soundName = sound.substr(sound.lastIndexOf("/") + 1);
+    soundName = soundName.substr(0, soundName.indexOf("."));
+    
+    sounds[soundName] = new Audio();
+    sounds[soundName].src = "sounds/" + sound;
+    return sounds[soundName];
+}
+
+function s(name){
+    if(name.indexOf(".") != -1){
+        var sound = name;
+        var soundName = sound.substr(sound.lastIndexOf("/") + 1);
+        soundName = soundName.substr(0, soundName.indexOf("."));
+        name = soundName;
+    }
+    return sounds[name];
+}
+
+function playSound(name){
+
+    if(globalOptions.disableSound) return;
+    if(name.indexOf(".") != -1){
+        var sound = name;
+        var soundName = sound.substr(sound.lastIndexOf("/") + 1);
+        soundName = soundName.substr(0, soundName.indexOf("."));
+        name = soundName;
+    }
+    sounds[name].play();
+}
+
+
 
 var keysDown = new Array();
 
@@ -345,7 +387,15 @@ function keyDown(keys) {
 
 function startGame() {
     /* First start of the game, total reset. */
+    
     inGame = true;
+    if(!globalOptions.disableSound){
+    backgroundSound = s(titleSounds[Math.floor(Math.random()*titleSounds.length)]);
+    backgroundSound.volume = .4;
+    backgroundSound.loop = true;
+    backgroundSound.play();
+}
+
     showClearedScreen("Ready? Go!", "#66a0ff");
     setTimeout(() => {
         score = 0;
@@ -400,6 +450,8 @@ function cleared() {
     }
     if (score % 3 == 0) {
         difficulty++;
+        if(!globalOptions.disableSound) backgroundSound.playbackRate += .3;
+    
         display = {
             text: "Faster!",
             color: "#ffe226"
@@ -438,11 +490,9 @@ function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
     if (timeLeft < 0 && !disableGameOver && timed) {
-  
             failed();
-       
     }
-    overlayProgress += 0.4; // Speed
+    overlayProgress += 0.3; // Speed
     ctx.drawImage(overlaySprites[Math.round(overlayProgress) % overlaySprites.length], 0, 0);
 
     ctx.fillStyle = "white";
@@ -460,6 +510,8 @@ function drawOverlay() {
 
 function failed(){
     disableInputs = true;
+    backgroundSound.pause();
+    backgroundSound.currentTime = 0;
     showClearedScreen("Game Over!", "#8c2424");
     inGame = false;
     setTimeout(() => {
@@ -499,6 +551,9 @@ function render() {
     if (globalOptions.devTools) {
         disableGameOver = true;
         logCoordinates = true;
+    } else {
+        logCoordinates = false;
+        disableGameOver = false;
     }
 
     if (Date.now() - lastCountedFPS > 50) {
@@ -609,10 +664,3 @@ function render() {
 function dampedSin(t) {
     return Math.pow(Math.E, t * (-1)) * Math.cos(2 * Math.PI * t);
 }
-
-
-
-//showClearedScreen();/* 
-/* setInterval(()=> {
-    showClearedScreen();
-}, 1000000) */
