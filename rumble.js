@@ -261,6 +261,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
 window.onload = () => {
     importTextures();
+    importSounds();
     readyOverlay();
     render();
 }
@@ -317,7 +318,7 @@ function importSpriteSheet(path, amount) {
 function importTextures() {
     /* Import all textures */
     miniGames.forEach(minigame => {
-        if (minigame.textures != false) {
+        if (minigame.textures != undefined) {
             minigame.textures.forEach(texture => {
                 textureNames.push(texture);
             })
@@ -338,6 +339,16 @@ function importTexture(texture) {
     textures[textureName] = new Image();
     textures[textureName].src = "textures/" + texture;
     return textures[textureName];
+}
+
+function importSounds(){
+    miniGames.forEach(minigame => {
+        if (minigame.sounds != undefined) {
+            minigame.sounds.forEach(sound => {
+                importSound(sound);
+            })
+        }
+    });
 }
 
 
@@ -361,7 +372,6 @@ function s(name){
 }
 
 function playSound(name){
-
     if(globalOptions.disableSound) return;
     if(name.indexOf(".") != -1){
         var sound = name;
@@ -369,6 +379,7 @@ function playSound(name){
         soundName = soundName.substr(0, soundName.indexOf("."));
         name = soundName;
     }
+    sounds[name].volume = .4;
     sounds[name].play();
 }
 
@@ -391,7 +402,7 @@ function startGame() {
     inGame = true;
     if(!globalOptions.disableSound){
     backgroundSound = s(titleSounds[Math.floor(Math.random()*titleSounds.length)]);
-    backgroundSound.volume = .4;
+    backgroundSound.volume = .2;
     backgroundSound.loop = true;
     backgroundSound.play();
 }
@@ -490,7 +501,12 @@ function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
     if (timeLeft < 0 && !disableGameOver && timed) {
+        if(miniGame.timedWin){
+            cleared();
+        } else {
             failed();
+        }
+            
     }
     overlayProgress += 0.3; // Speed
     ctx.drawImage(overlaySprites[Math.round(overlayProgress) % overlaySprites.length], 0, 0);
@@ -510,8 +526,11 @@ function drawOverlay() {
 
 function failed(){
     disableInputs = true;
-    backgroundSound.pause();
-    backgroundSound.currentTime = 0;
+    try{
+        backgroundSound.pause();
+        backgroundSound.currentTime = 0;
+    } catch(e){}
+    
     showClearedScreen("Game Over!", "#8c2424");
     inGame = false;
     setTimeout(() => {
