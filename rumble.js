@@ -17,9 +17,13 @@ var globalOptions = {
     disableSound: false
 }
 
+var lastGameIndex = undefined;
+
 var backgroundSound = undefined;
 
-var titleSounds = ["granddad-dino.mp3", "bonus-challenge.mp3", "mario-bonus-level.mp3"];
+
+var soundEffects = ["yoshi-mount.mp3", "faster.mp3"];
+var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball-ds.mp3"];
 
 loadSettings();
 
@@ -327,9 +331,7 @@ function importTextures() {
     textureNames.forEach(texture => {
         importTexture(texture);
     });
-    titleSounds.forEach(sound => {
-        importSound(sound);
-    })
+    
 }
 
 function importTexture(texture) {
@@ -342,6 +344,14 @@ function importTexture(texture) {
 }
 
 function importSounds(){
+
+    titleSounds.forEach(sound => {
+        importSound(sound);
+    })
+
+    soundEffects.forEach(sound => {
+        importSound(sound);
+    })
     miniGames.forEach(minigame => {
         if (minigame.sounds != undefined) {
             minigame.sounds.forEach(sound => {
@@ -372,6 +382,7 @@ function s(name){
 }
 
 function playSound(name){
+    console.log(name);
     if(globalOptions.disableSound) return;
     if(name.indexOf(".") != -1){
         var sound = name;
@@ -417,8 +428,17 @@ function startGame() {
 
 function newGame() {
     /* For each start of a new mini-game. */
+    
+    var miniGamesArray = miniGames;
+    if(miniGame !== undefined){
+        for(let i = 0; i < miniGamesArray.length; i++){
+            if(miniGamesArray[i] == miniGame){
+                miniGamesArray.splice(i, 1);
+            }
+        }
+    }
     drawOpening();
-    miniGame = miniGames[Math.floor(Math.random() * miniGames.length)];
+    miniGame = miniGamesArray[Math.floor(Math.random() * miniGamesArray.length)];
     inGame = true;
 }
 
@@ -433,10 +453,21 @@ canvas.addEventListener("click", e => {
 })
 
 
-document.addEventListener("keydown", e => {
+function buttonClick(id){
+    var keys = [38, 40, 37, 39, 88, 90];
+    var translate = ["up", "down", "left", "right", "x", "z"];
+    for(let i = 0; i < translate.length; i++){
+        if(id == translate[i]){
+            click(keys[i]);
+            break;
+        }
+    }
+}
+
+function click(code){
     if (disableInputs) return;
     var key = {
-        code: e.keyCode,
+        code: code,
         is: function (type) {
             if (type == undefined) return false;
             if (type.constructor != Array) return this.code == type;
@@ -448,18 +479,24 @@ document.addEventListener("keydown", e => {
     try {
         if (inGame && !showingOpeningAnimation) miniGame.logic(key);
     } catch (e) {};
-    if (!keyDown(e.keyCode)) {
-        keysDown.push(e.keyCode);
+    if (!keyDown(code)) {
+        keysDown.push(code);
     }
+}
+
+document.addEventListener("keydown", e => {
+    click(e.keyCode)
 });
 
 function cleared() {
     score++;
+    var sound = "yoshi-mount";
     var display = {
         text: "Cleared!",
         color: "#38ed4a"
     }
     if (score % 3 == 0) {
+        sound = "faster";
         difficulty++;
         if(!globalOptions.disableSound) backgroundSound.playbackRate += .3;
     
@@ -468,6 +505,7 @@ function cleared() {
             color: "#ffe226"
         }
     }
+    playSound(sound);
     showClearedScreen(display.text, display.color);
     setTimeout(() => {
         newGame();
@@ -527,13 +565,17 @@ function drawOverlay() {
 function failed(){
     disableInputs = true;
     try{
-        backgroundSound.pause();
-        backgroundSound.currentTime = 0;
+        backgroundSound.playbackRate =.2; 
     } catch(e){}
     
     showClearedScreen("Game Over!", "#8c2424");
     inGame = false;
     setTimeout(() => {
+        try{
+            backgroundSound.pause();
+            backgroundSound.playbackRate = 1;
+            backgroundSound.currentTime = 0;
+        } catch(e){}
         disableInputs = false
     }, 400);
 }
