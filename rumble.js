@@ -17,12 +17,12 @@ var globalOptions = {
     disableSound: false
 }
 
-var lastGameIndex = undefined;
+//document.documentElement.requestFullscreen();
 
 var backgroundSound = undefined;
 
 
-var soundEffects = ["yoshi-mount.mp3", "faster.mp3"];
+var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball-ds.mp3"];
 
 loadSettings();
@@ -40,7 +40,7 @@ function saveSettings() {
 
 var inGame = false;
 var selectedScene = 0;
-var miniGame = 0;
+var miniGame = undefined;
 var showingOpeningAnimation = false;
 var score = 0;
 var openingAnimationDuration = 15;
@@ -149,20 +149,30 @@ var optionsRender = {
         ctx.fillText("Z: Back X: Select", 630, 470);
     },
     logic: function (key) {
-        if (key.code == 40) this.selectedOption++;
+        var playEffect = false;
+
+        if (key.code == 40) {
+            this.selectedOption++;
+            playEffect = true;
+        }
         if (key.code == 38) {
             this.selectedOption--;
+            playEffect = true;
             if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
         }
         if (key.is(keys.action)) {
             // Toggle option
+            playEffect = true;
             eval("globalOptions." + this.options[this.selectedOption % this.options.length].source + "= !globalOptions." + this.options[this.selectedOption % this.options.length].source);
             saveSettings();
         }
         if (key.is(keys.back)) {
             // Go back to manu
+            playEffect = true;
             selectedScene = 0;
         }
+
+        if (playEffect) playSound("menu-click");
     }
 }
 
@@ -199,8 +209,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         for (let i = 0; i < 3; i++) {
             var tilt = 50;
             var tiltSpeed = 10;
-            if (this.selectedButton % this.buttonColors.length == i && this.buttonExtention[i] < tilt) this.buttonExtention[i]+=tiltSpeed;
-            if(this.selectedButton % this.buttonColors.length != i && this.buttonExtention[i] > 0) this.buttonExtention[i]-=tiltSpeed;
+            if (this.selectedButton % this.buttonColors.length == i && this.buttonExtention[i] < tilt) this.buttonExtention[i] += tiltSpeed;
+            if (this.selectedButton % this.buttonColors.length != i && this.buttonExtention[i] > 0) this.buttonExtention[i] -= tiltSpeed;
             tilt = this.buttonExtention[i];
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
@@ -245,19 +255,28 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
     },
     logic: function (key) {
-        if (key.code == 40) this.selectedButton++;
+        var playEffect = false;
+
+        if (key.code == 40) {
+            this.selectedButton++;
+            playEffect = true;
+        }
         if (key.code == 38) {
+            playEffect = true;
             this.selectedButton--;
             if (this.selectedButton < 0) this.selectedButton = this.buttonColors.length - 1;
         }
         if (key.is(keys.action)) {
+            playEffect = true;
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
-            if (this.selectedButton % this.buttonColors.length == 1){
+            if (this.selectedButton % this.buttonColors.length == 1) {
                 selectedScene = 1; /* Display options */
                 optionsRender.selectedOption = 0;
             }
-            
+
         }
+
+        if (playEffect) playSound("menu-click");
     }
 }
 
@@ -266,9 +285,44 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 window.onload = () => {
     importTextures();
     importSounds();
+    checkForMobileUser()
+    //loadControlpanel();
     readyOverlay();
     render();
 }
+
+/* function loadControlpanel(){
+    var cCanvas = document.getElementById("controlpanel");
+    cCanvas.width = $(window).width();
+    cCanvas.height = 350;
+    var cCtx = cCanvas.getContext("2d");
+
+    cCtx.fillStyle = "white";
+    cCtx.fillRect(0,0,cCanvas.width, cCanvas.height);
+
+    cCtx.drawImage(t("etika_open"), 0, 0);
+
+
+    cCanvas.addEventListener("click", e => {
+        var rect = cCanvas.getBoundingClientRect();
+    var x = Math.round(e.clientX - rect.left);
+    var y = Math.round(e.clientY - rect.top);
+    console.log(x, y);
+    })
+
+} */
+
+
+function checkForMobileUser() {
+     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) { 
+        document.getElementById("buttons").innerHTML = '<div id="dpad"> ' + 
+        '<button class="dpad" id="up" onclick="buttonClick(this.id)">▲</button>' +
+        '<button class="dpad" id="left" onclick="buttonClick(this.id)">◀</button> ' +
+        '<button class="dpad" id="right" onclick="buttonClick(this.id)">▶</button> ' +
+        '<button class="dpad" id="down" onclick="buttonClick(this.id)">▼</button> ' +
+        '</div><div id="zyButtons"><button id="z" onclick="buttonClick(this.id)">Z</button> <button id="x" onclick="buttonClick(this.id)">X</button></div>';
+     } 
+} 
 
 var overlaySprites = new Array();
 
@@ -331,7 +385,7 @@ function importTextures() {
     textureNames.forEach(texture => {
         importTexture(texture);
     });
-    
+
 }
 
 function importTexture(texture) {
@@ -343,7 +397,7 @@ function importTexture(texture) {
     return textures[textureName];
 }
 
-function importSounds(){
+function importSounds() {
 
     titleSounds.forEach(sound => {
         importSound(sound);
@@ -362,17 +416,17 @@ function importSounds(){
 }
 
 
-function importSound(sound){
+function importSound(sound) {
     var soundName = sound.substr(sound.lastIndexOf("/") + 1);
     soundName = soundName.substr(0, soundName.indexOf("."));
-    
+
     sounds[soundName] = new Audio();
     sounds[soundName].src = "sounds/" + sound;
     return sounds[soundName];
 }
 
-function s(name){
-    if(name.indexOf(".") != -1){
+function s(name) {
+    if (name.indexOf(".") != -1) {
         var sound = name;
         var soundName = sound.substr(sound.lastIndexOf("/") + 1);
         soundName = soundName.substr(0, soundName.indexOf("."));
@@ -381,10 +435,9 @@ function s(name){
     return sounds[name];
 }
 
-function playSound(name){
-    console.log(name);
-    if(globalOptions.disableSound) return;
-    if(name.indexOf(".") != -1){
+function playSound(name) {
+    if (globalOptions.disableSound) return;
+    if (name.indexOf(".") != -1) {
         var sound = name;
         var soundName = sound.substr(sound.lastIndexOf("/") + 1);
         soundName = soundName.substr(0, soundName.indexOf("."));
@@ -409,14 +462,14 @@ function keyDown(keys) {
 
 function startGame() {
     /* First start of the game, total reset. */
-    
+
     inGame = true;
-    if(!globalOptions.disableSound){
-    backgroundSound = s(titleSounds[Math.floor(Math.random()*titleSounds.length)]);
-    backgroundSound.volume = .2;
-    backgroundSound.loop = true;
-    backgroundSound.play();
-}
+    if (!globalOptions.disableSound) {
+        backgroundSound = s(titleSounds[Math.floor(Math.random() * titleSounds.length)]);
+        backgroundSound.volume = .2;
+        backgroundSound.loop = true;
+        backgroundSound.play();
+    }
 
     showClearedScreen("Ready? Go!", "#66a0ff");
     setTimeout(() => {
@@ -428,11 +481,11 @@ function startGame() {
 
 function newGame() {
     /* For each start of a new mini-game. */
-    
-    var miniGamesArray = miniGames;
-    if(miniGame !== undefined){
-        for(let i = 0; i < miniGamesArray.length; i++){
-            if(miniGamesArray[i] == miniGame){
+    var miniGamesArray = miniGames.concat(); // Copy array
+
+    if (miniGame !== undefined) {
+        for (let i = 0; i < miniGamesArray.length; i++) {
+            if (miniGamesArray[i] === miniGame) {
                 miniGamesArray.splice(i, 1);
             }
         }
@@ -453,18 +506,18 @@ canvas.addEventListener("click", e => {
 })
 
 
-function buttonClick(id){
+function buttonClick(id) {
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
-    for(let i = 0; i < translate.length; i++){
-        if(id == translate[i]){
+    for (let i = 0; i < translate.length; i++) {
+        if (id == translate[i]) {
             click(keys[i]);
             break;
         }
     }
 }
 
-function click(code){
+function click(code) {
     if (disableInputs) return;
     var key = {
         code: code,
@@ -498,8 +551,8 @@ function cleared() {
     if (score % 3 == 0) {
         sound = "faster";
         difficulty++;
-        if(!globalOptions.disableSound) backgroundSound.playbackRate += .3;
-    
+        if (!globalOptions.disableSound) backgroundSound.playbackRate += .3;
+
         display = {
             text: "Faster!",
             color: "#ffe226"
@@ -539,12 +592,12 @@ function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
     if (timeLeft < 0 && !disableGameOver && timed) {
-        if(miniGame.timedWin){
+        if (miniGame.timedWin) {
             cleared();
         } else {
             failed();
         }
-            
+
     }
     overlayProgress += 0.3; // Speed
     ctx.drawImage(overlaySprites[Math.round(overlayProgress) % overlaySprites.length], 0, 0);
@@ -558,24 +611,33 @@ function drawOverlay() {
     ctx.fillText(timePrint, 591, 440)
 
     ctx.fillStyle = "#f4d942",
-    ctx.textAlign = "left";
+        ctx.textAlign = "left";
     ctx.fillText(score.toString(), 418, 440)
 }
 
-function failed(){
+function failed() {
     disableInputs = true;
-    try{
-        backgroundSound.playbackRate =.2; 
-    } catch(e){}
-    
+
+    /* if(!globalOptions.disableSound){
+        var at = backgroundSound.playbackRate;
+        var jumpSpeed = at / 10;
+        var slowDown = setInterval(() => {
+            at -= jumpSpeed;
+            if(at >= 0){
+            backgroundSound.playbackRate = Math.round(at);
+            }
+        }, 100);
+    }
+ */
     showClearedScreen("Game Over!", "#8c2424");
     inGame = false;
     setTimeout(() => {
-        try{
-            backgroundSound.pause();
-            backgroundSound.playbackRate = 1;
-            backgroundSound.currentTime = 0;
-        } catch(e){}
+        try {
+           backgroundSound.pause();
+           backgroundSound.playbackRate = 1;
+           backgroundSound.currentTime = 0;
+           //setTimeout(()=> {clearInterval(slowDown);}, 250);
+        } catch (e) {}
         disableInputs = false
     }, 400);
 }

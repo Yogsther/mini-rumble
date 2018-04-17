@@ -6,9 +6,11 @@
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> 
+    <meta name="mobile-web-app-capable" content="yes">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>Mini-Rumble</title>
+    <link rel="manifest" href="rumbleManifest.json">
 </head>
 
 <body>
@@ -16,22 +18,10 @@
     <!-- Game canvas -->
     <canvas id="canvas" width="640" height="480"></canvas>
 
+    <!-- Mobile controls canvas -->
+    <canvas id="controlpanel" width="0" height="0"></canvas>
 
     <div id="buttons">
-
-        
-
-        <div id="dpad">
-            <button id="z" onclick="buttonClick(this.id)">Z</button>
-            <button id="x" onclick="buttonClick(this.id)">X</button>
-
-            <button class="dpad" id="up" onclick="buttonClick(this.id)">⇧</button><br>
-            <button class="dpad" id="left" onclick="buttonClick(this.id)">⇦</button>
-            <button class="dpad" id="right" onclick="buttonClick(this.id)">⇨</button><br>
-            <button class="dpad" id="down" onclick="buttonClick(this.id)">⇩</button>
-
-        </div>
-
     </div>
     
     

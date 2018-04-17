@@ -128,6 +128,7 @@ var carrotCatch = {
             disableInputs = true;
             this.rabbitTexture = "rabbit_closed"
             if (this.carrotPosition.x > 90 && this.carrotPosition.x < 232) {
+                playSound("nom_0")
                 this.carrotCatchSuccess = true;
             } else {
                 this.carrotCatchSuccess = false;
@@ -284,4 +285,4 @@ var mash = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge]
+var miniGames = [mash, carrotCatch, hoverDodge];
