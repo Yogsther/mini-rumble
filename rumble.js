@@ -299,12 +299,30 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
 
 window.onload = () => {
+    window.ready = false;
+    renderLoadingScreen();
     importTextures();
     importSounds();
     checkForMobileUser()
     //loadControlpanel();
     readyOverlay();
+    ready = true;
     render();
+}
+
+function renderLoadingScreen(){
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, canvas.width ,canvas.height);
+
+    ctx.fillStyle = "white";
+    ctx.font = "50px mario-maker";
+    ctx.textAlign = "center";
+    ctx.fillText("Loading...", canvas.width / 2, canvas.height /2);
+
+    if(!ready){
+        requestAnimationFrame(renderLoadingScreen);
+    }
 }
 
 /* function loadControlpanel(){
