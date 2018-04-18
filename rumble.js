@@ -88,10 +88,19 @@ var optionsRender = {
         text: "Placeholder",
         source: "disableSound"
     }],
+    spriteIndex: 0,
+    backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     paint: function () {
 
-        ctx.fillStyle = "#111";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        /* Draw background */
+        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
+        this.spriteIndex++;
+        
+        ctx.fillStyle = "rgba(0,0,0,0.75)";
+        var width = canvas.width - (canvas.width/4)
+        var height = canvas.height - (canvas.height/8);
+        ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height); 
+        
         for (let i = 0; i < this.options.length; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
@@ -220,17 +229,21 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.fillStyle = "black";
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80*this.buttonScale);
             if (this.selectedButton == i) {
-                ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
+                ctx.fillStyle = "#9e1f1f"
+                //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
-                ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
+                ctx.fillStyle = "#2d0a0a"
+                //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 *this.buttonScale + 20, 80 *this.buttonScale);
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
-                ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
+                ctx.fillStyle = "#e83333"
+                //ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
-                ctx.fillStyle = "rgba(17, 17, 17, 1)";
+                ctx.fillStyle = "#9b2323"
+                //ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt -50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 *this.buttonScale);
 
@@ -775,10 +788,12 @@ function render() {
 
     // Render FPS
     if (globalOptions.displayFPS) {
+        ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(555, 0, 80 , 30);
         ctx.font = "20px mario-maker";
         ctx.fillStyle = "white";
-        ctx.textAlign = "right";
-        ctx.fillText("fps: " + Math.round(fps), 630, 20);
+        ctx.textAlign = "left";
+        ctx.fillText("fps: " + Math.round(fps), 560, 20);
     }
 
 
