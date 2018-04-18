@@ -177,6 +177,8 @@ var optionsRender = {
 }
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
+    backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
+    spriteIndex: 0,
     lastUpdate: Date.now(),
     buttonColors: [
         [209, 66, 66],
@@ -188,10 +190,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     progress: 0,
     buttonPositions: {
         x: -50,
-        y: 150
+        y: 220
     },
+    buttonScale: .8,
     buttonExtention: [0, 0, 0],
-    buttonSpacing: 100,
+    buttonSpacing: 80,
     paint: function () {
         ctx.textAlign = "left"
         /* Fade colors for buttons */
@@ -202,8 +205,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
 
         /* Draw background */
-        ctx.fillStyle = "rgba(17, 17, 17, 1)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
+        this.spriteIndex++;
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
@@ -215,13 +218,13 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
-            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450, 80);
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80*this.buttonScale);
             if (this.selectedButton == i) {
                 ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
                 ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
-            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450, 80);
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 *this.buttonScale + 20, 80 *this.buttonScale);
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
@@ -229,18 +232,18 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             } else {
                 ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
-            ctx.fillRect(this.buttonPositions.x + tilt, this.buttonPositions.y + (i * this.buttonSpacing), 400, 80);
+            ctx.fillRect(this.buttonPositions.x + tilt -50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 *this.buttonScale);
 
             /* Draw button-text */
-            ctx.font = "55px mario-kart";
+            ctx.font =  55 *this.buttonScale + "px mario-kart";
             ctx.fillStyle = "white";
-            var globalOffset = -30;
+            var globalOffset = -30 * this.buttonScale;
 
             var text = this.buttonTitles[i].toUpperCase();
             for (let j = 0; j < text.length; j++) {
                 var jump = 0;
                 if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
-                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40) - globalOffset + 80, this.buttonPositions.y + (i * this.buttonSpacing) - jump + 53);
+                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40 *this.buttonScale) - globalOffset + 80 *this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
                 if (text[j] == "I") globalOffset += 12;
             }
 
@@ -363,14 +366,13 @@ function importSpriteSheet(path, amount) {
     })
     for (let i = 0; i < amount; i++) {
         var number = i.toString();
-        if (number.length < count) number = "0" + number;
+        while(number.length < count) number = "0" + number;
         var importPath = path.substr(0, path.indexOf("X")) + number + path.substr(path.lastIndexOf("X") + 1, path.length)
         var texture = importTexture(importPath);
         totalSprites.push(texture);
     }
     return totalSprites;
 }
-
 
 
 function importTextures() {
@@ -446,7 +448,6 @@ function playSound(name) {
     sounds[name].volume = .4;
     sounds[name].play();
 }
-
 
 
 var keysDown = new Array();
