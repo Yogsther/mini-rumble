@@ -14,7 +14,8 @@ var logCoordinates = false;
 var globalOptions = {
     displayFPS: false,
     devTools: false,
-    disableSound: false
+    disableSound: false,
+    disableMusic: false
 }
 
 //document.documentElement.requestFullscreen();
@@ -28,9 +29,20 @@ var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball
 loadSettings();
 
 function loadSettings() {
+    expandOptions();
     var settings = localStorage.getItem("globalOptions");
     if (settings == undefined) return;
     globalOptions = JSON.parse(settings);
+}
+
+function expandOptions(){
+    for(let i = 0; i < miniGames.length; i++){
+        console.log(eval("globalOptions." + miniGames[i].name + " == undefined"), "globalOptions." + miniGames[i].name + " == undefined");
+        if(eval("globalOptions." + miniGames[i].name + " == undefined")){
+            eval("globalOptions." + miniGames[i].name + " = true");
+            console.log("Added");
+        }
+    }
 }
 
 function saveSettings() {
@@ -73,6 +85,7 @@ var optionsRender = {
         x: 0,
         y: 100
     },
+    scrollPosition: 0,
     buttonSpacing: 20,
     selectedOption: 0,
     options: [{
@@ -85,8 +98,8 @@ var optionsRender = {
         text: "Disable sound",
         source: "disableSound"
     }, {
-        text: "Placeholder",
-        source: "disableSound"
+        text: "Disable music",
+        source: "disableMusic"
     }],
     spriteIndex: 0,
     backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
@@ -95,12 +108,12 @@ var optionsRender = {
         /* Draw background */
         ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
         this.spriteIndex++;
-        
+
         ctx.fillStyle = "rgba(0,0,0,0.75)";
-        var width = canvas.width - (canvas.width/4)
-        var height = canvas.height - (canvas.height/8);
-        ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height); 
-        
+        var width = canvas.width - (canvas.width / 4)
+        var height = canvas.height - (canvas.height / 8);
+        ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+
         for (let i = 0; i < this.options.length; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
@@ -181,6 +194,12 @@ var optionsRender = {
             selectedScene = 0;
         }
 
+        if (this.selectedOption == 2) {
+            if (globalOptions.disableSound) {
+                globalOptions.disableMusic = true;
+            }
+        }
+
         if (playEffect) playSound("menu-click");
     }
 }
@@ -227,7 +246,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
-            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80*this.buttonScale);
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
             if (this.selectedButton == i) {
                 ctx.fillStyle = "#9e1f1f"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
@@ -235,7 +254,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 ctx.fillStyle = "#2d0a0a"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
-            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 *this.buttonScale + 20, 80 *this.buttonScale);
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
@@ -245,10 +264,10 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 ctx.fillStyle = "#9b2323"
                 //ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
-            ctx.fillRect(this.buttonPositions.x + tilt -50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 *this.buttonScale);
+            ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 * this.buttonScale);
 
             /* Draw button-text */
-            ctx.font =  55 *this.buttonScale + "px mario-kart";
+            ctx.font = 55 * this.buttonScale + "px mario-kart";
             ctx.fillStyle = "white";
             var globalOffset = -30 * this.buttonScale;
 
@@ -256,7 +275,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             for (let j = 0; j < text.length; j++) {
                 var jump = 0;
                 if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
-                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40 *this.buttonScale) - globalOffset + 80 *this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
+                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40 * this.buttonScale) - globalOffset + 80 * this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
                 if (text[j] == "I") globalOffset += 12;
             }
 
@@ -300,7 +319,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
 window.onload = () => {
     window.ready = false;
-    renderLoadingScreen();
+    renderLoadingScreen(); // TODO: Not working for some reason..
     importTextures();
     importSounds();
     checkForMobileUser()
@@ -310,17 +329,17 @@ window.onload = () => {
     render();
 }
 
-function renderLoadingScreen(){
+function renderLoadingScreen() {
 
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width ,canvas.height);
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.fillStyle = "white";
     ctx.font = "50px mario-maker";
     ctx.textAlign = "center";
-    ctx.fillText("Loading...", canvas.width / 2, canvas.height /2);
+    ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2);
 
-    if(!ready){
+    if (!ready) {
         requestAnimationFrame(renderLoadingScreen);
     }
 }
@@ -348,15 +367,16 @@ function renderLoadingScreen(){
 
 
 function checkForMobileUser() {
-     if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) { 
-        document.getElementById("buttons").innerHTML = '<div id="dpad"> ' + 
-        '<button class="dpad" id="up" onclick="buttonClick(this.id)">▲</button>' +
-        '<button class="dpad" id="left" onclick="buttonClick(this.id)">◀</button> ' +
-        '<button class="dpad" id="right" onclick="buttonClick(this.id)">▶</button> ' +
-        '<button class="dpad" id="down" onclick="buttonClick(this.id)">▼</button> ' +
-        '</div><div id="zyButtons"><button id="z" onclick="buttonClick(this.id)">Z</button> <button id="x" onclick="buttonClick(this.id)">X</button></div>';
-     } 
-} 
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        document.getElementById("buttons").innerHTML = '<div id="dpad"> ' +
+            '<button class="dpad" id="up" onclick="buttonClick(this.id)">▲</button>' +
+            '<button class="dpad" id="left" onclick="buttonClick(this.id)">◀</button> ' +
+            '<button class="dpad" id="right" onclick="buttonClick(this.id)">▶</button> ' +
+            '<button class="dpad" id="down" onclick="buttonClick(this.id)">▼</button> ' +
+            '</div><div id="zyButtons"><button id="z" onclick="buttonClick(this.id)">Z</button> <button id="x" onclick="buttonClick(this.id)">X</button></div>';
+        document.body.style.background = "black";
+    }
+}
 
 var overlaySprites = new Array();
 
@@ -397,7 +417,7 @@ function importSpriteSheet(path, amount) {
     })
     for (let i = 0; i < amount; i++) {
         var number = i.toString();
-        while(number.length < count) number = "0" + number;
+        while (number.length < count) number = "0" + number;
         var importPath = path.substr(0, path.indexOf("X")) + number + path.substr(path.lastIndexOf("X") + 1, path.length)
         var texture = importTexture(importPath);
         totalSprites.push(texture);
@@ -496,7 +516,7 @@ function startGame() {
     /* First start of the game, total reset. */
 
     inGame = true;
-    if (!globalOptions.disableSound) {
+    if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound = s(titleSounds[Math.floor(Math.random() * titleSounds.length)]);
         backgroundSound.volume = .2;
         backgroundSound.loop = true;
@@ -515,7 +535,7 @@ function newGame() {
     /* For each start of a new mini-game. */
     var miniGamesArray = miniGames.concat(); // Copy array
 
-    if (miniGame !== undefined) {
+    if (miniGame !== undefined && miniGames.length > 1) {
         for (let i = 0; i < miniGamesArray.length; i++) {
             if (miniGamesArray[i] === miniGame) {
                 miniGamesArray.splice(i, 1);
@@ -549,9 +569,10 @@ function buttonClick(id) {
     }
 }
 
-function click(code) {
+function click(code, char) {
     if (disableInputs) return;
     var key = {
+        char: char,
         code: code,
         is: function (type) {
             if (type == undefined) return false;
@@ -570,31 +591,37 @@ function click(code) {
 }
 
 document.addEventListener("keydown", e => {
-    click(e.keyCode)
+    click(e.keyCode, e.key)
 });
 
-function cleared() {
-    score++;
-    var sound = "yoshi-mount";
-    var display = {
-        text: "Cleared!",
-        color: "#38ed4a"
-    }
-    if (score % 3 == 0) {
-        sound = "faster";
-        difficulty++;
-        if (!globalOptions.disableSound) backgroundSound.playbackRate += .3;
-
-        display = {
-            text: "Faster!",
-            color: "#ffe226"
-        }
-    }
-    playSound(sound);
-    showClearedScreen(display.text, display.color);
+function cleared(ms) {
+    if (ms == undefined) ms = 0;
+    globalOptions.disableGameOver = true;
     setTimeout(() => {
-        newGame();
-    }, 1000);
+        score++;
+        var sound = "yoshi-mount";
+        var display = {
+            text: "Cleared!",
+            color: "#38ed4a"
+        }
+        if (score % 3 == 0) {
+            sound = "faster";
+            difficulty++;
+            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate += .3;
+
+            display = {
+                text: "Faster!",
+                color: "#ffe226"
+            }
+        }
+        playSound(sound);
+        showClearedScreen(display.text, display.color);
+        setTimeout(() => {
+            newGame();
+            globalOptions.disableGameOver = false;
+        }, 1000);
+    }, ms);
+
 }
 
 
@@ -619,11 +646,21 @@ function drawGameOver() {
 
 var overlayProgress = 0;
 
+function timePunish(ms) {
+    /* Reduce time left with this amount of ms. */
+    timer -= ms;
+}
+
+function fill(color) {
+    /* Fills the color with  */
+    ctx.fillStyle = color;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 
 function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
-    if (timeLeft < 0 && !disableGameOver && timed) {
+    if (timeLeft < 0 && !globalOptions.disableGameOver && timed) {
         if (miniGame.timedWin) {
             cleared();
         } else {
@@ -647,31 +684,22 @@ function drawOverlay() {
     ctx.fillText(score.toString(), 418, 440)
 }
 
-function failed() {
+function failed(ms) {
+    if (ms == undefined) ms = 0;
     disableInputs = true;
-
-    /* if(!globalOptions.disableSound){
-        var at = backgroundSound.playbackRate;
-        var jumpSpeed = at / 10;
-        var slowDown = setInterval(() => {
-            at -= jumpSpeed;
-            if(at >= 0){
-            backgroundSound.playbackRate = Math.round(at);
-            }
-        }, 100);
-    }
- */
-    showClearedScreen("Game Over!", "#8c2424");
-    inGame = false;
     setTimeout(() => {
-        try {
-           backgroundSound.pause();
-           backgroundSound.playbackRate = 1;
-           backgroundSound.currentTime = 0;
-           //setTimeout(()=> {clearInterval(slowDown);}, 250);
-        } catch (e) {}
-        disableInputs = false
-    }, 400);
+        showClearedScreen("Game Over!", "#8c2424");
+        inGame = false;
+        setTimeout(() => {
+            try {
+                backgroundSound.pause();
+                backgroundSound.playbackRate = 1;
+                backgroundSound.currentTime = 0;
+                //setTimeout(()=> {clearInterval(slowDown);}, 250);
+            } catch (e) {}
+            disableInputs = false
+        }, 400);
+    }, ms)
 }
 
 
@@ -807,7 +835,7 @@ function render() {
     // Render FPS
     if (globalOptions.displayFPS) {
         ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(555, 0, 80 , 30);
+        ctx.fillRect(555, 0, 80, 30);
         ctx.font = "20px mario-maker";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
