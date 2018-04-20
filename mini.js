@@ -4,6 +4,8 @@
 
 
 var typeMaster = {
+    varName: "typeMaster",
+    displayName: "Type Master",
     timed: true,
     timedWin: false, 
     textures: ["pixel_pointer.png"],
@@ -105,6 +107,8 @@ var typeMaster = {
 }
 
 var hoverDodge = {
+    varName: "hoverDodge",
+    displayName: "Hover Dodge",
     timed: true,
     timedWin: true,
     textures: ["hover_board.png", "warning.png"],
@@ -188,6 +192,8 @@ var hoverDodge = {
 }
 
 var carrotCatch = {
+    varName: "carrotCatch",
+    displayName: "Carrot Catch",
     timed: false,
     textures: ["carrot.png", "rabbit_closed.png", "rabbit_open.png", "sunny_grass.png"],
     introText: "Catch!",
@@ -248,6 +254,8 @@ var carrotCatch = {
 }
 
 var mash = {
+    varName: "mash",
+    displayName: "Eat the Sandwich",
     timed: true,
     sounds: ["nom_0.mp3", "nom_1.mp3", "nom_2.mp3", "nom_3.mp3", "nom_4.mp3"],
     textures: ["sandwich_front.png", "sandwich_center.png", "sandwich_back.png", "etika_closed.png", "etika_open.png", "x_down.png", "x_up.png", "z_down.png", "z_up.png"],

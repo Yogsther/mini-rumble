@@ -15,7 +15,8 @@ var globalOptions = {
     displayFPS: false,
     devTools: false,
     disableSound: false,
-    disableMusic: false
+    disableMusic: false,
+    limitFPS: false
 }
 
 //document.documentElement.requestFullscreen();
@@ -26,22 +27,19 @@ var backgroundSound = undefined;
 var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball-ds.mp3"];
 
-loadSettings();
+
 
 function loadSettings() {
     expandOptions();
     var settings = localStorage.getItem("globalOptions");
     if (settings == undefined) return;
-    globalOptions = JSON.parse(settings);
+    globalOptions = Object.assign(globalOptions, JSON.parse(settings));
 }
 
 function expandOptions(){
     for(let i = 0; i < miniGames.length; i++){
-        console.log(eval("globalOptions." + miniGames[i].name + " == undefined"), "globalOptions." + miniGames[i].name + " == undefined");
-        if(eval("globalOptions." + miniGames[i].name + " == undefined")){
-            eval("globalOptions." + miniGames[i].name + " = true");
-            console.log("Added");
-        }
+        eval("globalOptions." + miniGames[i].varName + " = false");
+        optionsRender.options.push({text: "Disable " + miniGames[i].displayName, source: miniGames[i].varName});
     }
 }
 
@@ -88,6 +86,7 @@ var optionsRender = {
     scrollPosition: 0,
     buttonSpacing: 20,
     selectedOption: 0,
+    startPoint: 0,
     options: [{
         text: "Display FPS",
         source: "displayFPS"
@@ -100,6 +99,9 @@ var optionsRender = {
     }, {
         text: "Disable music",
         source: "disableMusic"
+    }, {
+        text: "Limit FPS (60)",
+        source: "limitFPS"
     }],
     spriteIndex: 0,
     backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
@@ -114,13 +116,16 @@ var optionsRender = {
         var height = canvas.height - (canvas.height / 8);
         ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
 
-        for (let i = 0; i < this.options.length; i++) {
+        while(this.selectedOption % this.options.length > this.startPoint+3) this.startPoint++;
+        while(this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
+
+        for (let i = this.startPoint; i < this.startPoint+4; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
-                y: this.buttonPositions.y + (i * (this.buttonSpacing + this.buttonStyles.height)),
+                y: this.buttonPositions.y + ((i-this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
                 width: this.buttonStyles.width,
                 height: this.buttonStyles.height,
-                color: "#353535"
+                color: "#111"
             }
 
             var text = {
@@ -138,6 +143,7 @@ var optionsRender = {
                 button.y -= this.buttonZoom;
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
+                button.color = "#353535"
                 // Text
                 text.scale = 1.15;
                 text.x -= 10;
@@ -165,9 +171,9 @@ var optionsRender = {
             ctx.fillText(statusText.text, text.x + 340 * (text.otherScale), text.y)
 
         }
-        ctx.fillStyle = "white";
+        ctx.fillStyle = "#111";
         ctx.font = "20px mario-maker",
-            ctx.textAlign = "right";
+        ctx.textAlign = "right";
         ctx.fillText("Z: Back X: Select", 630, 470);
     },
     logic: function (key) {
@@ -268,6 +274,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
             /* Draw button-text */
             ctx.font = 55 * this.buttonScale + "px mario-kart";
+            ctx.textAlign = "left";
             ctx.fillStyle = "white";
             var globalOffset = -30 * this.buttonScale;
 
@@ -286,6 +293,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 this.lastUpdate = Date.now();
                 if (this.progress > maxHopLength) this.progress = 0;
             }
+
+            ctx.fillStyle = "#111";
+            ctx.font = "20px mario-maker",
+            ctx.textAlign = "right";
+            ctx.fillText("Z: Back X: Select", 630, 470);
 
         }
     },
@@ -319,14 +331,26 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
 window.onload = () => {
     window.ready = false;
+    checkForMobileUser()
+    loadSettings();
     renderLoadingScreen(); // TODO: Not working for some reason..
+}
+
+var startedLoading = false;
+function loadFinalStuff(){
+    startedLoading = true;
     importTextures();
     importSounds();
-    checkForMobileUser()
     //loadControlpanel();
     readyOverlay();
+    loadLast();
     ready = true;
-    render();
+}
+
+function loadLast(){
+    if(onMobile){
+        globalOptions.typeMaster = true;
+    }
 }
 
 function renderLoadingScreen() {
@@ -339,8 +363,12 @@ function renderLoadingScreen() {
     ctx.textAlign = "center";
     ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2);
 
+    if(!startedLoading) loadFinalStuff();
+
     if (!ready) {
         requestAnimationFrame(renderLoadingScreen);
+    } else {
+        render();
     }
 }
 
@@ -365,7 +393,7 @@ function renderLoadingScreen() {
 
 } */
 
-
+var onMobile = false;
 function checkForMobileUser() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         document.getElementById("buttons").innerHTML = '<div id="dpad"> ' +
@@ -375,6 +403,7 @@ function checkForMobileUser() {
             '<button class="dpad" id="down" onclick="buttonClick(this.id)">▼</button> ' +
             '</div><div id="zyButtons"><button id="z" onclick="buttonClick(this.id)">Z</button> <button id="x" onclick="buttonClick(this.id)">X</button></div>';
         document.body.style.background = "black";
+        onMobile = true;
     }
 }
 
@@ -535,12 +564,24 @@ function newGame() {
     /* For each start of a new mini-game. */
     var miniGamesArray = miniGames.concat(); // Copy array
 
-    if (miniGame !== undefined && miniGames.length > 1) {
+    for(let i = 0; i < miniGamesArray.length; i++){
+        if(eval("globalOptions." + miniGamesArray[i].varName)){
+            miniGamesArray.splice(i , 1);
+            i--;
+        }
+    }
+
+    if (miniGame !== undefined && miniGamesArray.length > 1) {
         for (let i = 0; i < miniGamesArray.length; i++) {
             if (miniGamesArray[i] === miniGame) {
                 miniGamesArray.splice(i, 1);
             }
         }
+    }
+
+    if(miniGamesArray.length < 1){
+        failed();
+        return;
     }
     drawOpening();
     miniGame = miniGamesArray[Math.floor(Math.random() * miniGamesArray.length)];
@@ -621,7 +662,6 @@ function cleared(ms) {
             globalOptions.disableGameOver = false;
         }, 1000);
     }, ms);
-
 }
 
 
@@ -729,7 +769,17 @@ var frameScoreCached = new Array();
 
 var renders = [menuRender, optionsRender];
 
+var lastRender = Date.now();
+
 function render() {
+
+    if(Date.now() - lastRender < 16 && globalOptions.limitFPS){
+        console.log("Did not render");
+        requestAnimationFrame(render);
+        return;
+    }
+
+    lastRender = Date.now();
 
     if (globalOptions.devTools) {
         disableGameOver = true;
