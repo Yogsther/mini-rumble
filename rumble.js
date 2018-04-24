@@ -20,7 +20,7 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster];
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude];
 var activeMinigames = miniGames.slice(); 
 
 //document.documentElement.requestFullscreen();
