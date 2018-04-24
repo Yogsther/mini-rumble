@@ -86,33 +86,34 @@ var danceDude = {
   },
   logic: function(key){
     /* Logic is called on a keypress, you can use this for key initiated actions. */
-
-    if ((key.is(keys.left)) && (this.incomingLeftPos.y > 60)) failed();
-    if ((key.is(keys.up)) && (this.incomingUpPos.y > 60)) failed();
-    if ((key.is(keys.down)) && (this.incomingDownPos.y > 60)) failed();
-    if ((key.is(keys.right)) && (this.incomingRightPos.y > 60)) failed();
-    if ((key.is(keys.left)) & (this.incomingLeftPos.y < 60) & (this.incomingLeftPos.y > 0)) { 
+// Ends game with a fail on pressing a key too early
+    if ((key.is(keys.left)) && (this.incomingLeftPos.y > 70) && (this.danceStart)) failed();
+    if ((key.is(keys.up)) && (this.incomingUpPos.y > 70)&& (this.danceStart)) failed();
+    if ((key.is(keys.down)) && (this.incomingDownPos.y > 70)&& (this.danceStart)) failed();
+    if ((key.is(keys.right)) && (this.incomingRightPos.y > 70)&& (this.danceStart)) failed();
+      
+    if ((key.is(keys.left)) & (this.incomingLeftPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
         console.log(this.incomingLeftPos.y);
         this.incomingLeftPos.y += this.hitPos;
         this.hitLeft = true;
         console.log(this.hitLeft);
     }
       
-    if ((key.is(keys.up)) & (this.incomingUpPos.y < 60) & (this.incomingLeftPos.y > 0)) { 
+    if ((key.is(keys.up)) & (this.incomingUpPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
         console.log(this.incomingUpPos.y);
         this.incomingUpPos.y += this.hitPos;
         this.hitUp = true;
         console.log(this.hitUp);
     }
       
-    if ((key.is(keys.down)) & (this.incomingDownPos.y < 60) & (this.incomingLeftPos.y > 0)) { 
+    if ((key.is(keys.down)) & (this.incomingDownPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
         console.log(this.incomingDownPos.y);
         this.incomingDownPos.y += this.hitPos;
         this.hitDown = true;
         console.log(this.hitDown);
     }
       
-    if ((key.is(keys.right)) & (this.incomingRightPos.y < 60) & (this.incomingLeftPos.y > 0)) { 
+    if ((key.is(keys.right)) & (this.incomingRightPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
         console.log(this.incomingRightPos.y);
         this.incomingRightPos.y += this.hitPos;
         this.hitRight = true;
