@@ -51,9 +51,6 @@ var danceDude = {
   paint: function(){
     /* Render function, is called every frame.*/
         // Draw background
-      
-      
-      
       this.progress++;
       ctx.drawImage(this.sprites[this.progress%this.sprites.length], 0, 0);
  
@@ -71,6 +68,8 @@ var danceDude = {
   },
   loop: function(){
     /* Loop function, called every frame before paint() */
+      this.hitPos = Math.floor((Math.random() * 64) + 32) * 10;
+      
       // Ends in a fail on missing one arrow
       if (this.incomingLeftPos.y < -10) failed();
       if (this.incomingUpPos.y < -10) failed();
@@ -84,49 +83,34 @@ var danceDude = {
           this.incomingRightPos.y -= this.incomingSpeed;
       }
   },
-  logic: function(key){
+  logic: function(key) {
     /* Logic is called on a keypress, you can use this for key initiated actions. */
 // Ends game with a fail on pressing a key too early
     if ((key.is(keys.left)) && (this.incomingLeftPos.y > 70) && (this.danceStart)) failed();
-    if ((key.is(keys.up)) && (this.incomingUpPos.y > 70)&& (this.danceStart)) failed();
-    if ((key.is(keys.down)) && (this.incomingDownPos.y > 70)&& (this.danceStart)) failed();
-    if ((key.is(keys.right)) && (this.incomingRightPos.y > 70)&& (this.danceStart)) failed();
+    if ((key.is(keys.up)) && (this.incomingUpPos.y > 70) && (this.danceStart)) failed();
+    if ((key.is(keys.down)) && (this.incomingDownPos.y > 70) && (this.danceStart)) failed();
+    if ((key.is(keys.right)) && (this.incomingRightPos.y > 70) && (this.danceStart)) failed();
       
-    if ((key.is(keys.left)) & (this.incomingLeftPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
-        console.log(this.incomingLeftPos.y);
+    if ((key.is(keys.left)) & (this.incomingLeftPos.y < 70) & (this.incomingLeftPos.y > -10)) { 
         this.incomingLeftPos.y += this.hitPos;
         this.hitLeft = true;
-        console.log(this.hitLeft);
     }
       
-    if ((key.is(keys.up)) & (this.incomingUpPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
-        console.log(this.incomingUpPos.y);
+    if ((key.is(keys.up)) & (this.incomingUpPos.y < 70) & (this.incomingLeftPos.y > -10)) { 
         this.incomingUpPos.y += this.hitPos;
         this.hitUp = true;
-        console.log(this.hitUp);
     }
       
-    if ((key.is(keys.down)) & (this.incomingDownPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
-        console.log(this.incomingDownPos.y);
+    if ((key.is(keys.down)) & (this.incomingDownPos.y < 70) & (this.incomingLeftPos.y > -10)) { 
         this.incomingDownPos.y += this.hitPos;
         this.hitDown = true;
-        console.log(this.hitDown);
     }
       
-    if ((key.is(keys.right)) & (this.incomingRightPos.y < 70) & (this.incomingLeftPos.y > 0)) { 
-        console.log(this.incomingRightPos.y);
+    if ((key.is(keys.right)) & (this.incomingRightPos.y < 70) & (this.incomingLeftPos.y > -10)) { 
         this.incomingRightPos.y += this.hitPos;
-        this.hitRight = true;
-        console.log(this.hitRight);   
+        this.hitRight = true;  
     }
     
-    
-      
-      /*
-      if ((this.hitLeft == true) & (this.hitUp == true) & (this.hitDown == true) & (this.hitRight == true)) {
-          this.hitLeft = false;
-          cleared();
-        */
       if (this.hitLeft == true) {
           this.arrowsHit = this.arrowsHit + 1;
           playSound("muh.ogg");
@@ -152,5 +136,5 @@ var danceDude = {
           cleared();
           this.danceStart = false;
       }
-      }
   }
+}
