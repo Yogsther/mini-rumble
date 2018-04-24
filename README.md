@@ -1,4 +1,4 @@
-# Mini Rumble (Alpha v.0.0.3)
+# Mini Rumble (Beta v.0.3)
 
 Try it out in your browser:
 
@@ -8,9 +8,7 @@ Try it out in your browser:
 
 Mini Rumble is a mini-game collection with a varity of games. The Engine is dynamic and makes it easy to add new games. Making your own mini-game for Mini Rumble is easy with the rich documentation and easy-to-use API (Coming soon).
 
-Currently the game is avalible to play online, but will later also be avalible as a desctop application. Using the desctop application will increase performance and allow for quicker 
-
-
+Currently the game is avalible to play online, but will later also be avalible as a desctop application. Using the desctop application will increase performance and allow for quicker 
 
 ##### Controlls:
 
@@ -19,8 +17,6 @@ Currently the game is avalible to play online, but will later also be avalible a
 - Select: X
 
 - Back: Z
-
-
 
 ##### Todo:
 
@@ -32,7 +28,7 @@ Currently the game is avalible to play online, but will later also be avalible a
 
 - [x] Finalize game engine for v.0.1 (Beta)
 
-- [ ] Add more minigames (2/10)
+- [ ] Add more minigames (4/10)
 
 - [ ] Controller Support
 
@@ -46,13 +42,16 @@ Currently the game is avalible to play online, but will later also be avalible a
 
 #### Documentation:
 
-Mini games are located in the mini.js file. Each mini-game is store in it's own variable.
+Mini games are located in the mini.js file. Each mini-game is stored in it's own variable, in it's own file.
 
 The structure is as followes.
 
 ```javascript
 var nameOfMinigame = {
-  timed: true, 
+  varName: "nameOfMinigame", /* The exact name of the variable. */
+  displayName: "Test mini-game", /* The display name of the mini-game; Shown in the menu when togglening mini-games. */
+  timed: true, /* If the mini-game should have a 5-second time restriction. */
+  timedWin: false, /* Weather or not the mini-game should be won when the time runs out. */
   /* Weather or not the mini-game is timebased or not. If this is false, the timer will be disabled. */
   introText: "Something!", 
   /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
@@ -86,8 +85,6 @@ cleared(); // Successful completion of the mini-game, queueing next game.
 failed(); // Failed outcome from mini-game, i.e Game Over.
 ```
 
-
-
 ##### Built in functions and Data types:
 
 **Key:** This variable is recived in the logic function. 
@@ -106,73 +103,86 @@ key.code == 82;
 ```
 
 **t(name)**
- - Returns texture from name. Alternative from using textures["name"];
+
+- Returns texture from name. Alternative from using textures["name"];
 
 **importTexture(texturePath)**
- - Imports texture from path, default path: textures/.
- ```javascript
 
- /**
+- Imports texture from path, default path: textures/.
+
+  ```javascript
+  
+  /**
   * Example:
   * If the path to the texture is: textures/rabbitGame/rabbit_open.png
   * Then the expected texturePath should be: rabbitGame/rabbit_open.png
   * The name of the texture would be "rabbit_open", and it would be stored in the textures variable.
   * Retrive it with t("name") or textures["name"]
   */
-
+  
   importTexture("rabbitGame/rabbit_open.png"); // Import texture
   var img = t("rabbit_open"); // Get texture
+  ```
 
- ```
+  
+**importSpriteSheet(path, amount)**
+- Import multible textures in series. Designed for After Effects PNG sequence exports.
 
- **importSpriteSheet(path, amount)**
- - Import multible textures in series. Designed for After Effects PNG sequence exports.
- ```javascript
+  ```javascript
   /**
-   *  Example: Import 20 images from textures/overlay/overlay_00.png => textures/overlay/overlay_19.png
-   *  use importSpriteSheet("textures/overlay/overlay_XX.png", 20);
-   *  captial X in the path will be replaced with the number, XX => 00 -> 01... 50
-   *                                                         XXX => 000 -> 001... 050
-   *  importSpriteSheet will return all the textures in one array aswell, so it's usefull to keep them.
-   */
-
+  *  Example: Import 20 images from textures/overlay/overlay_00.png => textures/overlay/overlay_19.png
+  *  use importSpriteSheet("textures/overlay/overlay_XX.png", 20);
+  *  captial X in the path will be replaced with the number, XX => 00 -> 01... 50
+  *                                                         XXX => 000 -> 001... 050
+  *  importSpriteSheet will return all the textures in one array aswell, so it's usefull to keep them.
+  */
+  
   var sprites = importSpriteSheet("textures/overlay/overlay_XX.png", 20); // Imports textures, stores them in textures arr and return them. 
   
+  var progress = 0; // Start on frame 0
+  // For each frame, increase the progress
+  progress++;
   // In a loop, we could cycle these sprites to animate something in the game.
-  ctx.drawImage(sprites[progress], 0, 0);
+  // To make sure progress is a number between 0 - amount of sprites we can use mod,
+  // sprites[progress%sprites.length];
+  ctx.drawImage(sprites[progress%sprites.length], 0, 0);
+  /* Progress should be a variable that increases for each frame. */
+  ```
 
- ```
+  
 **keyDown(keyCode)**
- - Check if key is down, usefull for when controller a character. Checking for keys should be done in the loop function.
- ```javascript 
- /**
+- Check if key is down, usefull for when controller a character. Checking for keys should be done in the loop function.
+
+  ```javascript
+  /**
   * Example:  
   * Check if key is down, can be a keyCode or an Array of keyCodes.
   */
-
+  
   if(keyDown(23) && keyDown(keys.action)){
-    /* Do something */
+   /* Do something */
   }
-```
-
+  ```
 
 **keys**
- - This object contains the keys for action and back, you can use this variable to check for these keys.
+
+- This object contains the keys for action and back, you can use this variable to check for these keys.
 ```javascript
-  /* Example 1: In the logic function on a keypress you can check if that key is of type action or back. */
-  logic: function(key){
-    if(key.is(keys.action)) // Do Something
-  }
-  /* Example 2: To check if a key is down, in the loop function */
-  loop: function(){
-    if(keyDown(keys.action)) // Do something
-  }
+/* Example 1: In the logic function on a keypress you can check if that key is of type action or back. */
+logic: function(key){
+ if(key.is(keys.action)) // Do Something
+}
+/* Example 2: To check if a key is down, in the loop function */
+loop: function(){
+ if(keyDown(keys.action)) // Do something
+}
 
 ```
 
 **cleared()**
- - If the objective of the mini-game was cleared, call this function to queue the next mini-game.
+
+- If the objective of the mini-game was cleared, call this function to queue the next mini-game.
 
 **failed()**
- - If the objective was failed, use this function to cause a Game Over.
 
+- If the objective was failed, use this function to cause a Game Over.
