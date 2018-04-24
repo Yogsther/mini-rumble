@@ -19,6 +19,10 @@ var globalOptions = {
     limitFPS: false
 }
 
+
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster];
+var activeMinigames = miniGames.slice(); 
+
 //document.documentElement.requestFullscreen();
 
 var backgroundSound = undefined;
@@ -200,12 +204,6 @@ var optionsRender = {
             selectedScene = 0;
         }
 
-        if (this.selectedOption == 2) {
-            if (globalOptions.disableSound) {
-                globalOptions.disableMusic = true;
-            }
-        }
-
         if (playEffect) playSound("menu-click");
     }
 }
@@ -219,7 +217,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         [209, 83, 66],
         [209, 104, 66]
     ],
-    buttonTitles: ["Play", "Options", "Exit"],
+    buttonTitles: ["Play", "Online", "Options"],
     selectedButton: 0,
     progress: 0,
     buttonPositions: {
@@ -316,7 +314,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         if (key.is(keys.action)) {
             playEffect = true;
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
-            if (this.selectedButton % this.buttonColors.length == 1) {
+            if (this.selectedButton % this.buttonColors.length == 2) {
                 selectedScene = 1; /* Display options */
                 optionsRender.selectedOption = 0;
             }
@@ -333,7 +331,14 @@ window.onload = () => {
     window.ready = false;
     checkForMobileUser()
     loadSettings();
+    getVersion();
     renderLoadingScreen(); // TODO: Not working for some reason..
+}
+
+var version = "?";
+function getVersion(){
+    fetch("/README.md")
+        .then(data => console.log(data.text()));
 }
 
 var startedLoading = false;
@@ -611,6 +616,7 @@ function buttonClick(id) {
 }
 
 function click(code, char) {
+    if(!ready) return;
     if (disableInputs) return;
     var key = {
         char: char,
@@ -724,10 +730,16 @@ function drawOverlay() {
     ctx.fillText(score.toString(), 418, 440)
 }
 
+var failedCalled = false;
 function failed(ms) {
+    if(globalOptions.devTools) return;
+    if(failedCalled) return;
+    failedCalled = true;
+    console.log("Called failed from: " + failed.caller.toString());
     if (ms == undefined) ms = 0;
     disableInputs = true;
     setTimeout(() => {
+        miniGame = undefined;
         showClearedScreen("Game Over!", "#8c2424");
         inGame = false;
         setTimeout(() => {
@@ -737,6 +749,7 @@ function failed(ms) {
                 backgroundSound.currentTime = 0;
                 //setTimeout(()=> {clearInterval(slowDown);}, 250);
             } catch (e) {}
+            failedCalled = false;
             disableInputs = false
         }, 400);
     }, ms)
@@ -773,8 +786,7 @@ var lastRender = Date.now();
 
 function render() {
 
-    if(Date.now() - lastRender < 16 && globalOptions.limitFPS){
-        console.log("Did not render");
+    if(Date.now() - lastRender < 14 /* Not 16 because this causes fps to be around 55 */ && globalOptions.limitFPS){
         requestAnimationFrame(render);
         return;
     }

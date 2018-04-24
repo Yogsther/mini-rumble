@@ -1,4 +1,4 @@
-# Mini Rumble (Alpha v.0.0.3)
+# Mini Rumble (Beta v.0.4.1)
 
 Try it out in your browser:
 
@@ -32,7 +32,9 @@ Currently the game is avalible to play online, but will later also be avalible a
 
 - [x] Finalize game engine for v.0.1 (Beta)
 
-- [ ] Add more minigames (2/10)
+- [x] Mobile Support
+
+- [ ] 10 minigames (4/10)
 
 - [ ] Controller Support
 
