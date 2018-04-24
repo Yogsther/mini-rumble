@@ -1,4 +1,6 @@
 var danceDude = {
+  varName: "danceDude",
+  displayName: "Dance Dude",
   timed: false, 
   /* Weather or not the mini-game is timebased or not. If this is false, the timer will be disabled. */
   introText: "Dance!", 
