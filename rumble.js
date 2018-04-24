@@ -377,27 +377,6 @@ function renderLoadingScreen() {
     }
 }
 
-/* function loadControlpanel(){
-    var cCanvas = document.getElementById("controlpanel");
-    cCanvas.width = $(window).width();
-    cCanvas.height = 350;
-    var cCtx = cCanvas.getContext("2d");
-
-    cCtx.fillStyle = "white";
-    cCtx.fillRect(0,0,cCanvas.width, cCanvas.height);
-
-    cCtx.drawImage(t("etika_open"), 0, 0);
-
-
-    cCanvas.addEventListener("click", e => {
-        var rect = cCanvas.getBoundingClientRect();
-    var x = Math.round(e.clientX - rect.left);
-    var y = Math.round(e.clientY - rect.top);
-    console.log(x, y);
-    })
-
-} */
-
 var onMobile = false;
 function checkForMobileUser() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
