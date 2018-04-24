@@ -83,11 +83,14 @@ var danceDude = {
           this.incomingDownPos.y -= this.incomingSpeed;
           this.incomingRightPos.y -= this.incomingSpeed;
       }
-      
   },
   logic: function(key){
     /* Logic is called on a keypress, you can use this for key initiated actions. */
 
+    if ((key.is(keys.left)) && (this.incomingLeftPos.y > 60)) failed();
+    if ((key.is(keys.up)) && (this.incomingUpPos.y > 60)) failed();
+    if ((key.is(keys.down)) && (this.incomingDownPos.y > 60)) failed();
+    if ((key.is(keys.right)) && (this.incomingRightPos.y > 60)) failed();
     if ((key.is(keys.left)) & (this.incomingLeftPos.y < 60) & (this.incomingLeftPos.y > 0)) { 
         console.log(this.incomingLeftPos.y);
         this.incomingLeftPos.y += this.hitPos;
@@ -115,6 +118,9 @@ var danceDude = {
         this.hitRight = true;
         console.log(this.hitRight);   
     }
+    
+    
+      
       /*
       if ((this.hitLeft == true) & (this.hitUp == true) & (this.hitDown == true) & (this.hitRight == true)) {
           this.hitLeft = false;
