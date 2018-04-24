@@ -6,7 +6,7 @@ var danceDude = {
   introText: "Dance!", 
   /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
     sounds: ["muh.ogg"],
-  textures: ["dance_arrow_left.png", "dance_arrow_up.png", "dance_arrow_down.png", "dance_arrow_right.png", "dance_incoming_left.png", "dance_incoming_up.png", "dance_incoming_down.png", "dance_incoming_right.png", "dance_bg.png"], 
+  textures: ["dance_arrow_left.png", "dance_arrow_up.png", "dance_arrow_down.png", "dance_arrow_right.png", "dance_incoming_left.png", "dance_incoming_up.png", "dance_incoming_down.png", "dance_incoming_right.png", /* missing texture: "dance_bg.png"*/], 
   /* If your mini-game contains textures, enter them in here. default path is /textures. */
     
   init: function(dif){

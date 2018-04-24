@@ -20,7 +20,7 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude];
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite];
 var activeMinigames = miniGames.slice(); 
 
 //document.documentElement.requestFullscreen();
@@ -70,10 +70,10 @@ var sounds = new Object();
 var keys = {
     action: [88, 32, 13],
     back: [90, 8, 27],
-    up: [38],
-    down: [40],
-    left: [37],
-    right: [39]
+    up: [38, 87],
+    down: [40, 83],
+    left: [37, 65],
+    right: [39, 68]
 }
 
 
@@ -338,7 +338,7 @@ window.onload = () => {
 var version = "?";
 function getVersion(){
     fetch("/README.md")
-        .then(data => console.log(data.text()));
+        .then(data => console.log(data.text())); // TODO
 }
 
 var startedLoading = false;
