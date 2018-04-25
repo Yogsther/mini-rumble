@@ -31,10 +31,23 @@ var gatherFortnite = {
         ctx.save();
         ctx.translate(playerDrawPoint.x, playerDrawPoint.y);
         var desiredDirection = (90 * this.player.direction);
-        for(let i = 0; i < 10; i++){
-            console.log(desiredDirection, this.player.superDirection)
-            if(desiredDirection < Math.round(this.player.superDirection) % 360) this.player.superDirection--;
-            if(desiredDirection > Math.round(this.player.superDirection) % 360) this.player.superDirection++; 
+        for(let i = 0; i < 6; i++){
+            var distance = (desiredDirection - (this.player.superDirection % 360))
+            console.log(distance);
+            var changedDir = false;
+            if(distance < 180 && distance > 0){
+                this.player.superDirection++;
+                changedDir = true;
+            }
+            if(distance < 0 && distance > -180){
+                changedDir = true;
+                this.player.superDirection--;
+            } 
+
+            if(!changedDir && this.player.superDirection != desiredDirection)this.player.superDirection++;    
+            
+            //if(desiredDirection < Math.round(this.player.superDirection) % 360) 
+            //if(desiredDirection > Math.round(this.player.superDirection) % 360) this.player.superDirection++; 
         }
 
         ctx.rotate(this.player.superDirection * Math.PI / 180);
