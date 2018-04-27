@@ -296,6 +296,9 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.font = "20px mario-maker",
             ctx.textAlign = "right";
             ctx.fillText("Z: Back X: Select", 630, 470);
+            ctx.fillStyle = "rgba(0,0,0,0.3)";
+            ctx.textAlign = "left";
+            ctx.fillText(version, 15, 30);
 
         }
     },
@@ -338,8 +341,13 @@ window.onload = () => {
 
 var version = "?";
 function getVersion(){
-    fetch("/README.md")
-        .then(data => console.log(data.text())); // TODO
+    var client = new XMLHttpRequest();
+    client.open('GET', '/README.md');
+    client.onreadystatechange = function() {
+        var s = JSON.stringify(client.responseText)
+        version = s.substr(s.indexOf("(") + 1, s.indexOf(")") -17);
+    }
+    client.send();
 }
 
 var startedLoading = false;
@@ -413,7 +421,7 @@ function fadeColor(r, g, b) {
 }
 
 function importSpriteSheet(path, amount) {
-
+    
     /*  If the path is: "textures/overlay/overlay_00.png => overlay_19.png"
         Then expected input path is: "overlay/overlay_XX.png", amount: 20
     */
@@ -661,7 +669,6 @@ function click(code, char) {
     } catch (e) {};
     if (!keyDown(code) && !onMobile) {
         keysDown.push(code);
-        console.log("Pushed. ", code, keysDown);
     }
 }
 
@@ -767,7 +774,6 @@ function failed(ms) {
     if(globalOptions.devTools) return;
     if(failedCalled) return;
     failedCalled = true;
-    console.log("Called failed from: " + failed.caller.toString());
     if (ms == undefined) ms = 0;
     disableInputs = true;
     setTimeout(() => {
@@ -787,6 +793,20 @@ function failed(ms) {
         }, 400);
     }, ms)
 }
+
+function draw(sprite, x, y, scale){
+    if(scale == false) scale = 1;
+    ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
+}
+
+function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2){
+    if(scale1 == false) scale1 = 1;
+    if(scale2 == false) scale2 = 1;
+
+    // TODO
+
+}
+
 
 
 function startOpeningAnimation() {
@@ -818,8 +838,7 @@ var renders = [menuRender, optionsRender];
 var lastRender = Date.now();
 
 function render() {
-    //console.log(keysDown);
-    if(Date.now() - lastRender < 16 /* Not 16 because this causes fps to be around 55 */ && globalOptions.limitFPS){
+    if(Date.now() - lastRender < 16 && globalOptions.limitFPS){
         requestAnimationFrame(render);
         return;
     }

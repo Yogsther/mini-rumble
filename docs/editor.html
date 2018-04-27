@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+    <input type="text" id="title" placeholder="Title">
+    <input type="text" id="type" placeholder="Type"><br>
+    <textarea type="text" id="text-area" style="width:400px;height:400px;" placeholder="Description"></textarea><br>
+    <button onclick="run()">Convert</button><br>
+    <input type="text" id="output" style="width: 400px;">
+    
+    <script>
+    
+    function run(){
+        var text = document.getElementById("text-area").value
+        var obj = new Object;
+        obj.description = text
+        obj.title = document.getElementById("title").value;
+        obj.type = document.getElementById("type").value;
+        document.getElementById("output").value = "{title: " + JSON.stringify(obj.title) + ", description: " + JSON.stringify(obj.description) + ", type: " + JSON.stringify(obj.type) + "}";
+
+        
+    }
+    
+    </script>
+</body>
+</html>

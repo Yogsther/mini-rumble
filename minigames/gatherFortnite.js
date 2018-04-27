@@ -41,7 +41,6 @@ var gatherFortnite = {
     },
     paint: function () {
         if(this.drawScene == 0){
-
             ctx.fillStyle = "#111";
             ctx.fillRect(0, 0, canvas.width, canvas.height); // Clear
     
