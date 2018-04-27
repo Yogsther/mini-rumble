@@ -4,6 +4,7 @@ var typeMaster = {
     timed: true,
     timedWin: false, 
     textures: ["pixel_pointer.png"],
+    requiresKeyboard: true,
     introText: "Type!",
     init: function(dif){
         var words = ["Wahoo", "Ohyeah", "Mario Time", "Niiiiiintendo Wahoo", "Here I go", "Mama Mia", "QWERTY", "Random"]
@@ -83,7 +84,6 @@ var typeMaster = {
     },
     logic: function(key){
         if(key.char.toLowerCase() == "shift") return;
-        //console.log(key.char.toLowerCase(), this.word[this.progress].toLowerCase() , key.char.toLowerCase() == this.word[this.progress].toLowerCase());
         if(key.char.toLowerCase() == this.word[this.progress].toLowerCase()){
             this.progress++;
             if(this.progress >= this.word.length && !this.cleared){

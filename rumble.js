@@ -333,6 +333,7 @@ window.onload = () => {
     loadSettings();
     getVersion();
     renderLoadingScreen(); // TODO: Not working for some reason..
+    loadLast();
 }
 
 var version = "?";
@@ -348,14 +349,7 @@ function loadFinalStuff(){
     importSounds();
     //loadControlpanel();
     readyOverlay();
-    loadLast();
     ready = true;
-}
-
-function loadLast(){
-    if(onMobile){
-        globalOptions.typeMaster = true;
-    }
 }
 
 function renderLoadingScreen() {
@@ -483,15 +477,16 @@ function importSounds() {
 
 
 function importSound(sound) {
+    /* Import a sound, default directory: /sounds/ */
     var soundName = sound.substr(sound.lastIndexOf("/") + 1);
     soundName = soundName.substr(0, soundName.indexOf("."));
-
     sounds[soundName] = new Audio();
     sounds[soundName].src = "sounds/" + sound;
     return sounds[soundName];
 }
 
 function s(name) {
+    /* Return a sound file from name */
     if (name.indexOf(".") != -1) {
         var sound = name;
         var soundName = sound.substr(sound.lastIndexOf("/") + 1);
@@ -594,6 +589,65 @@ function buttonClick(id) {
     }
 }
 
+var waitDown = new Array();
+function loadLast(){
+   
+    var elements = document.getElementsByClassName("dpad");
+    for(let i = 0; i < elements.length; i++){
+        elements[i].addEventListener("touchstart", e => {
+            
+            var keys = [38, 40, 37, 39, 88, 90];
+            var translate = ["up", "down", "left", "right", "x", "z"];
+            var index = translate.indexOf(elements[i].id);
+            var key = keys[index];
+           
+            if(!keyDown(key)) keysDown.push(key);
+            console.log("Pushed " , key, keysDown);
+        });
+    }
+    for(let i = 0; i < elements.length; i++){
+        elements[i].addEventListener("mouseup", e => {
+            var keys = [38, 40, 37, 39, 88, 90];
+            var translate = ["up", "down", "left", "right", "x", "z"];
+            var index = translate.indexOf(elements[i].id);
+            var key = keys[index];
+            
+            while (keyDown(key)) {
+                for (let i = 0; i < keysDown.length; i++) {
+                    if (keysDown[i] == key){
+                        keysDown.splice(i, 1);
+                        
+                    }
+                }
+            }
+            console.log("removed", key,  keysDown);
+        });
+    }
+}
+
+function displayMobileKeyboard(){
+    disableKeyboard = true;
+    document.getElementById("keyboard-input").innerHTML = ' <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)">';
+    document.getElementById("keyboard-controlls").focus();
+    return;
+}
+
+function hideMobileKeyboard(){
+    disableKeyboard = false;
+    document.getElementById("keyboard-input").innerHTML = '';
+    document.getElementById("canvas").focus();
+}
+
+
+var disableKeyboard = false;
+
+function detectMobileInput(value){
+    var charCode = value.toLowerCase().charCodeAt(0);
+    click(charCode, value);
+    document.getElementById("keyboard-controlls").value = "";
+}
+
+
 function click(code, char) {
     if(!ready) return;
     if (disableInputs) return;
@@ -617,13 +671,17 @@ function click(code, char) {
 }
 
 document.addEventListener("keydown", e => {
+    if(disableKeyboard) return;
     click(e.keyCode, e.key)
 });
 
-function cleared(ms) {
+function cleared(ms){
+    
     if (ms == undefined) ms = 0;
     globalOptions.disableGameOver = true;
+    
     setTimeout(() => {
+        disableKeyboard = false;
         score++;
         var sound = "yoshi-mount";
         var display = {
@@ -718,6 +776,7 @@ function failed(ms) {
     if (ms == undefined) ms = 0;
     disableInputs = true;
     setTimeout(() => {
+        disableKeyboard = false;
         miniGame = undefined;
         showClearedScreen("Game Over!", "#8c2424");
         inGame = false;
@@ -764,8 +823,8 @@ var renders = [menuRender, optionsRender];
 var lastRender = Date.now();
 
 function render() {
-
-    if(Date.now() - lastRender < 14 /* Not 16 because this causes fps to be around 55 */ && globalOptions.limitFPS){
+    //console.log(keysDown);
+    if(Date.now() - lastRender < 16 /* Not 16 because this causes fps to be around 55 */ && globalOptions.limitFPS){
         requestAnimationFrame(render);
         return;
     }
@@ -821,7 +880,11 @@ function render() {
             showingOpeningAnimation = false;
             timer = Date.now();
             window.timed = miniGame.timed;
+            if(miniGame.requiresKeyboard && onMobile){
+                displayMobileKeyboard();
+            }
             miniGame.init(difficulty);
+            
         }
     }
 
@@ -836,7 +899,6 @@ function render() {
         var duration = 1000 // ms
         var curtainSpeed = 30;
         var textDisplayTimeout = 1.5;
-
 
         clearedProgress += speed;
         ctx.fillStyle = "#111";
