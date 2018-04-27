@@ -589,26 +589,22 @@ function buttonClick(id) {
     }
 }
 
-var waitDown = new Array();
 function loadLast(){
    
+
+    var keys = [38, 40, 37, 39, 88, 90];
+    var translate = ["up", "down", "left", "right", "x", "z"];
+
     var elements = document.getElementsByClassName("dpad");
     for(let i = 0; i < elements.length; i++){
         elements[i].addEventListener("touchstart", e => {
-            
-            var keys = [38, 40, 37, 39, 88, 90];
-            var translate = ["up", "down", "left", "right", "x", "z"];
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
-           
+
             if(!keyDown(key)) keysDown.push(key);
-            console.log("Pushed " , key, keysDown);
         });
-    }
-    for(let i = 0; i < elements.length; i++){
-        elements[i].addEventListener("mouseup", e => {
-            var keys = [38, 40, 37, 39, 88, 90];
-            var translate = ["up", "down", "left", "right", "x", "z"];
+
+        elements[i].addEventListener("touchend", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
             
@@ -616,11 +612,9 @@ function loadLast(){
                 for (let i = 0; i < keysDown.length; i++) {
                     if (keysDown[i] == key){
                         keysDown.splice(i, 1);
-                        
                     }
                 }
             }
-            console.log("removed", key,  keysDown);
         });
     }
 }
@@ -665,8 +659,9 @@ function click(code, char) {
     try {
         if (inGame && !showingOpeningAnimation) miniGame.logic(key);
     } catch (e) {};
-    if (!keyDown(code)) {
+    if (!keyDown(code) && !onMobile) {
         keysDown.push(code);
+        console.log("Pushed. ", code, keysDown);
     }
 }
 
