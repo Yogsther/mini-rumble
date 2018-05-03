@@ -1,9 +1,9 @@
-# Mini Rumble  (Beta v.0.5.0)
+# Mini Rumble  (Beta v.0.5.2)
 
  Try it out in your browser:
  [mini.livfor.it](http://mini.livfor.it)
  
- Documentation: 
+ Documentation & API: 
  [mini.livfor.it/docs](http://mini.livfor.it/docs)
 
 ##### What is it?
