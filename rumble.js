@@ -334,9 +334,22 @@ window.onload = () => {
     window.ready = false;
     checkForMobileUser()
     loadSettings();
+    getAmountOfCommits();
     getVersion();
     renderLoadingScreen(); // TODO: Not working for some reason..
     loadLast();
+    
+}
+
+function getAmountOfCommits(){
+    
+    var client = new XMLHttpRequest();
+    client.open('GET', 'https://api.github.com/repos/yogsther/mini-rumble/commits');
+    client.onreadystatechange = function() {
+        var commits = client.responseText;
+        console.log(JSON.parse(commits).length);
+    }
+    client.send();
 }
 
 var version = "?";
