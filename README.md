@@ -2,6 +2,7 @@
 
  Try it out in your browser:
  [mini.livfor.it](http://mini.livfor.it)
+ 
  Documentation: 
  [mini.livfor.it/docs](http://mini.livfor.it/docs)
 
@@ -23,10 +24,12 @@ Currently the game is avalible to play online, but will later also be avalible a
 - [x] Finnish Options menu
 - [x] Finalize game engine for v.0.1 (Beta)
 - [x] Mobile Support
+- [x] Publish documentation and API 
 - [ ] 10 minigames (6/10)
 - [ ] Controller Support
 - [ ] Package Electron app
-- [ ] Publish documentation and API 
+- [ ] 1.0 Build
+- [ ] Begin full patch-notes documentation
 - [ ] Online leaderboards
 - [ ] Multiplayer play
 
