@@ -347,7 +347,18 @@ function getAmountOfCommits(){
     client.open('GET', 'https://api.github.com/repos/yogsther/mini-rumble/commits');
     client.onreadystatechange = function() {
         var commits = client.responseText;
-        console.log(JSON.parse(commits).length);
+        commits = JSON.parse(commits);
+        var i = 0;
+        window.finalVersion = false;
+        commits.forEach(commit => {
+            if(finalVersion === false){
+            var message = commit.commit.message;
+            if(message.indexOf("v.") != -1){
+                version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
+                i++;
+                }
+            }
+        })
     }
     client.send();
 }
