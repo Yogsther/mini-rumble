@@ -296,6 +296,9 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.font = "20px mario-maker",
             ctx.textAlign = "right";
             ctx.fillText("Z: Back X: Select", 630, 470);
+            ctx.fillStyle = "rgba(0,0,0,0.3)";
+            ctx.textAlign = "left";
+            ctx.fillText(version, 15, 30);
 
         }
     },
@@ -333,12 +336,18 @@ window.onload = () => {
     loadSettings();
     getVersion();
     renderLoadingScreen(); // TODO: Not working for some reason..
+    loadLast();
 }
 
 var version = "?";
 function getVersion(){
-    fetch("/README.md")
-        .then(data => console.log(data.text())); // TODO
+    var client = new XMLHttpRequest();
+    client.open('GET', '/README.md');
+    client.onreadystatechange = function() {
+        var s = JSON.stringify(client.responseText)
+        version = s.substr(s.indexOf("(") + 1, s.indexOf(")") -17);
+    }
+    client.send();
 }
 
 var startedLoading = false;
@@ -348,14 +357,7 @@ function loadFinalStuff(){
     importSounds();
     //loadControlpanel();
     readyOverlay();
-    loadLast();
     ready = true;
-}
-
-function loadLast(){
-    if(onMobile){
-        globalOptions.typeMaster = true;
-    }
 }
 
 function renderLoadingScreen() {
@@ -419,7 +421,7 @@ function fadeColor(r, g, b) {
 }
 
 function importSpriteSheet(path, amount) {
-
+    
     /*  If the path is: "textures/overlay/overlay_00.png => overlay_19.png"
         Then expected input path is: "overlay/overlay_XX.png", amount: 20
     */
@@ -483,15 +485,16 @@ function importSounds() {
 
 
 function importSound(sound) {
+    /* Import a sound, default directory: /sounds/ */
     var soundName = sound.substr(sound.lastIndexOf("/") + 1);
     soundName = soundName.substr(0, soundName.indexOf("."));
-
     sounds[soundName] = new Audio();
     sounds[soundName].src = "sounds/" + sound;
     return sounds[soundName];
 }
 
 function s(name) {
+    /* Return a sound file from name */
     if (name.indexOf(".") != -1) {
         var sound = name;
         var soundName = sound.substr(sound.lastIndexOf("/") + 1);
@@ -594,6 +597,59 @@ function buttonClick(id) {
     }
 }
 
+function loadLast(){
+   
+
+    var keys = [38, 40, 37, 39, 88, 90];
+    var translate = ["up", "down", "left", "right", "x", "z"];
+
+    var elements = document.getElementsByClassName("dpad");
+    for(let i = 0; i < elements.length; i++){
+        elements[i].addEventListener("touchstart", e => {
+            var index = translate.indexOf(elements[i].id);
+            var key = keys[index];
+
+            if(!keyDown(key)) keysDown.push(key);
+        });
+
+        elements[i].addEventListener("touchend", e => {
+            var index = translate.indexOf(elements[i].id);
+            var key = keys[index];
+            
+            while (keyDown(key)) {
+                for (let i = 0; i < keysDown.length; i++) {
+                    if (keysDown[i] == key){
+                        keysDown.splice(i, 1);
+                    }
+                }
+            }
+        });
+    }
+}
+
+function displayMobileKeyboard(){
+    disableKeyboard = true;
+    document.getElementById("keyboard-input").innerHTML = ' <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)">';
+    document.getElementById("keyboard-controlls").focus();
+    return;
+}
+
+function hideMobileKeyboard(){
+    disableKeyboard = false;
+    document.getElementById("keyboard-input").innerHTML = '';
+    document.getElementById("canvas").focus();
+}
+
+
+var disableKeyboard = false;
+
+function detectMobileInput(value){
+    var charCode = value.toLowerCase().charCodeAt(0);
+    click(charCode, value);
+    document.getElementById("keyboard-controlls").value = "";
+}
+
+
 function click(code, char) {
     if(!ready) return;
     if (disableInputs) return;
@@ -611,19 +667,23 @@ function click(code, char) {
     try {
         if (inGame && !showingOpeningAnimation) miniGame.logic(key);
     } catch (e) {};
-    if (!keyDown(code)) {
+    if (!keyDown(code) && !onMobile) {
         keysDown.push(code);
     }
 }
 
 document.addEventListener("keydown", e => {
+    if(disableKeyboard) return;
     click(e.keyCode, e.key)
 });
 
-function cleared(ms) {
+function cleared(ms){
+    
     if (ms == undefined) ms = 0;
     globalOptions.disableGameOver = true;
+    
     setTimeout(() => {
+        disableKeyboard = false;
         score++;
         var sound = "yoshi-mount";
         var display = {
@@ -714,10 +774,10 @@ function failed(ms) {
     if(globalOptions.devTools) return;
     if(failedCalled) return;
     failedCalled = true;
-    console.log("Called failed from: " + failed.caller.toString());
     if (ms == undefined) ms = 0;
     disableInputs = true;
     setTimeout(() => {
+        disableKeyboard = false;
         miniGame = undefined;
         showClearedScreen("Game Over!", "#8c2424");
         inGame = false;
@@ -733,6 +793,20 @@ function failed(ms) {
         }, 400);
     }, ms)
 }
+
+function draw(sprite, x, y, scale){
+    if(scale == false) scale = 1;
+    ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
+}
+
+function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2){
+    if(scale1 == false) scale1 = 1;
+    if(scale2 == false) scale2 = 1;
+
+    // TODO
+
+}
+
 
 
 function startOpeningAnimation() {
@@ -764,8 +838,7 @@ var renders = [menuRender, optionsRender];
 var lastRender = Date.now();
 
 function render() {
-
-    if(Date.now() - lastRender < 14 /* Not 16 because this causes fps to be around 55 */ && globalOptions.limitFPS){
+    if(Date.now() - lastRender < 16 && globalOptions.limitFPS){
         requestAnimationFrame(render);
         return;
     }
@@ -821,7 +894,11 @@ function render() {
             showingOpeningAnimation = false;
             timer = Date.now();
             window.timed = miniGame.timed;
+            if(miniGame.requiresKeyboard && onMobile){
+                displayMobileKeyboard();
+            }
             miniGame.init(difficulty);
+            
         }
     }
 
@@ -836,7 +913,6 @@ function render() {
         var duration = 1000 // ms
         var curtainSpeed = 30;
         var textDisplayTimeout = 1.5;
-
 
         clearedProgress += speed;
         ctx.fillStyle = "#111";

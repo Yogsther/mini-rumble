@@ -16,6 +16,9 @@
 
 <body>
 
+    <!-- Mobile keyboard support for typing mini-games -->
+    <span id="keyboard-input"> <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)"></span>
+
     <!-- Game canvas -->
     <canvas id="canvas" width="640" height="480"></canvas>
 
