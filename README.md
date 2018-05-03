@@ -44,12 +44,9 @@ Check out the full documentation here: [mini.livfor.it/docs](http://mini.livfor.
 
 ![Version image: v. 1. 9. 12](https://i.imgur.com/rLiOkMO.jpg)
 
-- Major updates: These are the biggest updates and will only occur rairly when a major change or feature is made / added.
-
+- Major updates: These are the biggest updates and will only occur rarely when a major change or feature is made / added.
 - Minor updates: Minor updates are manually made when new mini-games is added or bigger changes are made.
-
-- Hotfix updates: This number represents the amount of commits made since the last Minor update. This is automaticly updated.
-
+- Hotfix updates: This number represents the amount of commits made since the last Minor update. This is automatically updated.
 
 
 Mini games are located in the minigames folder. Each mini-game is stored in it's own variable, in it's own file.
