@@ -20,7 +20,7 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite];
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot];
 var activeMinigames = miniGames.slice(); 
 
 //document.documentElement.requestFullscreen();
