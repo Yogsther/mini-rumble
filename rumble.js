@@ -20,7 +20,7 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot];
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce];
 var activeMinigames = miniGames.slice(); 
 
 //document.documentElement.requestFullscreen();
@@ -335,7 +335,6 @@ window.onload = () => {
     checkForMobileUser()
     loadSettings();
     getAmountOfCommits();
-    getVersion();
     renderLoadingScreen(); // TODO: Not working for some reason..
     loadLast();
     
@@ -354,9 +353,9 @@ function getAmountOfCommits(){
             if(finalVersion === false){
             var message = commit.commit.message;
             if(message.indexOf("v.") != -1){
-                version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
-                i++;
-                }
+                version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;    
+            }
+            i++;
             }
         })
     }
@@ -364,7 +363,11 @@ function getAmountOfCommits(){
 }
 
 var version = "?";
-function getVersion(){
+
+
+/* 
+    Old way of getting the current version via the README
+    function getVersion(){
     var client = new XMLHttpRequest();
     client.open('GET', '/README.md');
     client.onreadystatechange = function() {
@@ -372,7 +375,7 @@ function getVersion(){
         version = s.substr(s.indexOf("(") + 1, s.indexOf(")") -17);
     }
     client.send();
-}
+} */
 
 var startedLoading = false;
 function loadFinalStuff(){
