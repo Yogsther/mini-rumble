@@ -2,7 +2,7 @@ var gatherFortnite = {
     varName: "gatherFortnite",
     displayName: "Wood Gather",
     timed: true,
-    textures: ["gather/tricerathot.png", "gather/wood.png", "gather/gather_bg.png", "gather/thot_big.png"],
+    textures: ["gather/tricerathot.png", "gather/wood.png", "gather/gather_bg.png", "gather/thot_big.png", "gather/gather_grass.png"],
     introText: "Gather!",
     init: function (dif) {
         /* Run on initiation */
@@ -44,6 +44,7 @@ var gatherFortnite = {
         if(this.drawScene == 0){
             ctx.fillStyle = "#111";
             ctx.fillRect(0, 0, canvas.width, canvas.height); // Clear
+            ctx.drawImage(t("gather_grass"), 0, 0);
     
             // Draw materials
             this.materials.forEach(material => {
@@ -157,6 +158,18 @@ var gatherFortnite = {
         if (keyDown(keys.down)) {
             this.player.y += speed;
             this.player.direction = 2;
+        }
+        if ((keyDown(keys.left)) && (keyDown(keys.up))) {
+            this.player.direction = 3.5;
+        }
+        if ((keyDown(keys.right)) && (keyDown(keys.up))) {
+            this.player.direction = 0.5;
+        }
+        if ((keyDown(keys.left)) && (keyDown(keys.down))) {
+            this.player.direction = 2.5;
+        }
+        if ((keyDown(keys.right)) && (keyDown(keys.down))) {
+            this.player.direction = 1.5;
         }
     },
     /* Move variables */
