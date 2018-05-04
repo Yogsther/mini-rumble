@@ -7,7 +7,7 @@ var typeMaster = {
     requiresKeyboard: true,
     introText: "Type!",
     init: function(dif){
-        var words = ["Wahoo", "Ohyeah", "Mario Time", "Niiiiiintendo Wahoo", "Here I go", "Mama Mia", "QWERTY", "Random"]
+        var words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow"]
         this.word = words[Math.floor(Math.random()*words.length)];
         this.progress = 0;
         this.sinProgression = 0;

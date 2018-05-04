@@ -28,14 +28,14 @@ var gatherFortnite = {
             opacity: 1,
             x: 255,
             y: 10,
-            timer: 0
+            timer: 0,
+            bgX: -20
         }
-        
     },
     populateMaterials: function(){
         for(let i = 0; i < this.amountOfMaterials; i++){
             var x = Math.floor(Math.random() * (canvas.width - (this.padding*2))) + this.padding;
-                y = Math.floor(Math.random() * (canvas.height - (this.padding*2))) + this.padding;
+                y = Math.floor(Math.random() * (353  - (this.padding*2))) + this.padding;
             this.materials[i] = {x: x, y: y, collected: false};
             console.log(x, y);
         }
@@ -88,9 +88,11 @@ var gatherFortnite = {
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             var bgScale = .6;
             ctx.globalAlpha = this.finalScene.opacity;
-            ctx.drawImage(t("gather_bg"), 0, 0, t("gather_bg").width*bgScale, t("gather_bg").height*bgScale);
+            this.finalScene.bgX+=.2;
+            ctx.drawImage(t("gather_bg"), this.finalScene.bgX, 0, t("gather_bg").width*bgScale, t("gather_bg").height*bgScale);
             ctx.globalAlpha = 1;
             var triceraScale = .4;
+           
             ctx.drawImage(t("thot_big"), this.finalScene.x, 50 + this.finalScene.y, t("thot_big").width*triceraScale, t("thot_big").height*triceraScale);
 
         }
