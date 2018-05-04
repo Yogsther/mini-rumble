@@ -1,4 +1,4 @@
-# Mini Rumble  (Beta v.0.5.3)
+# Mini Rumble  (Beta)
 
 ![Banner](https://i.imgur.com/65H9VaQ.jpg)
 
