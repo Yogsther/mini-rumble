@@ -72,7 +72,7 @@ var hoverDodge = {
     },
     loop: function () {
         if(this.playerJumpProgress !== false){
-            if(this.playerJumpProgress > 6 || (this.playerY > this.groundLevel + (this.playerTexture.height * this.playerScale))){
+            if(this.playerJumpProgress > 5.9 || (this.playerY > this.groundLevel + (this.playerTexture.height * this.playerScale))){
                 this.playerJumpProgress = false;
                 this.playerY = this.groundLevel;
             } else {
