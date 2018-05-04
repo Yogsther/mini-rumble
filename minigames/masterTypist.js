@@ -7,7 +7,7 @@ var typeMaster = {
     requiresKeyboard: true,
     introText: "Type!",
     init: function(dif){
-        this.words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow"]
+        this.words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow", "Very Nice", "Meme Review", "Me too thanks", "haha yes", "Dab", "Somebody", "Once", "Told", "The World", "Roll", "Sharpest", "Tool", "Shed", "Looking", "Kind", "Dumb", "Finger", "Thumb", "Shape", "Forehead", "Years", "Start", "Coming", "Rules", "Ground", "Running", "Make", "Sense", "Live", "Fun", "Brain", "Smart", "Head", "Much", "See", "Wrong", "Taking", "Back", "Streets", "Never", "Know", "Shine", "Glow", "Hey", "Now", "All", "Star"]
         this.wordsToType = (dif + 1);
         this.completedWords = 0;
         this.word = this.words[Math.floor(Math.random()*this.words.length)];
