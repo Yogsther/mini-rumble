@@ -8,6 +8,7 @@ var bounce = {
     introText: "Bounce!",
     init: function (dif) {
         this.bounces = 0;
+        this.playerSpeed = (((dif + 1) * 2) + 6);
         this.pastPositions = new Array();
         this.dot = {
             x: canvas.width /2,
@@ -73,7 +74,7 @@ var bounce = {
     },
     loop: function (){
         if(this.bounces > 0) this.bounces--;
-        playerSpeed = 7;
+        playerSpeed = this.playerSpeed;
         if(keyDown(keys.left)) this.player.x-=playerSpeed;
         if(keyDown(keys.right)) this.player.x+=playerSpeed;
 
