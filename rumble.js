@@ -10,6 +10,8 @@ const ctx = canvas.getContext("2d");
 var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
 var disableGameOver = false;
 var logCoordinates = false;
+var initialDificulty = 0 /* This needs to be 0 whenever a commit is made! */
+/* TODO: Warninnggggg */
 
 var globalOptions = {
     displayFPS: false,
@@ -360,7 +362,6 @@ function getAmountOfCommits(){
 
 var version = "?";
 
-
 /* 
     Old way of getting the current version via the README
     function getVersion(){
@@ -573,7 +574,7 @@ function startGame() {
     showClearedScreen("Ready? Go!", "#66a0ff");
     setTimeout(() => {
         score = 0;
-        window.difficulty = 0;
+        window.difficulty = initialDificulty;
         newGame();
     }, 1000)
 }
@@ -629,8 +630,6 @@ function buttonClick(id) {
 }
 
 function loadLast(){
-   
-
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
 
@@ -941,9 +940,16 @@ function render() {
         var maxHeight = 15;
         var bounceScale = 30;
         var bounceSpeed = 50;
-        var duration = 1000 // ms
-        var curtainSpeed = 30;
+        var duration = 1200 // ms
+        var curtainSpeed = 20;
         var textDisplayTimeout = 1.5;
+
+
+        var timePassed = Date.now() - clearedStartTime;
+        var opacity = 0;
+        if((timePassed - 900) > 0){
+            opacity = Math.round((((timePassed - 1000)) / 200) * 100) / 100;
+        }
 
         clearedProgress += speed;
         ctx.fillStyle = "#111";
@@ -951,21 +957,21 @@ function render() {
             var x = (canvas.width * -1) + (clearedProgress * curtainSpeed)
             if (x > 0) x = 0;
         }
-        ctx.fillRect(x, 0, canvas.width, canvas.height);
+        ctx.fillRect(0, x, canvas.width, canvas.height);
+        ctx.fillRect(0, x*-1, canvas.width, canvas.height);
 
         ctx.fillStyle = clearedColor;
         for (let i = 0; i < pins; i++) {
             var pinWidth = canvas.width / pins;
-            var localProgress = clearedProgress - (i * pinOffset)
+            var localProgress = clearedProgress - (i * pinOffset);
             var height = localProgress * 10;
             if (localProgress > maxHeight) {
                 height = maxHeight * 10;
                 height += (dampedSin((localProgress - maxHeight) / bounceSpeed) * bounceScale)
             }
-            //if()
             ctx.fillRect(i * (pinWidth), 0, pinWidth + 1, height);
             ctx.fillRect(i * (pinWidth), canvas.height, pinWidth + 1, height * -1);
-        }
+        }     
         var text = clearedText;
         var textOffset = 10;
         var textSpacing = 50;
@@ -973,11 +979,13 @@ function render() {
         for (let i = 0; i < (clearedProgress / textDisplayTimeout) - text.length; i++) {
             if (i < text.length) {
                 var localProgress = clearedProgress - (i * textOffset)
-                ctx.fillStyle = "white";
+                ctx.fillStyle = "rgba(255,255,255, 1)";
                 ctx.fillText(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing / 2) + 25, 10 + canvas.height / 2 + (dampedSin((localProgress - (i + 100)) * 0.02)));
             }
         }
-        if (Date.now() - clearedStartTime >= duration) showingClearedScreen = false;
+        
+        if (timePassed >= duration) showingClearedScreen = false;
+        fill("rgba(17,17,17," + opacity + ")");
     }
 
     // Render FPS

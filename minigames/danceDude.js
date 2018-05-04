@@ -50,6 +50,7 @@ var danceDude = {
   },
   paint: function () {
     /* Render function, is called every frame.*/
+    fill("#111");
     // Draw background
     this.progress++;
     ctx.drawImage(this.sprites[this.progress % this.sprites.length], 0, 0);

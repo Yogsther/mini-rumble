@@ -8,6 +8,7 @@ var gatherFortnite = {
         /* Run on initiation */
         this.dif = dif;
         this.amountOfMaterials = (dif + 2) * 2;
+        this.turningSpeed = (dif +1) * 1.2;
         this.materials = new Array();
         this.player = {
             x: canvas.width / 2,
@@ -62,8 +63,8 @@ var gatherFortnite = {
                 var distance = (desiredDirection - (this.player.superDirection % 360))
                 if(distance < -180) distance = 360 + distance;
                 if(distance > 180) distance = distance - 360;
-                if(distance < 180 && distance > 0) this.player.superDirection++;
-                if(distance < 0 && distance > -180) this.player.superDirection--;
+                if(distance < 180 && distance > 0) this.player.superDirection+=this.turningSpeed;
+                if(distance < 0 && distance > -180) this.player.superDirection-=this.turningSpeed;
     
                 if(Math.abs(distance) == 180) this.player.superDirection++; // Correct if user is stuck at 180 turn    
             }

@@ -12,8 +12,8 @@ var bounce = {
         this.pastPositions = new Array();
         this.dot = {
             x: canvas.width /2,
-            y: canvas.height /2,
-            dir: 120,
+            y: 25,
+            dir: Math.floor(Math.random()*360),
             vel: (((dif + 1) * 2) + 6),
             width: 20,
             length: 20,
@@ -64,7 +64,7 @@ var bounce = {
         }
         if(colliding !== false){
             //this.dot.vel += 5;
-            this.bounces = 10;
+            this.bounces = 3;
             //if(this.dot.vel > 8) this.dot.vel = 8;
         }
     }   
