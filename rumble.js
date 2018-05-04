@@ -7,7 +7,7 @@ const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
 /* Debug options */
-
+var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
 var disableGameOver = false;
 var logCoordinates = false;
 
@@ -23,14 +23,10 @@ var globalOptions = {
 var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce];
 var activeMinigames = miniGames.slice(); 
 
-//document.documentElement.requestFullscreen();
-
 var backgroundSound = undefined;
-
 
 var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball-ds.mp3"];
-
 
 
 function loadSettings() {
@@ -183,11 +179,11 @@ var optionsRender = {
     logic: function (key) {
         var playEffect = false;
 
-        if (key.code == 40) {
+        if (key.is(keys.down)) {
             this.selectedOption++;
             playEffect = true;
         }
-        if (key.code == 38) {
+        if (key.is(keys.up)) {
             this.selectedOption--;
             playEffect = true;
             if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
@@ -305,11 +301,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     logic: function (key) {
         var playEffect = false;
 
-        if (key.code == 40) {
+        if (key.is(keys.down)) {
             this.selectedButton++;
             playEffect = true;
         }
-        if (key.code == 38) {
+        if (key.is(keys.up)) {
             playEffect = true;
             this.selectedButton--;
             if (this.selectedButton < 0) this.selectedButton = this.buttonColors.length - 1;
@@ -385,6 +381,14 @@ function loadFinalStuff(){
     //loadControlpanel();
     readyOverlay();
     ready = true;
+    instaLoad();
+}
+
+function instaLoad(){
+    if(instaStart !== false && globalOptions.devTools){
+        miniGames = [instaStart]
+        startGame();
+    }
 }
 
 function renderLoadingScreen() {
