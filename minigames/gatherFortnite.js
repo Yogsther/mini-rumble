@@ -158,6 +158,18 @@ var gatherFortnite = {
             this.player.y += speed;
             this.player.direction = 2;
         }
+        if ((keyDown(keys.left)) && (keyDown(keys.up))) {
+            this.player.direction = 3.5;
+        }
+        if ((keyDown(keys.right)) && (keyDown(keys.up))) {
+            this.player.direction = 0.5;
+        }
+        if ((keyDown(keys.left)) && (keyDown(keys.down))) {
+            this.player.direction = 2.5;
+        }
+        if ((keyDown(keys.right)) && (keyDown(keys.down))) {
+            this.player.direction = 1.5;
+        }
     },
     /* Move variables */
     logic: function (key) {
