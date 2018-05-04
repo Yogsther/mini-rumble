@@ -2,11 +2,11 @@
 
 ![Banner](https://i.imgur.com/65H9VaQ.jpg)
 
- Try it out in your browser:
- [mini.livfor.it](http://mini.livfor.it)
+Try it out in your browser:
+[mini.livfor.it](http://mini.livfor.it)
 
- Documentation & API: 
- [mini.livfor.it/docs](http://mini.livfor.it/docs)
+Documentation & API: 
+[mini.livfor.it/docs](http://mini.livfor.it/docs)
 
 ##### What is it?
 
@@ -28,9 +28,9 @@ Currently the game is avalible to play online, but will later also be avalible a
 - [x]  Finalize game engine for v.0.1 (Beta)
 - [x]  Mobile Support
 - [x]  Publish documentation and API 
-- [ ]  10 minigames (6/10)
-- [ ]  Controller Support
+- [ ]  10 minigames (8/10)
 - [ ]  Package Electron app
+- [ ]  Controller Support
 - [ ]  1.0 Build
 - [ ]  Begin full patch-notes documentation
 - [ ]  Online leaderboards

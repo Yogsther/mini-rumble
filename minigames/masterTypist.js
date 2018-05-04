@@ -7,8 +7,10 @@ var typeMaster = {
     requiresKeyboard: true,
     introText: "Type!",
     init: function(dif){
-        var words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow"]
-        this.word = words[Math.floor(Math.random()*words.length)];
+        this.words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow"]
+        this.wordsToType = (dif + 1);
+        this.completedWords = 0;
+        this.word = this.words[Math.floor(Math.random()*this.words.length)];
         this.progress = 0;
         this.sinProgression = 0;
         this.colors = [255, 66, 66];
@@ -24,12 +26,19 @@ var typeMaster = {
         var pointerScale = .5;
 
         fill("#111");
+        
+
+        if(!this.failed && !this.cleared){
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.font = "20px mario-maker";
+            ctx.fillText((this.completedWords+1) + "/" + this.wordsToType, canvas.width/2, 100);
+        }
+
         var fontSize = 350 / this.word.length;
         ctx.font = fontSize + "px mario-maker";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
-
-
         var text = {
             x: (25) + canvas.width / 2, 
             y: canvas.height / 2,
@@ -87,8 +96,19 @@ var typeMaster = {
         if(key.char.toLowerCase() == this.word[this.progress].toLowerCase()){
             this.progress++;
             if(this.progress >= this.word.length && !this.cleared){
-                this.cleared = true;
-                cleared(900);
+                this.completedWords++;
+                if(this.wordsToType == this.completedWords){
+                    this.cleared = true;
+                    cleared(900);
+                } else {
+                    this.word = this.words[Math.floor(Math.random()*this.words.length)];
+                    this.progress = 0;
+                    this.sinProgression = 0;
+                    this.colors = [255, 66, 66];
+                    this.xPos = 0
+                    //this.firstRun = true;
+                }
+                
             }
         } else {
             failed(900);

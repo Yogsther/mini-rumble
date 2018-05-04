@@ -4,10 +4,10 @@
 
 TODO: 
 
-- Implement new version system
+- Implement new version system [DONE]
 
-- Sexy loading screens with random messages
+- Sexy loading screens with random messages [DONE, CAN BE IMPROVED]
 
-- Warning for online leaderboards not tracking when gamemodes are disabled.
+- Warning for online leaderboards not tracking when gamemodes are disabled. [DONE]
 
   

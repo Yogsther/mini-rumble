@@ -2,16 +2,27 @@
  * Mini-Rumble Game Engine, core
  */
 
+/* Debug options */
+var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
+var initialDificulty = 0 /* This needs to be 0 whenever a commit is made! */
+/* These are already enabled if Dev-mode is enabled! */
+var disableGameOver = false;
+var logCoordinates = false;
+
+
+
 /* Engine variables */
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-/* Debug options */
-var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
-var disableGameOver = false;
-var logCoordinates = false;
-var initialDificulty = 0 /* This needs to be 0 whenever a commit is made! */
+var loadingScreenDotJump = 0;
+var loadingMessages = ["Get ready!", "Collecting your data", "Working hard", "Hardly working", "Sorting things out", "Downloading information"]
+var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random()*loadingMessages.length)];
+renderLoadingScreen();
+
+
 /* TODO: Warninnggggg */
+var warningSigns = new Array();
 
 var globalOptions = {
     displayFPS: false,
@@ -36,6 +47,7 @@ function loadSettings() {
     var settings = localStorage.getItem("globalOptions");
     if (settings == undefined) return;
     globalOptions = Object.assign(globalOptions, JSON.parse(settings));
+    loadWarnings();
 }
 
 function expandOptions(){
@@ -45,7 +57,20 @@ function expandOptions(){
     }
 }
 
+function loadWarnings(){
+    warningSigns = [{title: "Note!", description: "Online features in progress"}];
+    if(globalOptions.devTools) warningSigns.push({title: "Leaderboards disabled!", description: "Dev-mode is enabled!"});
+    var gamemodesDisabled = 0;
+    for(let i = 0; i < miniGames.length; i++){
+        if(eval("globalOptions." + miniGames[i].varName)) gamemodesDisabled++;
+    }
+    var msg = " gamemodes are disabled."
+    if(gamemodesDisabled < 2) msg = " gamemode is disabled."
+    if(gamemodesDisabled > 0) warningSigns.push({title: "Leaderboards disabled!", description: gamemodesDisabled + msg});
+}
+
 function saveSettings() {
+    loadWarnings();
     var settings = JSON.stringify(globalOptions);
     localStorage.setItem("globalOptions", settings);
 }
@@ -74,6 +99,7 @@ var keys = {
     right: [39, 68]
 }
 
+var ready = false;
 
 var optionsRender = {
     buttonZoom: 10,
@@ -298,6 +324,27 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.textAlign = "left";
             ctx.fillText(version, 15, 30);
 
+            /* Warning signs */
+            
+            for(let i = 0; i < warningSigns.length; i++){
+                /* Black box */
+                height = 60; 
+                width = 230; 
+                x = 390; 
+                y = 383 - (i * (height+10));
+
+                ctx.fillStyle = "rgba(0,0,0,.6)"
+                ctx.fillRect(x, y, width, height);
+                ctx.fillStyle = "red";
+                ctx.textAlign = "left";
+                ctx.font = "15px mario-maker"
+                ctx.fillText(warningSigns[i].title, x+10, y+25)
+                ctx.fillStyle = "white";
+                ctx.font = "14px mario-maker"
+                ctx.fillText(warningSigns[i].description, x+10, y+45)
+            }
+
+
         }
     },
     logic: function (key) {
@@ -329,13 +376,13 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
 
 window.onload = () => {
-    window.ready = false;
+    ready = false;
+    //renderLoadingScreen(); // TODO: Not working for some reason..
     checkForMobileUser()
     loadSettings();
     getAmountOfCommits();
-    renderLoadingScreen(); // TODO: Not working for some reason..
+    loadFinalStuff();
     loadLast();
-    
 }
 
 function getAmountOfCommits(){
@@ -360,7 +407,7 @@ function getAmountOfCommits(){
     client.send();
 }
 
-var version = "?";
+var version = "Beta";
 
 /* 
     Old way of getting the current version via the README
@@ -392,18 +439,24 @@ function instaLoad(){
     }
 }
 
+
+
 function renderLoadingScreen() {
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+
     ctx.fillStyle = "white";
     ctx.font = "50px mario-maker";
     ctx.textAlign = "center";
-    ctx.fillText("Loading...", canvas.width / 2, canvas.height / 2);
-
-    if(!startedLoading) loadFinalStuff();
-
+    loadingScreenDotJump+=.05;
+    var loadingString = "Loading";
+    for(let i = 0; i < (loadingScreenDotJump % 4-1); i++) loadingString+=".";
+    ctx.fillText(loadingString, canvas.width / 2, canvas.height / 2);
+    ctx.font = "20px mario-maker";
+    ctx.fillText(currentLoadPackageMessage, canvas.width / 2, 291)
+    
     if (!ready) {
         requestAnimationFrame(renderLoadingScreen);
     } else {
@@ -475,6 +528,8 @@ function importSpriteSheet(path, amount) {
 
 function importTextures() {
     /* Import all textures */
+    currentLoadPackageMessage = "Importing textures...";
+    console.log(currentLoadPackageMessage);
     miniGames.forEach(minigame => {
         if (minigame.textures != undefined) {
             minigame.textures.forEach(texture => {
@@ -498,7 +553,7 @@ function importTexture(texture) {
 }
 
 function importSounds() {
-
+    currentLoadPackageMessage = "Importing sounds";
     titleSounds.forEach(sound => {
         importSound(sound);
     })
