@@ -111,8 +111,10 @@ const lib = [{
         title: "playSound(String name)",
         description: "Play a previously imported sound.\n\n```javascript /* Example */\nplaySound(\"nom_0\"); // Plays audio!\n```\n",
         type: "function"
-    },{title: "fill(String color)", description: "Fill the entire screen with one solid color. Can be hex, rgb or rgba.", type: "function"},
+    },
+    {title: "fill(String color)", description: "Fill the entire screen with one solid color. Can be hex, rgb or rgba.", type: "function"},
     {title: "textures", description: "This is the array that stores all imported textures for the mini-game. ", type: "global variable"},
+    {title: "Updating version", description: "Updating the version of Mini-rumble is super easy, hotfixes are updated automatically with every new commit. \nTo edit the minor or major you have to provide the full version in the beginning of your commit.\n<br><br>\nExample: To update from 0.6.2 => 0.7.0, the commit message should equal: \"v.0.7 {message}\" (without the quotes or brackets)", type: "text", pinned: true},
 
 
 ]

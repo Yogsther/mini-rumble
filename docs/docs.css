@@ -89,7 +89,7 @@ input:focus {outline:0;}
 
 #page{
     color: white;
-    height:80vh;
+    height: 78%;
     //height: 730px;
     top: 140px;
     width: 65%;
@@ -104,7 +104,7 @@ input:focus {outline:0;}
 }
 
 #list{
-    height:80vh;
+    height:78%;
     width: 30%;
     background: #353535;
     top: 140px;

@@ -3,6 +3,7 @@ var bounce = {
     varName: "bounce",
     displayName: "Bounce",
     timed: true,
+    timedWin: true,
     textures: [],
     introText: "Bounce!",
     init: function (dif) {
@@ -46,10 +47,9 @@ var bounce = {
         if(this.bounces < 1){
         if(this.dot.x > canvas.width - this.dot.width) colliding = "x"; 
         if(this.dot.x < 0) colliding = "x";
-        if(this.dot.y > canvas.height - this.dot.width) failed();
-        if(this.dot.y > this.player.y && this.dot.y < this.player.y + this.player.height){
-            if(this.dot.x > this.player.x - this.dot.width && this.dot.x < this.player.x + this.player.width){
-                console.log("Bounce");
+        if(this.dot.y + this.dot.width > canvas.height) failed();
+        if(this.dot.y + this.dot.width > this.player.y && this.dot.y < this.player.y + this.player.height){
+            if(this.dot.x + this.dot.width > this.player.x && this.dot.x < this.player.x + this.player.width){
                 colliding = "y";
             }
         }
@@ -64,7 +64,7 @@ var bounce = {
         if(colliding !== false){
             //this.dot.vel += 5;
             this.bounces = 10;
-            if(this.dot.vel > 8) this.dot.vel = 8;
+            //if(this.dot.vel > 8) this.dot.vel = 8;
         }
     }   
     
