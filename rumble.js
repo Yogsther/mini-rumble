@@ -15,8 +15,7 @@ var logCoordinates = false;
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const width = canvas.width;
-const height = canvas.height;
+const c = canvas;
 
 var loadingScreenDotJump = 0;
 var loadingMessages = ["Get ready!", "Collecting your data", "Working hard", "Hardly working", "Sorting things out", "Downloading information"]
@@ -266,7 +265,7 @@ var onlineRender = {
 
 
         /* Buttons */
-        ctx.fillStyle = "#7092d1";
+        
         for(let i = 0; i < this.buttons.length; i++){
             var zoom = 0;
             var zoomSpeed = 3
@@ -276,7 +275,13 @@ var onlineRender = {
                 if(this.buttonZoom[i] > 0) this.buttonZoom[i] -= zoomSpeed;
             }
             zoom = this.buttonZoom[i]
+            ctx.fillStyle = "#7092d1";
             ctx.fillRect(25 - zoom, 140 + (i * (100 + 20)) - zoom, 200 + zoom * 2, 100 + zoom * 2);
+            ctx.fillStyle = "white";
+            ctx.textAlign = "center";
+            ctx.font =  30 + (zoom * 2) + "px mario-maker";
+            ctx.fillText(this.buttons[i], 25 + (200 / 2) - (zoom/2) + 5, 140 + (i * (100 + 20)) - zoom)
+
         }
 
 
@@ -287,6 +292,7 @@ var onlineRender = {
             this.selectedButton--;
             if(this.selectedButton < 0) this.selectedButton+=this.buttons.length;
         }
+        if(key.is(keys.back)) selectedScene = 0;
     }
 }
 
