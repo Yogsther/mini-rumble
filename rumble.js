@@ -307,7 +307,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         y: 220
     },
     buttonScale: .8,
-    buttonExtention: [0, 0, 0],
+    buttonExtension: [0, 0, 0],
     buttonSpacing: 80,
     paint: function () {
         ctx.textAlign = "left"
@@ -326,9 +326,9 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         for (let i = 0; i < 3; i++) {
             var tilt = 50;
             var tiltSpeed = 10;
-            if (this.selectedButton % this.buttonColors.length == i && this.buttonExtention[i] < tilt) this.buttonExtention[i] += tiltSpeed;
-            if (this.selectedButton % this.buttonColors.length != i && this.buttonExtention[i] > 0) this.buttonExtention[i] -= tiltSpeed;
-            tilt = this.buttonExtention[i];
+            if (this.selectedButton % this.buttonColors.length == i && this.buttonExtension[i] < tilt) this.buttonExtension[i] += tiltSpeed;
+            if (this.selectedButton % this.buttonColors.length != i && this.buttonExtension[i] > 0) this.buttonExtension[i] -= tiltSpeed;
+            tilt = this.buttonExtension[i];
             /* Draw button shadow */
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
