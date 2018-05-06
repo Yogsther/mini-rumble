@@ -4,7 +4,7 @@
     position: relative;
     display: block;
     width: 100%;
-    top: 0px;
+    top: 20px;
     max-width: 640px;
     image-rendering: optimizeSpeed;             /* Older versions of FF          */
     image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */

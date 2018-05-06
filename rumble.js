@@ -15,6 +15,9 @@ var logCoordinates = false;
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+const width = canvas.width;
+const height = canvas.height;
+
 var loadingScreenDotJump = 0;
 var loadingMessages = ["Get ready!", "Collecting your data", "Working hard", "Hardly working", "Sorting things out", "Downloading information"]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random()*loadingMessages.length)];
@@ -76,7 +79,7 @@ function saveSettings() {
 }
 
 var inGame = false;
-var selectedScene = 0;
+var selectedScene = 2; 
 var miniGame = undefined;
 var showingOpeningAnimation = false;
 var score = 0;
@@ -232,6 +235,61 @@ var optionsRender = {
     }
 }
 
+var onlineRender = {
+    animationProgress: 0,
+    buttons: ["Join", "Leave"],
+    buttonZoom: [0, 0],
+    selectedButton: 0,
+    paint: function() {
+        fill("#111");
+        
+        dots = canvas.width;
+        speed = .1;
+        spacing = .005;
+        scale = 10;
+
+        ctx.fillStyle = "#304560";
+        ctx.fillRect(0, 0, canvas.width, 100);
+        
+        this.animationProgress+=speed;
+        for(let i = 0; i < dots; i++){
+            ctx.fillStyle = "#5678a5";
+            var y = (Math.sin(this.animationProgress + (spacing * i)) * scale) + 60;
+            ctx.fillRect((canvas.width / dots) * i, y, (canvas.width / dots), 110 - y);
+        }
+
+        // Online text
+        ctx.fillStyle = "white";
+        ctx.textAlign = "left";
+        ctx.font = "50px mario-maker";
+        ctx.fillText("Online!", 50, 70)
+
+
+        /* Buttons */
+        ctx.fillStyle = "#7092d1";
+        for(let i = 0; i < this.buttons.length; i++){
+            var zoom = 0;
+            var zoomSpeed = 3
+            if(this.selectedButton % this.buttons.length == i){
+                if(this.buttonZoom[i] < 10) this.buttonZoom[i] += zoomSpeed;
+            } else {
+                if(this.buttonZoom[i] > 0) this.buttonZoom[i] -= zoomSpeed;
+            }
+            zoom = this.buttonZoom[i]
+            ctx.fillRect(25 - zoom, 140 + (i * (100 + 20)) - zoom, 200 + zoom * 2, 100 + zoom * 2);
+        }
+
+
+    }, 
+    logic(key){
+        if(key.is(keys.down)) this.selectedButton++;
+        if(key.is(keys.up)){
+            this.selectedButton--;
+            if(this.selectedButton < 0) this.selectedButton+=this.buttons.length;
+        }
+    }
+}
+
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     spriteIndex: 0,
@@ -343,8 +401,6 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 ctx.font = "14px mario-maker"
                 ctx.fillText(warningSigns[i].description, x+10, y+45)
             }
-
-
         }
     },
     logic: function (key) {
@@ -362,6 +418,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         if (key.is(keys.action)) {
             playEffect = true;
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
+            if (this.selectedButton % this.buttonColors.length == 1) selectedScene = 2 /* Play button */
             if (this.selectedButton % this.buttonColors.length == 2) {
                 selectedScene = 1; /* Display options */
                 optionsRender.selectedOption = 0;
@@ -918,7 +975,7 @@ var frames = 0;
 var lastCountedFPS = Date.now();
 var frameScoreCached = new Array();
 
-var renders = [menuRender, optionsRender];
+var renders = [menuRender, optionsRender, onlineRender];
 
 var lastRender = Date.now();
 
