@@ -35,7 +35,7 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce];
+var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce, missiles];
 var activeMinigames = miniGames.slice(); 
 
 var backgroundSound = undefined;
