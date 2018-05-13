@@ -78,7 +78,7 @@ function saveSettings() {
 }
 
 var inGame = false;
-var selectedScene = 2; 
+var selectedScene = 0; 
 var miniGame = undefined;
 var showingOpeningAnimation = false;
 var score = 0;
