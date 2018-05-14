@@ -4,12 +4,10 @@
 
 TODO: 
 
-- Add that title screen music.[FILE IS CURRENTLY IN THE SOUND EFFECTS IMPORT]
+- Add that title screen music.[DONE]
 
 - Implement new version system [DONE]
 
 - Sexy loading screens with random messages [DONE, CAN BE IMPROVED]
 
 - Warning for online leaderboards not tracking when gamemodes are disabled. [DONE]
-
-  

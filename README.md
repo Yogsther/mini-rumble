@@ -28,7 +28,7 @@ Currently the game is avalible to play online, but will later also be avalible a
 - [x]  Finalize game engine for v.0.1 (Beta)
 - [x]  Mobile Support
 - [x]  Publish documentation and API 
-- [ ]  10 minigames (8/10)
+- [ ]  10 minigames (9/10)
 - [ ]  Package Electron app
 - [ ]  Controller Support
 - [ ]  1.0 Build

@@ -12,18 +12,17 @@ var logCoordinates = false;
 
 
 /* Engine variables */
-const canvas = document.getElementById("canvas");
+const canvas = c = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
-const c = canvas;
+
 
 var loadingScreenDotJump = 0;
 var loadingMessages = ["Get ready!", "Collecting your data", "Working hard", "Hardly working", "Sorting things out", "Downloading information"]
-var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random()*loadingMessages.length)];
+var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 renderLoadingScreen();
 
 
-/* TODO: Warninnggggg */
 var warningSigns = new Array();
 
 var globalOptions = {
@@ -36,11 +35,13 @@ var globalOptions = {
 
 
 var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce, missiles];
-var activeMinigames = miniGames.slice(); 
+var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
+var playingMenuMusic = false;
 
-var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3", "SmoothMoves.mp3"];
+var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
+var mainMenuMusic = ["SmoothMoves.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "WaluigiPinball.mp3", "ComeOn.mp3", "KingDedede.mp3", "DiggaLeg.mp3"];
 
 
@@ -52,23 +53,35 @@ function loadSettings() {
     loadWarnings();
 }
 
-function expandOptions(){
-    for(let i = 0; i < miniGames.length; i++){
+function expandOptions() {
+    for (let i = 0; i < miniGames.length; i++) {
         eval("globalOptions." + miniGames[i].varName + " = false");
-        optionsRender.options.push({text: "Disable " + miniGames[i].displayName, source: miniGames[i].varName});
+        optionsRender.options.push({
+            text: "Disable " + miniGames[i].displayName,
+            source: miniGames[i].varName
+        });
     }
 }
 
-function loadWarnings(){
-    warningSigns = [{title: "Note!", description: "Online features in progress"}];
-    if(globalOptions.devTools) warningSigns.push({title: "Leaderboards disabled!", description: "Dev-mode is enabled!"});
+function loadWarnings() {
+    warningSigns = [{
+        title: "Note!",
+        description: "Online features in progress"
+    }];
+    if (globalOptions.devTools) warningSigns.push({
+        title: "Leaderboards disabled!",
+        description: "Dev-mode is enabled!"
+    });
     var gamemodesDisabled = 0;
-    for(let i = 0; i < miniGames.length; i++){
-        if(eval("globalOptions." + miniGames[i].varName)) gamemodesDisabled++;
+    for (let i = 0; i < miniGames.length; i++) {
+        if (eval("globalOptions." + miniGames[i].varName)) gamemodesDisabled++;
     }
     var msg = " gamemodes are disabled."
-    if(gamemodesDisabled < 2) msg = " gamemode is disabled."
-    if(gamemodesDisabled > 0) warningSigns.push({title: "Leaderboards disabled!", description: gamemodesDisabled + msg});
+    if (gamemodesDisabled < 2) msg = " gamemode is disabled."
+    if (gamemodesDisabled > 0) warningSigns.push({
+        title: "Leaderboards disabled!",
+        description: gamemodesDisabled + msg
+    });
 }
 
 function saveSettings() {
@@ -78,7 +91,7 @@ function saveSettings() {
 }
 
 var inGame = false;
-var selectedScene = 0; 
+var selectedScene = 0;
 var miniGame = undefined;
 var showingOpeningAnimation = false;
 var score = 0;
@@ -146,13 +159,13 @@ var optionsRender = {
         var height = canvas.height - (canvas.height / 8);
         ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
 
-        while(this.selectedOption % this.options.length > this.startPoint+3) this.startPoint++;
-        while(this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
+        while (this.selectedOption % this.options.length > this.startPoint + 3) this.startPoint++;
+        while (this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
 
-        for (let i = this.startPoint; i < this.startPoint+4; i++) {
+        for (let i = this.startPoint; i < this.startPoint + 4; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
-                y: this.buttonPositions.y + ((i-this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
+                y: this.buttonPositions.y + ((i - this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
                 width: this.buttonStyles.width,
                 height: this.buttonStyles.height,
                 color: "#111"
@@ -203,7 +216,7 @@ var optionsRender = {
         }
         ctx.fillStyle = "#111";
         ctx.font = "20px mario-maker",
-        ctx.textAlign = "right";
+            ctx.textAlign = "right";
         ctx.fillText("Z: Back X: Select", 630, 470);
     },
     logic: function (key) {
@@ -239,9 +252,9 @@ var onlineRender = {
     buttons: ["Join", "Leave"],
     buttonZoom: [0, 0],
     selectedButton: 0,
-    paint: function() {
+    paint: function () {
         fill("#111");
-        
+
         dots = canvas.width;
         speed = .1;
         spacing = .005;
@@ -249,9 +262,9 @@ var onlineRender = {
 
         ctx.fillStyle = "#304560";
         ctx.fillRect(0, 0, canvas.width, 100);
-        
-        this.animationProgress+=speed;
-        for(let i = 0; i < dots; i++){
+
+        this.animationProgress += speed;
+        for (let i = 0; i < dots; i++) {
             ctx.fillStyle = "#5678a5";
             var y = (Math.sin(this.animationProgress + (spacing * i)) * scale) + 60;
             ctx.fillRect((canvas.width / dots) * i, y, (canvas.width / dots), 110 - y);
@@ -265,34 +278,34 @@ var onlineRender = {
 
 
         /* Buttons */
-        
-        for(let i = 0; i < this.buttons.length; i++){
+
+        for (let i = 0; i < this.buttons.length; i++) {
             var zoom = 0;
             var zoomSpeed = 3
-            if(this.selectedButton % this.buttons.length == i){
-                if(this.buttonZoom[i] < 10) this.buttonZoom[i] += zoomSpeed;
+            if (this.selectedButton % this.buttons.length == i) {
+                if (this.buttonZoom[i] < 10) this.buttonZoom[i] += zoomSpeed;
             } else {
-                if(this.buttonZoom[i] > 0) this.buttonZoom[i] -= zoomSpeed;
+                if (this.buttonZoom[i] > 0) this.buttonZoom[i] -= zoomSpeed;
             }
             zoom = this.buttonZoom[i]
             ctx.fillStyle = "#7092d1";
             ctx.fillRect(25 - zoom, 140 + (i * (100 + 20)) - zoom, 200 + zoom * 2, 100 + zoom * 2);
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
-            ctx.font =  30 + (zoom * 2) + "px mario-maker";
-            ctx.fillText(this.buttons[i], 25 + (200 / 2) - (zoom/2) + 5, 140 + (i * (100 + 20)) - zoom)
+            ctx.font = 30 + (zoom * 2) + "px mario-maker";
+            ctx.fillText(this.buttons[i], 25 + (200 / 2) - (zoom / 2) + 5, 140 + (i * (100 + 20)) - zoom)
 
         }
 
 
-    }, 
-    logic(key){
-        if(key.is(keys.down)) this.selectedButton++;
-        if(key.is(keys.up)){
+    },
+    logic(key) {
+        if (key.is(keys.down)) this.selectedButton++;
+        if (key.is(keys.up)) {
             this.selectedButton--;
-            if(this.selectedButton < 0) this.selectedButton+=this.buttons.length;
+            if (this.selectedButton < 0) this.selectedButton += this.buttons.length;
         }
-        if(key.is(keys.back)) selectedScene = 0;
+        if (key.is(keys.back)) selectedScene = 0;
     }
 }
 
@@ -382,30 +395,30 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
             ctx.fillStyle = "#111";
             ctx.font = "20px mario-maker",
-            ctx.textAlign = "right";
+                ctx.textAlign = "right";
             ctx.fillText("Z: Back X: Select", 630, 470);
             ctx.fillStyle = "rgba(0,0,0,0.3)";
             ctx.textAlign = "left";
             ctx.fillText(version, 15, 30);
 
             /* Warning signs */
-            
-            for(let i = 0; i < warningSigns.length; i++){
+
+            for (let i = 0; i < warningSigns.length; i++) {
                 /* Black box */
-                height = 60; 
-                width = 230; 
-                x = 390; 
-                y = 383 - (i * (height+10));
+                height = 60;
+                width = 230;
+                x = 390;
+                y = 383 - (i * (height + 10));
 
                 ctx.fillStyle = "rgba(0,0,0,.6)"
                 ctx.fillRect(x, y, width, height);
                 ctx.fillStyle = "red";
                 ctx.textAlign = "left";
                 ctx.font = "15px mario-maker"
-                ctx.fillText(warningSigns[i].title, x+10, y+25)
+                ctx.fillText(warningSigns[i].title, x + 10, y + 25)
                 ctx.fillStyle = "white";
                 ctx.font = "14px mario-maker"
-                ctx.fillText(warningSigns[i].description, x+10, y+45)
+                ctx.fillText(warningSigns[i].description, x + 10, y + 45)
             }
         }
     },
@@ -448,25 +461,28 @@ window.onload = () => {
     loadLast();
 }
 
-function getAmountOfCommits(){
-    
+function getAmountOfCommits() {
+
     var client = new XMLHttpRequest();
     client.open('GET', 'https://api.github.com/repos/yogsther/mini-rumble/commits');
-    client.onreadystatechange = function() {
+    client.onreadystatechange = function () {
         var commits = client.responseText;
         commits = JSON.parse(commits);
         var i = 0;
         window.finalVersion = false;
         commits.forEach(commit => {
-            if(finalVersion === false){
-            var message = commit.commit.message;
-            if(message.indexOf("v.") != -1){
-                version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;    
-            }
-            i++;
+            if (finalVersion === false) {
+                var message = commit.commit.message;
+
+                if (message.indexOf("v.") != -1) {
+                    version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
+                    finalVersion = true;
+                }
+                i++;
             }
         })
     }
+
     client.send();
 }
 
@@ -485,7 +501,8 @@ var version = "Beta";
 } */
 
 var startedLoading = false;
-function loadFinalStuff(){
+
+function loadFinalStuff() {
     startedLoading = true;
     importTextures();
     importSounds();
@@ -495,8 +512,8 @@ function loadFinalStuff(){
     instaLoad();
 }
 
-function instaLoad(){
-    if(instaStart !== false && globalOptions.devTools){
+function instaLoad() {
+    if (instaStart !== false && globalOptions.devTools) {
         miniGames = [instaStart]
         startGame();
     }
@@ -513,13 +530,13 @@ function renderLoadingScreen() {
     ctx.fillStyle = "white";
     ctx.font = "50px mario-maker";
     ctx.textAlign = "center";
-    loadingScreenDotJump+=.05;
+    loadingScreenDotJump += .05;
     var loadingString = "Loading";
-    for(let i = 0; i < (loadingScreenDotJump % 4-1); i++) loadingString+=".";
+    for (let i = 0; i < (loadingScreenDotJump % 4 - 1); i++) loadingString += ".";
     ctx.fillText(loadingString, canvas.width / 2, canvas.height / 2);
     ctx.font = "20px mario-maker";
     ctx.fillText(currentLoadPackageMessage, canvas.width / 2, 291)
-    
+
     if (!ready) {
         requestAnimationFrame(renderLoadingScreen);
     } else {
@@ -528,6 +545,7 @@ function renderLoadingScreen() {
 }
 
 var onMobile = false;
+
 function checkForMobileUser() {
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         document.getElementById("buttons").innerHTML = '<div id="dpad"> ' +
@@ -569,7 +587,7 @@ function fadeColor(r, g, b) {
 }
 
 function importSpriteSheet(path, amount) {
-    
+
     /*  If the path is: "textures/overlay/overlay_00.png => overlay_19.png"
         Then expected input path is: "overlay/overlay_XX.png", amount: 20
     */
@@ -620,6 +638,10 @@ function importSounds() {
     titleSounds.forEach(sound => {
         importSound(sound);
     })
+
+    mainMenuMusic.forEach(sound => {
+        importSound(sound);
+    });
 
     soundEffects.forEach(sound => {
         importSound(sound);
@@ -682,10 +704,13 @@ function startGame() {
     /* First start of the game, total reset. */
 
     inGame = true;
+    playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
+        backgroundSound.pause();
         backgroundSound = s(titleSounds[Math.floor(Math.random() * titleSounds.length)]);
         backgroundSound.volume = .2;
         backgroundSound.loop = true;
+        backgroundSound.playbackRate = 1;
         backgroundSound.play();
     }
 
@@ -701,9 +726,9 @@ function newGame() {
     /* For each start of a new mini-game. */
     var miniGamesArray = miniGames.concat(); // Copy array
 
-    for(let i = 0; i < miniGamesArray.length; i++){
-        if(eval("globalOptions." + miniGamesArray[i].varName)){
-            miniGamesArray.splice(i , 1);
+    for (let i = 0; i < miniGamesArray.length; i++) {
+        if (eval("globalOptions." + miniGamesArray[i].varName)) {
+            miniGamesArray.splice(i, 1);
             i--;
         }
     }
@@ -716,7 +741,7 @@ function newGame() {
         }
     }
 
-    if(miniGamesArray.length < 1){
+    if (miniGamesArray.length < 1) {
         failed();
         return;
     }
@@ -747,26 +772,26 @@ function buttonClick(id) {
     }
 }
 
-function loadLast(){
+function loadLast() {
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
 
     var elements = document.getElementsByClassName("dpad");
-    for(let i = 0; i < elements.length; i++){
+    for (let i = 0; i < elements.length; i++) {
         elements[i].addEventListener("touchstart", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
 
-            if(!keyDown(key)) keysDown.push(key);
+            if (!keyDown(key)) keysDown.push(key);
         });
 
         elements[i].addEventListener("touchend", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
-            
+
             while (keyDown(key)) {
                 for (let i = 0; i < keysDown.length; i++) {
-                    if (keysDown[i] == key){
+                    if (keysDown[i] == key) {
                         keysDown.splice(i, 1);
                     }
                 }
@@ -775,14 +800,14 @@ function loadLast(){
     }
 }
 
-function displayMobileKeyboard(){
+function displayMobileKeyboard() {
     disableKeyboard = true;
     document.getElementById("keyboard-input").innerHTML = ' <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)">';
     document.getElementById("keyboard-controlls").focus();
     return;
 }
 
-function hideMobileKeyboard(){
+function hideMobileKeyboard() {
     disableKeyboard = false;
     document.getElementById("keyboard-input").innerHTML = '';
     document.getElementById("canvas").focus();
@@ -791,7 +816,7 @@ function hideMobileKeyboard(){
 
 var disableKeyboard = false;
 
-function detectMobileInput(value){
+function detectMobileInput(value) {
     var charCode = value.toLowerCase().charCodeAt(0);
     click(charCode, value);
     document.getElementById("keyboard-controlls").value = "";
@@ -799,7 +824,7 @@ function detectMobileInput(value){
 
 
 function click(code, char) {
-    if(!ready) return;
+    if (!ready) return;
     if (disableInputs) return;
     var key = {
         char: char,
@@ -821,15 +846,15 @@ function click(code, char) {
 }
 
 document.addEventListener("keydown", e => {
-    if(disableKeyboard) return;
+    if (disableKeyboard) return;
     click(e.keyCode, e.key)
 });
 
-function cleared(ms){
-    
+function cleared(ms) {
+
     if (ms == undefined) ms = 0;
     globalOptions.disableGameOver = true;
-    
+
     setTimeout(() => {
         disableKeyboard = false;
         score++;
@@ -918,17 +943,18 @@ function drawOverlay() {
 }
 
 var failedCalled = false;
+
 function failed(ms) {
-    if(globalOptions.devTools) return;
-    if(failedCalled) return;
+    if (globalOptions.devTools) return;
+    if (failedCalled) return;
     failedCalled = true;
     if (ms == undefined) ms = 0;
     disableInputs = true;
+
     setTimeout(() => {
         disableKeyboard = false;
         miniGame = undefined;
         showClearedScreen("Game Over!", "#8c2424");
-        inGame = false;
         setTimeout(() => {
             try {
                 backgroundSound.pause();
@@ -938,18 +964,20 @@ function failed(ms) {
             } catch (e) {}
             failedCalled = false;
             disableInputs = false
+            inGame = false;
+            playingMenuMusic = false;
         }, 400);
     }, ms)
 }
 
-function draw(sprite, x, y, scale){
-    if(scale == false) scale = 1;
+function draw(sprite, x, y, scale) {
+    if (scale == false) scale = 1;
     ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
 }
 
-function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2){
-    if(scale1 == false) scale1 = 1;
-    if(scale2 == false) scale2 = 1;
+function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2) {
+    if (scale1 == false) scale1 = 1;
+    if (scale2 == false) scale2 = 1;
 
     // TODO
 
@@ -982,16 +1010,36 @@ var lastCountedFPS = Date.now();
 var frameScoreCached = new Array();
 
 var renders = [menuRender, optionsRender, onlineRender];
-
 var lastRender = Date.now();
 
 function render() {
-    if(Date.now() - lastRender < 16 && globalOptions.limitFPS){
+    if (Date.now() - lastRender < 16 && globalOptions.limitFPS) {
         requestAnimationFrame(render);
         return;
     }
 
     lastRender = Date.now();
+
+    if (!inGame) {
+        if (!playingMenuMusic && (!globalOptions.disableMusic && !globalOptions.disableSound) && !inGame) {
+            /* Play menu music */
+            playingMenuMusic = true;
+            try {
+                backgroundSound.pause();
+            } catch (e) {}
+            backgroundSound = s(mainMenuMusic[Math.floor(Math.random() * mainMenuMusic.length)]);
+            backgroundSound.currentTime = 0;
+            backgroundSound.volume = .2;
+            backgroundSound.playbackRate = 1;
+            backgroundSound.play();
+        }
+
+        if (((globalOptions.disableSound || globalOptions.disableMusic) && playingMenuMusic) || (inGame && playingMenuMusic)) {
+            /* Stop menu music */
+            playingMenuMusic = false;
+            backgroundSound.pause();
+        }
+    }
 
     if (globalOptions.devTools) {
         disableGameOver = true;
@@ -1042,11 +1090,11 @@ function render() {
             showingOpeningAnimation = false;
             timer = Date.now();
             window.timed = miniGame.timed;
-            if(miniGame.requiresKeyboard && onMobile){
+            if (miniGame.requiresKeyboard && onMobile) {
                 displayMobileKeyboard();
             }
             miniGame.init(difficulty);
-            
+
         }
     }
 
@@ -1065,7 +1113,7 @@ function render() {
 
         var timePassed = Date.now() - clearedStartTime;
         var opacity = 0;
-        if((timePassed - 900) > 0){
+        if ((timePassed - 900) > 0) {
             opacity = Math.round((((timePassed - 1000)) / 200) * 100) / 100;
         }
 
@@ -1076,7 +1124,7 @@ function render() {
             if (x > 0) x = 0;
         }
         ctx.fillRect(0, x, canvas.width, canvas.height);
-        ctx.fillRect(0, x*-1, canvas.width, canvas.height);
+        ctx.fillRect(0, x * -1, canvas.width, canvas.height);
 
         ctx.fillStyle = clearedColor;
         for (let i = 0; i < pins; i++) {
@@ -1089,7 +1137,7 @@ function render() {
             }
             ctx.fillRect(i * (pinWidth), 0, pinWidth + 1, height);
             ctx.fillRect(i * (pinWidth), canvas.height, pinWidth + 1, height * -1);
-        }     
+        }
         var text = clearedText;
         var textOffset = 10;
         var textSpacing = 50;
@@ -1101,7 +1149,7 @@ function render() {
                 ctx.fillText(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing / 2) + 25, 10 + canvas.height / 2 + (dampedSin((localProgress - (i + 100)) * 0.02)));
             }
         }
-        
+
         if (timePassed >= duration) showingClearedScreen = false;
         fill("rgba(17,17,17," + opacity + ")");
     }
