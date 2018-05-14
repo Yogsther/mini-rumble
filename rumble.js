@@ -41,7 +41,7 @@ var activeMinigames = miniGames.slice();
 var backgroundSound = undefined;
 
 var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
-var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "waluigi-pinball-ds.mp3"];
+var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "WaluigiPinball.mp3", "ComeOn.mp3", "KingDedede.mp3", "DiggaLeg.mp3"];
 
 
 function loadSettings() {
@@ -841,7 +841,7 @@ function cleared(ms){
         if (score % 3 == 0) {
             sound = "faster";
             difficulty++;
-            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate += .3;
+            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate += .05;
 
             display = {
                 text: "Faster!",
