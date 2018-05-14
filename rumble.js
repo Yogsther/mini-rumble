@@ -40,7 +40,7 @@ var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
 
-var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
+var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3", "SmoothMoves.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "WaluigiPinball.mp3", "ComeOn.mp3", "KingDedede.mp3", "DiggaLeg.mp3"];
 
 
