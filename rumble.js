@@ -41,7 +41,7 @@ var backgroundSound = undefined;
 var playingMenuMusic = false;
 
 var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
-var mainMenuMusic = ["SmoothMoves.mp3"];
+var mainMenuMusic = ["SmoothMoves.mp3", "Ware.mp3"];
 var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "WaluigiPinball.mp3", "ComeOn.mp3", "KingDedede.mp3", "DiggaLeg.mp3"];
 
 
