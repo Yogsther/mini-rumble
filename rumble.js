@@ -655,6 +655,18 @@ function importSounds() {
     });
 }
 
+function checkCollision(obj1, obj2){
+    /**
+     * Check 2D collision between two object.
+     * Returns false for no collision. 
+     * Returns an object on collision: {fromLeft: bool, fromRight: bool, fromTop: bool, fromBottom: bool}
+     * Usage: if(checkCollision(obj1, obj2).fromLeft) // Do something
+     */
+
+    
+
+}
+
 
 function importSound(sound) {
     /* Import a sound, default directory: /sounds/ */
@@ -1031,6 +1043,7 @@ function render() {
             backgroundSound = s(mainMenuMusic[Math.floor(Math.random() * mainMenuMusic.length)]);
             backgroundSound.currentTime = 0;
             backgroundSound.volume = .2;
+            backgroundSound.loop = true;
             backgroundSound.playbackRate = 1;
             backgroundSound.play();
         }
