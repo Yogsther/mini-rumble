@@ -5,6 +5,7 @@ var cock_n_shoot = {
     introText: "Lock n Load!",
     timed: true,
     textures: ["cock_arm.png", "cock_barrel.png", "cock_bg.png", "cock_hatch.png", "shoot_bg.png", "shoot_enemy.png", "shoot_player.png", "shoot_bullet.png", "shoot_flash.png"],
+    sounds: ["cock_lock.ogg", "cock_load.ogg", "shoot_bang.ogg"],
     init: function(dif) {
         
         /* init - Pump Scene */
@@ -111,15 +112,18 @@ var cock_n_shoot = {
         
         /* logic - Pump Scene */
         if ((key.is(keys.left)) && (this.gameprogress == 0)) {
+            playSound("cock_lock");
             this.gameprogress = 1;
         }
         if ((key.is(keys.right)) && (this.gameprogress == 1) && (this.armPos.x == -120)) {
+            playSound("cock_load");
             this.gameprogress = 2;
         }
         
         /* logic - Shoot Scene */
-        if ((key.is(keys.action)) && (this.shootActive)) {
+        if ((key.is(keys.action)) && (this.shootActive) && (this.gunFired == false)) {
             this.shootFlashPos.x = 0;
+            playSound("shoot_bang");
             this.gunFired = true;
         }
     }
