@@ -4,10 +4,11 @@ var typeMaster = {
     timed: true,
     timedWin: false, 
     textures: ["pixel_pointer.png"],
+    sounds: ["key_0.mp3", "key_1.mp3", "key_2.mp3", "key_3.mp3"],
     requiresKeyboard: true,
     introText: "Type!",
     init: function(dif){
-        this.words = ["Wahoo", "Ohyeah", "Mario Time", "Lets a go", "Here I go", "Mama Mia", "QWERTY", "Random", "Wow", "Very Nice", "Meme Review", "Me too thanks", "haha yes", "Dab", "Somebody", "Once", "Told", "The World", "Roll", "Sharpest", "Tool", "Shed", "Looking", "Kind", "Dumb", "Finger", "Thumb", "Shape", "Forehead", "Years", "Start", "Coming", "Rules", "Ground", "Running", "Make", "Sense", "Live", "Fun", "Brain", "Smart", "Head", "Much", "See", "Wrong", "Taking", "Back", "Streets", "Never", "Know", "Shine", "Glow", "Hey", "Now", "All", "Star"]
+        this.words = ["Wahoo", "Ohyeah", "QWERTY", "Random", "Wow", "Very", "Nice", "Meme", "Review", "Me",  "too", "thanks", "haha" , "yes", "Dab", "Somebody", "Once", "Told", "World", "Roll", "Sharpest", "Tool", "Shed", "Looking", "Kind", "Dumb", "Thumb", "Shape", "Forehead", "Years", "Start", "Rules", "Ground", "Running", "Make", "Sense", "Live", "Fun", "Brain", "Smart", "Head", "Much", "See", "Wrong", "Taking", "Back", "Streets", "Never", "Know", "Shine", "Glow", "Hey", "Now", "All", "Star"]
         this.wordsToType = (dif + 1);
         this.completedWords = 0;
         this.word = this.words[Math.floor(Math.random()*this.words.length)];
@@ -95,6 +96,7 @@ var typeMaster = {
         if(key.char.toLowerCase() == "shift") return;
         if(key.char.toLowerCase() == this.word[this.progress].toLowerCase()){
             this.progress++;
+            playSound(this.sounds[Math.floor(Math.random()*this.sounds.length)]);
             if(this.progress >= this.word.length && !this.cleared){
                 this.completedWords++;
                 if(this.wordsToType == this.completedWords){
