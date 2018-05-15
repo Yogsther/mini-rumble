@@ -11,7 +11,8 @@ var typeMaster = {
         this.words = ["Wahoo", "Ohyeah", "QWERTY", "Random", "Wow", "Very", "Nice", "Meme", "Review", "Me",  "too", "thanks", "haha" , "yes", "Dab", "Somebody", "Once", "Told", "World", "Roll", "Sharpest", "Tool", "Shed", "Looking", "Kind", "Dumb", "Thumb", "Shape", "Forehead", "Years", "Start", "Rules", "Ground", "Running", "Make", "Sense", "Live", "Fun", "Brain", "Smart", "Head", "Much", "See", "Wrong", "Taking", "Back", "Streets", "Never", "Know", "Shine", "Glow", "Hey", "Now", "All", "Star"]
         this.wordsToType = (dif + 1);
         this.completedWords = 0;
-        this.word = this.words[Math.floor(Math.random()*this.words.length)];
+        this.wordStart = Math.floor(Math.random()*this.words.length);
+        this.word = this.words[this.wordStart];
         this.progress = 0;
         this.sinProgression = 0;
         this.colors = [255, 66, 66];
@@ -103,7 +104,8 @@ var typeMaster = {
                     this.cleared = true;
                     cleared(900);
                 } else {
-                    this.word = this.words[Math.floor(Math.random()*this.words.length)];
+                    this.wordStart++;
+                    this.word = this.words[this.wordStart % this.words.length];
                     this.progress = 0;
                     this.sinProgression = 0;
                     this.colors = [255, 66, 66];

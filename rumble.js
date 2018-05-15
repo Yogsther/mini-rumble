@@ -4,7 +4,7 @@
 
 /* Debug options */
 var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
-var initialDificulty = 0 /* This needs to be 0 whenever a commit is made! */
+var initialDifficulty = 0 /* This needs to be 0 whenever a commit is made! */
 /* These are already enabled if Dev-mode is enabled! */
 var disableGameOver = false;
 var logCoordinates = false;
@@ -676,7 +676,7 @@ function s(name) {
     return sounds[name];
 }
 
-function playSound(name) {
+function playSound(name, volume) {
     if (globalOptions.disableSound) return;
     if (name.indexOf(".") != -1) {
         var sound = name;
@@ -684,7 +684,8 @@ function playSound(name) {
         soundName = soundName.substr(0, soundName.indexOf("."));
         name = soundName;
     }
-    sounds[name].volume = .4;
+    if(volume == undefined) volume = .4;
+    sounds[name].volume = volume;
     sounds[name].play();
 }
 
@@ -717,7 +718,7 @@ function startGame() {
     showClearedScreen("Ready? Go!", "#66a0ff");
     setTimeout(() => {
         score = 0;
-        window.difficulty = initialDificulty;
+        window.difficulty = initialDifficulty;
         newGame();
     }, 1000)
 }
