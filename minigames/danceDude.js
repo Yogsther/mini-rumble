@@ -33,22 +33,22 @@ var danceDude = {
     // Decides the starting position of the incoming arrows
     this.incomingLeftPos = {
       x: 20,
-      y: Math.floor((Math.random() * 96) + 32) * 10
+      y: Math.floor((Math.random() * 64) + 48) * 10
     };
     this.incomingUpPos = {
       x: 120,
-      y: Math.floor((Math.random() * 96) + 32) * 10
+      y: Math.floor((Math.random() * 64) + 48) * 10
     };
     this.incomingDownPos = {
       x: 220,
-      y: Math.floor((Math.random() * 96) + 32) * 10
+      y: Math.floor((Math.random() * 64) + 48) * 10
     };
     this.incomingRightPos = {
       x: 320,
-      y: Math.floor((Math.random() * 96) + 32) * 10
+      y: Math.floor((Math.random() * 64) + 48) * 10
     };
 
-    this.hitPos = Math.floor((Math.random() * 64) + 32) * 10;
+    this.hitPos = Math.floor((Math.random() * 64) + 48) * 10;
 
     // Hit Status
     this.hitLeft = false;
@@ -69,30 +69,32 @@ var danceDude = {
     fill("#111");
     // Draw background
     this.progress++;
-    ctx.drawImage(this.sprites[this.progress % this.sprites.length], 0, 0);
+    draw(this.sprites[this.progress % this.sprites.length], 0, 0);
 
     // Draw "slot arrows"
-    ctx.drawImage(t("dance_arrow_left"), 0, 10);
-    ctx.drawImage(t("dance_arrow_up"), 0, 10);
-    ctx.drawImage(t("dance_arrow_down"), 0, 10);
-    ctx.drawImage(t("dance_arrow_right"), 0, 10);
+    draw("dance_arrow_left", 0, 10);
+    draw("dance_arrow_up", 0, 10);
+    draw("dance_arrow_down", 0, 10);
+    draw("dance_arrow_right", 0, 10);
 
     // Draw incoming arrows
-    ctx.drawImage(t("dance_incoming_left"), this.incomingLeftPos.x, this.incomingLeftPos.y);
-    ctx.drawImage(t("dance_incoming_up"), this.incomingUpPos.x, this.incomingUpPos.y);
-    ctx.drawImage(t("dance_incoming_down"), this.incomingDownPos.x, this.incomingDownPos.y);
-    ctx.drawImage(t("dance_incoming_right"), this.incomingRightPos.x, this.incomingRightPos.y);
+    draw("dance_incoming_left", this.incomingLeftPos.x, this.incomingLeftPos.y);
+    draw("dance_incoming_up", this.incomingUpPos.x, this.incomingUpPos.y);
+    draw("dance_incoming_down", this.incomingDownPos.x, this.incomingDownPos.y);
+    draw("dance_incoming_right", this.incomingRightPos.x, this.incomingRightPos.y);
+    
+    // Draw hit animations
     if (this.hitUp) {
-      ctx.drawImage(t("dance_arrow_up_hit"), 0, 10);
+      draw("dance_arrow_up_hit", 0, 10);
     }
     if (this.hitDown) {
-      ctx.drawImage(t("dance_arrow_down_hit"), 0, 10);
+      draw("dance_arrow_down_hit", 0, 10);
     }
     if (this.hitLeft) {
-      ctx.drawImage(t("dance_arrow_left_hit"), 0, 10);
+      draw("dance_arrow_left_hit", 0, 10);
     }
     if (this.hitRight) {
-      ctx.drawImage(t("dance_arrow_right_hit"), 0, 10);
+      draw("dance_arrow_right_hit", 0, 10);
     }
   },
   loop: function () {
@@ -143,22 +145,30 @@ var danceDude = {
     if (this.hitLeft == true) {
       this.arrowsHit = this.arrowsHit + 1;
       playSound("dance_hit_1");
-      setTimeout(()=>{this.hitLeft = false;},70);
+      setTimeout(() => {
+        this.hitLeft = false;
+      }, 70);
     }
     if (this.hitUp == true) {
       this.arrowsHit = this.arrowsHit + 1;
       playSound("dance_hit_3");
-      setTimeout(()=>{this.hitUp = false;},70);
+      setTimeout(() => {
+        this.hitUp = false;
+      }, 70);
     }
     if (this.hitDown == true) {
       this.arrowsHit = this.arrowsHit + 1;
       playSound("dance_hit_4");
-      setTimeout(()=>{this.hitDown = false;},70);
+      setTimeout(() => {
+        this.hitDown = false;
+      }, 70);
     }
     if (this.hitRight == true) {
       this.arrowsHit = this.arrowsHit + 1;
       playSound("dance_hit_2");
-      setTimeout(()=>{this.hitRight = false;},70);
+      setTimeout(() => {
+        this.hitRight = false;
+      }, 70);
     }
 
     if ((this.arrowsHit > this.hitGoal) & (this.danceStart == true)) {
