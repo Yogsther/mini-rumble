@@ -167,3 +167,6 @@ var danceDude = {
     }
   }
 }
+
+
+miniGames.push(danceDude);

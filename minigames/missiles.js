@@ -182,3 +182,5 @@ var missiles = {
 
   }
 }
+
+miniGames.push(missiles);

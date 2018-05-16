@@ -65,3 +65,5 @@ var carrotCatch = {
     }
 
 }
+
+miniGames.push(carrotCatch);

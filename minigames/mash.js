@@ -155,3 +155,5 @@ var mash = {
         });
     }
 }
+
+miniGames.push(mash);

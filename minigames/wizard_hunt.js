@@ -25,3 +25,5 @@ var wizard_hunt = {
 
     }
   }
+
+  miniGames.push(wizard_hunt);

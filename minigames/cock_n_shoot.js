@@ -143,3 +143,5 @@ var cock_n_shoot = {
     }
 
 }
+
+miniGames.push(cock_n_shoot);

@@ -191,3 +191,5 @@ var gatherFortnite = {
         };
     }
 }
+
+miniGames.push(gatherFortnite);

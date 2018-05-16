@@ -92,3 +92,5 @@ var bounce = {
     }
 
 }
+
+miniGames.push(bounce);

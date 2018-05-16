@@ -86,3 +86,5 @@ var hoverDodge = {
         this.worldX -= 7 + (this.speed / 2);
     }
 }
+
+miniGames.push(hoverDodge);

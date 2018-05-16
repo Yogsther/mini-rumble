@@ -185,3 +185,5 @@ var typeMaster = {
     }
 
 }
+
+miniGames.push(typeMaster);

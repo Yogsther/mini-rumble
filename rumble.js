@@ -4,17 +4,15 @@
 
 /* Debug options */
 var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
-var initialDifficulty = 0 /* This needs to be 0 whenever a commit is made! */
+var initialDifficulty = 0; /* This needs to be 0 whenever a commit is made! */
 /* These are already enabled if Dev-mode is enabled! */
 var disableGameOver = false;
 var logCoordinates = false;
 
 
-
 /* Engine variables */
 const canvas = c = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-
 
 
 var loadingScreenDotJump = 0;
@@ -41,8 +39,8 @@ var globalOptions = {
 }
 
 // TOOD: Document this process
-var miniGames = [
-    mash,
+var miniGames = [ // Minigames are now added to this array in their own file.
+    /* mash,
     carrotCatch,
     hoverDodge,
     typeMaster,
@@ -51,7 +49,7 @@ var miniGames = [
     cock_n_shoot,
     bounce,
     missiles,
-    wizard_hunt
+    wizard_hunt */
 ];
 var activeMinigames = miniGames.slice();
 
@@ -79,7 +77,7 @@ var titleSounds = [
 function loadSettings() {
     expandOptions();
     var settings = localStorage.getItem("globalOptions");
-    if (settings == undefined) return;
+    if (settings === undefined) return;
     globalOptions = Object.assign(globalOptions, JSON.parse(settings));
     loadWarnings();
 }
