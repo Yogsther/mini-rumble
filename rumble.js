@@ -19,11 +19,11 @@ const ctx = canvas.getContext("2d");
 
 var loadingScreenDotJump = 0;
 var loadingMessages = [
-    "Get ready!", 
-    "Collecting your data", 
-    "Working hard", 
-    "Hardly working", 
-    "Sorting things out", 
+    "Get ready!",
+    "Collecting your data",
+    "Working hard",
+    "Hardly working",
+    "Sorting things out",
     "Downloading information"
 ]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
@@ -40,17 +40,18 @@ var globalOptions = {
     limitFPS: false
 }
 
-
+// TOOD: Document this process
 var miniGames = [
-    mash, 
-    carrotCatch, 
-    hoverDodge, 
-    typeMaster, 
-    danceDude, 
-    gatherFortnite, 
-    cock_n_shoot, 
-    bounce, 
-    missiles
+    mash,
+    carrotCatch,
+    hoverDodge,
+    typeMaster,
+    danceDude,
+    gatherFortnite,
+    cock_n_shoot,
+    bounce,
+    missiles,
+    wizard_hunt
 ];
 var activeMinigames = miniGames.slice();
 
@@ -209,7 +210,10 @@ var onlineRender = {
 }
 
 
-
+/**
+ * Menu renders,
+ * Simular structure to minigames but a little diffrent.
+ */
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
@@ -221,8 +225,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         [209, 104, 66]
     ],
     buttonTitles: [
-        "Play", 
-        "Online", 
+        "Play",
+        "Online",
         "Options"
     ],
     selectedButton: 0,
@@ -332,7 +336,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         var playEffect = false;
 
         if (key.is(keys.down)) {
-            this.selectedButton ++;
+            this.selectedButton++;
             playEffect = true;
         }
         if (key.is(keys.up)) {
@@ -491,7 +495,6 @@ var optionsRender = {
 
 window.onload = () => {
     ready = false;
-    //renderLoadingScreen(); // TODO: Not working for some reason..
     checkForMobileUser()
     loadSettings();
     getAmountOfCommits();
@@ -510,20 +513,25 @@ function getAmountOfCommits() {
     client.open('GET', 'https://api.github.com/repos/yogsther/mini-rumble/commits');
     client.onreadystatechange = function () {
         var commits = client.responseText;
-        commits = JSON.parse(commits);
+        try {
+            commits = JSON.parse(commits);
+        } catch (e) {}
+
         var i = 0;
         window.finalVersion = false;
-        commits.forEach(commit => {
-            if (finalVersion === false) {
-                var message = commit.commit.message;
+        try {
+            commits.forEach(commit => {
+                if (finalVersion === false) {
+                    var message = commit.commit.message;
 
-                if (message.indexOf("v.") != -1) {
-                    version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
-                    finalVersion = true;
+                    if (message.indexOf("v.") != -1) {
+                        version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
+                        finalVersion = true;
+                    }
+                    i++;
                 }
-                i++;
-            }
-        })
+            })
+        } catch (e) {}
     }
 
     client.send();
@@ -696,7 +704,7 @@ function importSounds() {
     });
 }
 
-function checkCollision(obj1, obj2){
+function checkCollision(obj1, obj2) {
     /**
      * Check 2D collision between two object.
      * Returns false for no collision. 
@@ -704,7 +712,7 @@ function checkCollision(obj1, obj2){
      * Usage: if(checkCollision(obj1, obj2).fromLeft) // Do something
      */
 
-    
+
 
 }
 
@@ -730,7 +738,7 @@ function s(name) {
 }
 
 function playSound(name, volume) {
-    
+
     if (globalOptions.disableSound) return;
     if (name.indexOf(".") != -1) {
         var sound = name;
@@ -738,7 +746,7 @@ function playSound(name, volume) {
         soundName = soundName.substr(0, soundName.indexOf("."));
         name = soundName;
     }
-    if(volume == undefined) volume = .4;
+    if (volume == undefined) volume = .4;
     sounds[name].volume = volume;
     sounds[name].play();
 }
@@ -828,13 +836,16 @@ function buttonClick(id) {
 }
 
 function loadLast() {
-    if(!onMobile) return;
+    /**
+     * Load mobile controlls and attach event listeners (Only if onMobile!)
+     */
+    if (!onMobile) return;
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
     var elements = new Array();
-    
+
     /* Add event listeners to all mobile buttons */
-    translate.forEach(e => elements.push(document.getElementById(e))); 
+    translate.forEach(e => elements.push(document.getElementById(e)));
 
     for (let i = 0; i < elements.length; i++) {
         elements[i].addEventListener("touchstart", e => {
@@ -858,6 +869,12 @@ function loadLast() {
     }
 }
 
+/**
+ * Mobile keyboard handlers
+ */
+
+var disableKeyboard = false;
+
 function displayMobileKeyboard() {
     disableKeyboard = true;
     document.getElementById("keyboard-input").innerHTML = ' <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)">';
@@ -871,9 +888,6 @@ function hideMobileKeyboard() {
     document.getElementById("canvas").focus();
 }
 
-
-var disableKeyboard = false;
-
 function detectMobileInput(value) {
     var charCode = value.toLowerCase().charCodeAt(0);
     click(charCode, value);
@@ -882,6 +896,10 @@ function detectMobileInput(value) {
 
 
 function click(code, char) {
+    /**
+     * Key event emiter.
+     * Emits a click event to the current mini-game or scene.
+     */
     if (!ready) return;
     if (disableInputs) return;
     var key = {
@@ -1029,8 +1047,32 @@ function failed(ms) {
 }
 
 function draw(sprite, x, y, scale) {
-    if (scale == false) scale = 1;
+    /**
+     * Draw a texture on screen, provide a scale if you want.
+     * You can either submit an Image or a string of the name.
+     */
+    if (scale == undefined) scale = 1;
+    if (sprite.constructor == String) sprite = t(sprite);
+    if(x === undefined && y === undefined){
+        x = c.width/2 - sprite.width/2;
+        y = c.height/2 - sprite.height/2;
+    }
     ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
+}
+
+function drawC(sprite, x, y, scale){
+    /**
+     * Draw a centered texture on screen, provide a scale if you want.
+     * x and y will be the center location.
+     * You can either submit an Image or a string of the name.
+     */
+    if (scale == undefined) scale = 1;
+    if (sprite.constructor == String) sprite = t(sprite);
+    if(x === undefined && y === undefined){
+        x = c.width/2 - sprite.width/2;
+        y = c.height/2 - sprite.height/2;
+    }
+    ctx.drawImage(sprite, x - (sprite.width/2)*scale, y - (sprite.height/2)*scale, sprite.width * scale, sprite.height * scale);
 }
 
 function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2) {
