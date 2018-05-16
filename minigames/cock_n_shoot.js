@@ -1,27 +1,26 @@
-
 var cock_n_shoot = {
     varName: "cock_n_shoot",
     displayName: "Cock n Shoot",
     introText: "Lock n Load!",
     timed: true,
     textures: [
-        "cock_n_shoot/cock_arm.png", 
-        "cock_n_shoot/cock_barrel.png", 
-        "cock_n_shoot/cock_bg.png", 
-        "cock_n_shoot/cock_hatch.png", 
-        "cock_n_shoot/shoot_bg.png", 
-        "cock_n_shoot/shoot_enemy.png", 
-        "cock_n_shoot/shoot_player.png", 
+        "cock_n_shoot/cock_arm.png",
+        "cock_n_shoot/cock_barrel.png",
+        "cock_n_shoot/cock_bg.png",
+        "cock_n_shoot/cock_hatch.png",
+        "cock_n_shoot/shoot_bg.png",
+        "cock_n_shoot/shoot_enemy.png",
+        "cock_n_shoot/shoot_player.png",
         "cock_n_shoot/shoot_bullet.png",
         "cock_n_shoot/shoot_flash.png"
     ],
     sounds: [
-        "cock_n_shoot/cock_lock.ogg", 
-        "cock_n_shoot/cock_load.ogg", 
+        "cock_n_shoot/cock_lock.ogg",
+        "cock_n_shoot/cock_load.ogg",
         "cock_n_shoot/shoot_bang.ogg"
     ],
-    init: function(dif) {
-        
+    init: function (dif) {
+
         /* init - Pump Scene */
         this.gameprogress = 0
         this.armPos = {
@@ -29,7 +28,7 @@ var cock_n_shoot = {
             y: 170
         }
         this.armSpeed = 5 * ((dif) + 3)
-        
+
         /* init - Shoot Scene */
         this.shootActive = false
         this.shootBgPos = {
@@ -57,10 +56,10 @@ var cock_n_shoot = {
         this.enemyDirection = 0
         this.enemySpeed = 2 * ((dif) + 1)
         this.enemyShot = false
-        
+
     },
-    paint: function() {
-        
+    paint: function () {
+
         /* paint - Pump Scene */
         if (this.shootActive == false) {
             ctx.drawImage(t("cock_bg"), 0, 0)
@@ -68,7 +67,7 @@ var cock_n_shoot = {
             ctx.drawImage(t("cock_barrel"), 0, 160)
             ctx.drawImage(t("cock_arm"), this.armPos.x, this.armPos.y)
         }
-        
+
         /* paint - Shoot Scene */
         if (this.shootActive) {
             ctx.drawImage(t("shoot_bg"), this.shootBgPos.x, this.shootBgPos.y)
@@ -78,8 +77,8 @@ var cock_n_shoot = {
             ctx.drawImage(t("shoot_flash"), this.shootFlashPos.x, this.shootFlashPos.y)
         }
     },
-    loop: function() {
-        
+    loop: function () {
+
         /* loop - Pump Scene */
         if ((this.gameprogress == 1) && (this.armPos.x > -120)) {
             this.armPos.x -= 10;
@@ -90,7 +89,7 @@ var cock_n_shoot = {
         if ((this.gameprogress == 2) && (this.armPos.x == 0)) {
             this.shootActive = true;
         }
-        
+
         /* loop - Shoot Scene */
         if (this.enemyPos.y < 300) {
             this.enemyDirection = 1;
@@ -122,8 +121,8 @@ var cock_n_shoot = {
             cleared();
         }
     },
-    logic: function(key) {
-        
+    logic: function (key) {
+
         /* logic - Pump Scene */
         if ((key.is(keys.left)) && (this.gameprogress == 0)) {
             playSound("cock_lock");
@@ -133,7 +132,7 @@ var cock_n_shoot = {
             playSound("cock_load");
             this.gameprogress = 2;
         }
-        
+
         /* logic - Shoot Scene */
         if ((key.is(keys.action)) && (this.shootActive) && (this.gunFired == false)) {
             this.shootFlashPos.x = 0;
