@@ -89,8 +89,7 @@ input:focus {outline:0;}
 
 #page{
     color: white;
-    height: 78%;
-    //height: 730px;
+    height: 80vh;
     top: 140px;
     width: 65%;
     right: 2.5%;

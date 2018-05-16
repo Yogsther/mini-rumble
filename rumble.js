@@ -496,7 +496,12 @@ window.onload = () => {
 }
 
 function getAmountOfCommits() {
-
+    /**
+     * Use github's API to see the last 30 commits and messages.
+     * Parse and read them to see the latest update message: A commit 
+     * message containing "v.x.x" in the start. This will determine the version
+     * number. More about the version number: http://mini.livfor.it/docs
+     */
     var client = new XMLHttpRequest();
     client.open('GET', 'https://api.github.com/repos/yogsther/mini-rumble/commits');
     client.onreadystatechange = function () {
@@ -644,7 +649,6 @@ function importSpriteSheet(path, amount) {
 function importTextures() {
     /* Import all textures */
     currentLoadPackageMessage = "Importing textures...";
-    console.log(currentLoadPackageMessage);
     miniGames.forEach(minigame => {
         if (minigame.textures != undefined) {
             minigame.textures.forEach(texture => {
@@ -723,6 +727,7 @@ function s(name) {
 }
 
 function playSound(name, volume) {
+    
     if (globalOptions.disableSound) return;
     if (name.indexOf(".") != -1) {
         var sound = name;
@@ -820,15 +825,18 @@ function buttonClick(id) {
 }
 
 function loadLast() {
+    if(!onMobile) return;
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
+    var elements = new Array();
+    
+    /* Add event listeners to all mobile buttons */
+    translate.forEach(e => elements.push(document.getElementById(e))); 
 
-    var elements = document.getElementsByClassName("dpad");
     for (let i = 0; i < elements.length; i++) {
         elements[i].addEventListener("touchstart", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
-
             if (!keyDown(key)) keysDown.push(key);
         });
 
