@@ -146,137 +146,6 @@ var keys = {
 
 var ready = false;
 
-var optionsRender = {
-    buttonZoom: 10,
-    buttonStyles: {
-        height: 60,
-        width: 400
-    },
-    buttonPositions: {
-        x: 0,
-        y: 100
-    },
-    scrollPosition: 0,
-    buttonSpacing: 20,
-    selectedOption: 0,
-    startPoint: 0,
-    options: [{
-        text: "Display FPS",
-        source: "displayFPS"
-    }, {
-        text: "Enable Dev-tools",
-        source: "devTools"
-    }, {
-        text: "Disable sound",
-        source: "disableSound"
-    }, {
-        text: "Disable music",
-        source: "disableMusic"
-    }, {
-        text: "Limit FPS (60)",
-        source: "limitFPS"
-    }],
-    spriteIndex: 0,
-    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
-    paint: function () {
-
-        /* Draw background */
-        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
-        this.spriteIndex++;
-
-        ctx.fillStyle = "rgba(0,0,0,0.75)";
-        var width = canvas.width - (canvas.width / 4)
-        var height = canvas.height - (canvas.height / 8);
-        ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
-
-        while (this.selectedOption % this.options.length > this.startPoint + 3) this.startPoint++;
-        while (this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
-
-        for (let i = this.startPoint; i < this.startPoint + 4; i++) {
-            var button = {
-                x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
-                y: this.buttonPositions.y + ((i - this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
-                width: this.buttonStyles.width,
-                height: this.buttonStyles.height,
-                color: "#111"
-            }
-
-            var text = {
-                display: this.options[i].text,
-                state: this.options[i].source,
-                x: button.x + 30,
-                y: button.y + 36,
-                scale: 1,
-                otherScale: 1
-            }
-
-            if (this.selectedOption % this.options.length == i) {
-                // Selected button
-                button.x -= this.buttonZoom;
-                button.y -= this.buttonZoom;
-                button.width += this.buttonZoom * 2;
-                button.height += this.buttonZoom * 2;
-                button.color = "#353535"
-                // Text
-                text.scale = 1.15;
-                text.x -= 10;
-                text.y -= -1;
-                text.otherScale = 1.1;
-            }
-
-            ctx.fillStyle = button.color;
-            ctx.fillRect(button.x, button.y, button.width, button.height);
-            ctx.fillStyle = "white";
-            ctx.font = (20 * text.scale) + "px mario-maker";
-            ctx.textAlign = "left";
-            ctx.fillText(text.display + ":", text.x, text.y);
-            // Status
-            var statusText = {
-                text: "No",
-                color: "#912f2f"
-            };
-            if (eval("globalOptions." + this.options[i].source)) statusText = {
-                text: "Yes",
-                color: "#2f9146"
-            };
-            ctx.textAlign = "right";
-            ctx.fillStyle = statusText.color;
-            ctx.fillText(statusText.text, text.x + 340 * (text.otherScale), text.y)
-
-        }
-        ctx.fillStyle = "#111";
-        ctx.font = "20px mario-maker",
-            ctx.textAlign = "right";
-        ctx.fillText("Z: Back X: Select", 630, 470);
-    },
-    logic: function (key) {
-        var playEffect = false;
-
-        if (key.is(keys.down)) {
-            this.selectedOption++;
-            playEffect = true;
-        }
-        if (key.is(keys.up)) {
-            this.selectedOption--;
-            playEffect = true;
-            if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
-        }
-        if (key.is(keys.action)) {
-            // Toggle option
-            playEffect = true;
-            eval("globalOptions." + this.options[this.selectedOption % this.options.length].source + "= !globalOptions." + this.options[this.selectedOption % this.options.length].source);
-            saveSettings();
-        }
-        if (key.is(keys.back)) {
-            // Go back to manu
-            playEffect = true;
-            selectedScene = 0;
-        }
-
-        if (playEffect) playSound("menu-click", 1);
-    }
-}
-
 var onlineRender = {
     animationProgress: 0,
     buttons: ["Join", "Leave"],
@@ -338,6 +207,9 @@ var onlineRender = {
         if (key.is(keys.back)) selectedScene = 0;
     }
 }
+
+
+
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
@@ -482,6 +354,138 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         if (playEffect) playSound("menu-click", 1);
     }
 }
+
+var optionsRender = {
+    buttonZoom: 10,
+    buttonStyles: {
+        height: 60,
+        width: 400
+    },
+    buttonPositions: {
+        x: 0,
+        y: 100
+    },
+    scrollPosition: 0,
+    buttonSpacing: 20,
+    selectedOption: 0,
+    startPoint: 0,
+    options: [{
+        text: "Display FPS",
+        source: "displayFPS"
+    }, {
+        text: "Enable Dev-tools",
+        source: "devTools"
+    }, {
+        text: "Disable sound",
+        source: "disableSound"
+    }, {
+        text: "Disable music",
+        source: "disableMusic"
+    }, {
+        text: "Limit FPS (60)",
+        source: "limitFPS"
+    }],
+    spriteIndex: 0,
+    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
+    paint: function () {
+
+        /* Draw background */
+        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
+        this.spriteIndex++;
+
+        ctx.fillStyle = "rgba(0,0,0,0.75)";
+        var width = canvas.width - (canvas.width / 4)
+        var height = canvas.height - (canvas.height / 8);
+        ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
+
+        while (this.selectedOption % this.options.length > this.startPoint + 3) this.startPoint++;
+        while (this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
+
+        for (let i = this.startPoint; i < this.startPoint + 4; i++) {
+            var button = {
+                x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
+                y: this.buttonPositions.y + ((i - this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
+                width: this.buttonStyles.width,
+                height: this.buttonStyles.height,
+                color: "#111"
+            }
+
+            var text = {
+                display: this.options[i].text,
+                state: this.options[i].source,
+                x: button.x + 30,
+                y: button.y + 36,
+                scale: 1,
+                otherScale: 1
+            }
+
+            if (this.selectedOption % this.options.length == i) {
+                // Selected button
+                button.x -= this.buttonZoom;
+                button.y -= this.buttonZoom;
+                button.width += this.buttonZoom * 2;
+                button.height += this.buttonZoom * 2;
+                button.color = "#353535"
+                // Text
+                text.scale = 1.15;
+                text.x -= 10;
+                text.y -= -1;
+                text.otherScale = 1.1;
+            }
+
+            ctx.fillStyle = button.color;
+            ctx.fillRect(button.x, button.y, button.width, button.height);
+            ctx.fillStyle = "white";
+            ctx.font = (20 * text.scale) + "px mario-maker";
+            ctx.textAlign = "left";
+            ctx.fillText(text.display + ":", text.x, text.y);
+            // Status
+            var statusText = {
+                text: "No",
+                color: "#912f2f"
+            };
+            if (eval("globalOptions." + this.options[i].source)) statusText = {
+                text: "Yes",
+                color: "#2f9146"
+            };
+            ctx.textAlign = "right";
+            ctx.fillStyle = statusText.color;
+            ctx.fillText(statusText.text, text.x + 340 * (text.otherScale), text.y)
+
+        }
+        ctx.fillStyle = "#111";
+        ctx.font = "20px mario-maker",
+            ctx.textAlign = "right";
+        ctx.fillText("Z: Back X: Select", 630, 470);
+    },
+    logic: function (key) {
+        var playEffect = false;
+
+        if (key.is(keys.down)) {
+            this.selectedOption++;
+            playEffect = true;
+        }
+        if (key.is(keys.up)) {
+            this.selectedOption--;
+            playEffect = true;
+            if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
+        }
+        if (key.is(keys.action)) {
+            // Toggle option
+            playEffect = true;
+            eval("globalOptions." + this.options[this.selectedOption % this.options.length].source + "= !globalOptions." + this.options[this.selectedOption % this.options.length].source);
+            saveSettings();
+        }
+        if (key.is(keys.back)) {
+            // Go back to manu
+            playEffect = true;
+            selectedScene = 0;
+        }
+
+        if (playEffect) playSound("menu-click", 1);
+    }
+}
+
 
 
 
@@ -672,15 +676,14 @@ function importTexture(texture) {
 }
 
 function importSounds() {
+    /* Bulk import engine sounds, this runs when the engine starts. */
     currentLoadPackageMessage = "Importing sounds";
     titleSounds.forEach(sound => {
         importSound(sound);
     })
-
     mainMenuMusic.forEach(sound => {
         importSound(sound);
     });
-
     soundEffects.forEach(sound => {
         importSound(sound);
     })
