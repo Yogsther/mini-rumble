@@ -2,7 +2,13 @@ var gatherFortnite = {
     varName: "gatherFortnite",
     displayName: "Wood Gather",
     timed: true,
-    textures: ["gather/tricerathot.png", "gather/wood.png", "gather/gather_bg.png", "gather/thot_big.png", "gather/gather_grass.png"],
+    textures: [
+        "gather/tricerathot.png", 
+        "gather/wood.png", 
+        "gather/gather_bg.png", 
+        "gather/thot_big.png", 
+        "gather/gather_grass.png"
+    ],
     introText: "Gather!",
     init: function (dif) {
         /* Run on initiation */

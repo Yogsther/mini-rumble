@@ -3,7 +3,12 @@ var carrotCatch = {
     varName: "carrotCatch",
     displayName: "Carrot Catch",
     timed: false,
-    textures: ["carrot.png", "rabbit_closed.png", "rabbit_open.png", "sunny_grass.png"],
+    textures: [
+        "carrot.png", 
+        "rabbit_closed.png", 
+        "rabbit_open.png", 
+        "sunny_grass.png"
+    ],
     introText: "Catch!",
     init: function (dif) {
         this.startTime = Date.now();

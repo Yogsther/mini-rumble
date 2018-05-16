@@ -4,7 +4,10 @@ var hoverDodge = {
     displayName: "Hover Dodge",
     timed: true,
     timedWin: true,
-    textures: ["hover_board.png", "warning.png"],
+    textures: [
+        "hover_board.png", 
+        "warning.png"
+    ],
     introText: "Dodge!",
     init: function (dif) {
         this.flex = 60; // Flex margin for collision

@@ -2,11 +2,27 @@ var danceDude = {
   varName: "danceDude",
   displayName: "Dance Dude",
   timed: false,
-  /* Weather or not the mini-game is timebased or not. If this is false, the timer will be disabled. */
   introText: "Dance!",
-  /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
-  sounds: ["muh.ogg", "dance_hit_1.mp3", "dance_hit_2.mp3", "dance_hit_3.mp3", "dance_hit_4.mp3"],
-  textures: ["dance_arrow_left.png", "dance_arrow_up.png", "dance_arrow_down.png", "dance_arrow_right.png", "dance_incoming_left.png", "dance_incoming_up.png", "dance_incoming_down.png", "dance_incoming_right.png", "dance_arrow_up_hit.png", "dance_arrow_down_hit.png", "dance_arrow_left_hit.png", "dance_arrow_right_hit.png"],
+  textures: [
+    "dance_arrow_left.png",
+    "dance_arrow_up.png",
+    "dance_arrow_down.png",
+    "dance_arrow_right.png",
+    "dance_incoming_left.png",
+    "dance_incoming_up.png",
+    "dance_incoming_down.png",
+    "dance_incoming_right.png",
+    "dance_arrow_up_hit.png",
+    "dance_arrow_down_hit.png",
+    "dance_arrow_left_hit.png",
+    "dance_arrow_right_hit.png"
+  ],
+  sounds: [
+    "dance_hit_1.mp3",
+    "dance_hit_2.mp3",
+    "dance_hit_3.mp3",
+    "dance_hit_4.mp3"
+  ],
   /* If your mini-game contains textures, enter them in here. default path is /textures. */
 
   init: function (dif) {
@@ -56,27 +72,27 @@ var danceDude = {
     ctx.drawImage(this.sprites[this.progress % this.sprites.length], 0, 0);
 
     // Draw "slot arrows"
-    ctx.drawImage(t("dance_arrow_left"), 0, 10)
-    ctx.drawImage(t("dance_arrow_up"), 0, 10)
-    ctx.drawImage(t("dance_arrow_down"), 0, 10)
-    ctx.drawImage(t("dance_arrow_right"), 0, 10)
+    ctx.drawImage(t("dance_arrow_left"), 0, 10);
+    ctx.drawImage(t("dance_arrow_up"), 0, 10);
+    ctx.drawImage(t("dance_arrow_down"), 0, 10);
+    ctx.drawImage(t("dance_arrow_right"), 0, 10);
 
     // Draw incoming arrows
-    ctx.drawImage(t("dance_incoming_left"), this.incomingLeftPos.x, this.incomingLeftPos.y)
-    ctx.drawImage(t("dance_incoming_up"), this.incomingUpPos.x, this.incomingUpPos.y)
-    ctx.drawImage(t("dance_incoming_down"), this.incomingDownPos.x, this.incomingDownPos.y)
-    ctx.drawImage(t("dance_incoming_right"), this.incomingRightPos.x, this.incomingRightPos.y)
+    ctx.drawImage(t("dance_incoming_left"), this.incomingLeftPos.x, this.incomingLeftPos.y);
+    ctx.drawImage(t("dance_incoming_up"), this.incomingUpPos.x, this.incomingUpPos.y);
+    ctx.drawImage(t("dance_incoming_down"), this.incomingDownPos.x, this.incomingDownPos.y);
+    ctx.drawImage(t("dance_incoming_right"), this.incomingRightPos.x, this.incomingRightPos.y);
     if (this.hitUp) {
-      ctx.drawImage(t("dance_arrow_up_hit"), 0, 10)
+      ctx.drawImage(t("dance_arrow_up_hit"), 0, 10);
     }
     if (this.hitDown) {
-      ctx.drawImage(t("dance_arrow_down_hit"), 0, 10)
+      ctx.drawImage(t("dance_arrow_down_hit"), 0, 10);
     }
     if (this.hitLeft) {
-      ctx.drawImage(t("dance_arrow_left_hit"), 0, 10)
+      ctx.drawImage(t("dance_arrow_left_hit"), 0, 10);
     }
     if (this.hitRight) {
-      ctx.drawImage(t("dance_arrow_right_hit"), 0, 10)
+      ctx.drawImage(t("dance_arrow_right_hit"), 0, 10);
     }
   },
   loop: function () {

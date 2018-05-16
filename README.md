@@ -61,8 +61,14 @@ var nameOfMinigame = {
   /* Weather or not the mini-game is timebased or not. If this is false, the timer will be disabled. */
   introText: "Something!", 
   /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
-  textures: ["filename.png"], 
-  /* If your mini-game contains textures, enter them in here. default path is /textures. */
+  textures: [
+    "filename.png"
+    ],
+    /* If your mini-game contains textures, enter them in here. default path is /textures. */
+  sounds: [
+    "filename.mp3"
+  ]
+  /* If your mini-game contains sound effects, enter them in here. default path is /sounds. */
   init: function(difficulty){
     this.example = "example"; // This is how you would initiate a variable.
 

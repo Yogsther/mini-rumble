@@ -18,7 +18,14 @@ const ctx = canvas.getContext("2d");
 
 
 var loadingScreenDotJump = 0;
-var loadingMessages = ["Get ready!", "Collecting your data", "Working hard", "Hardly working", "Sorting things out", "Downloading information"]
+var loadingMessages = [
+    "Get ready!", 
+    "Collecting your data", 
+    "Working hard", 
+    "Hardly working", 
+    "Sorting things out", 
+    "Downloading information"
+]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 renderLoadingScreen();
 
@@ -34,15 +41,38 @@ var globalOptions = {
 }
 
 
-var miniGames = [mash, carrotCatch, hoverDodge, typeMaster, danceDude, gatherFortnite, cock_n_shoot, bounce, missiles];
+var miniGames = [
+    mash, 
+    carrotCatch, 
+    hoverDodge, 
+    typeMaster, 
+    danceDude, 
+    gatherFortnite, 
+    cock_n_shoot, 
+    bounce, 
+    missiles
+];
 var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
 var playingMenuMusic = false;
 
-var soundEffects = ["yoshi-mount.mp3", "faster.mp3", "menu-click.mp3"];
-var mainMenuMusic = ["SmoothMoves.mp3", "Ware.mp3"];
-var titleSounds = ["mario-bonus-level.mp3", "yoshi-island.mp3", "WaluigiPinball.mp3", "ComeOn.mp3", "KingDedede.mp3", "DiggaLeg.mp3"];
+var soundEffects = [
+    "yoshi-mount.mp3",
+    "faster.mp3",
+    "menu-click.mp3"
+];
+var mainMenuMusic = [
+    "SmoothMoves.mp3",
+    "Ware.mp3"
+];
+var titleSounds = [
+    "yoshi-island.mp3",
+    "WaluigiPinball.mp3",
+    "ComeOn.mp3",
+    "KingDedede.mp3",
+    "DiggaLeg.mp3"
+];
 
 
 function loadSettings() {
@@ -243,7 +273,7 @@ var optionsRender = {
             selectedScene = 0;
         }
 
-        if (playEffect) playSound("menu-click");
+        if (playEffect) playSound("menu-click", 1);
     }
 }
 
@@ -318,7 +348,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         [209, 83, 66],
         [209, 104, 66]
     ],
-    buttonTitles: ["Play", "Online", "Options"],
+    buttonTitles: [
+        "Play", 
+        "Online", 
+        "Options"
+    ],
     selectedButton: 0,
     progress: 0,
     buttonPositions: {
@@ -426,7 +460,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         var playEffect = false;
 
         if (key.is(keys.down)) {
-            this.selectedButton++;
+            this.selectedButton ++;
             playEffect = true;
         }
         if (key.is(keys.up)) {
@@ -445,7 +479,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
         }
 
-        if (playEffect) playSound("menu-click");
+        if (playEffect) playSound("menu-click", 1);
     }
 }
 
