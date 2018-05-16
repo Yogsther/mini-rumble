@@ -4,7 +4,7 @@ var typeMaster = {
     timed: true,
     timedWin: false,
     textures: [
-        "pixel_pointer.png"
+        "type_master/pixel_pointer.png"
     ],
     sounds: [
         "key_0.mp3",

@@ -4,23 +4,23 @@ var mash = {
     varName: "mash",
     displayName: "Eat the Sandwich",
     timed: true,
-    sounds: [
-        "nom_0.mp3",
-        "nom_1.mp3", 
-        "nom_2.mp3", 
-        "nom_3.mp3", 
-        "nom_4.mp3"
-    ],
     textures: [
-        "sandwich_front.png", 
-        "sandwich_center.png", 
-        "sandwich_back.png", 
-        "etika_closed.png", 
-        "etika_open.png", 
-        "x_down.png", 
-        "x_up.png", 
-        "z_down.png", 
-        "z_up.png"
+        "mash/sandwich_front.png", 
+        "mash/sandwich_center.png", 
+        "mash/sandwich_back.png", 
+        "mash/etika_closed.png", 
+        "mash/etika_open.png", 
+        "mash/x_down.png", 
+        "mash/x_up.png", 
+        "mash/z_down.png", 
+        "mash/z_up.png"
+    ],
+    sounds: [
+        "mash/nom_0.mp3",
+        "mash/nom_1.mp3", 
+        "mash/nom_2.mp3", 
+        "mash/nom_3.mp3", 
+        "mash/nom_4.mp3"
     ],
     introText: "Eat!",
     /* Intro text is the text displayed before the mini-game, should contain a short instruction for the minigame. */

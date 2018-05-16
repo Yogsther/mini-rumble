@@ -4,24 +4,24 @@ var danceDude = {
   timed: false,
   introText: "Dance!",
   textures: [
-    "dance_arrow_left.png",
-    "dance_arrow_up.png",
-    "dance_arrow_down.png",
-    "dance_arrow_right.png",
-    "dance_incoming_left.png",
-    "dance_incoming_up.png",
-    "dance_incoming_down.png",
-    "dance_incoming_right.png",
-    "dance_arrow_up_hit.png",
-    "dance_arrow_down_hit.png",
-    "dance_arrow_left_hit.png",
-    "dance_arrow_right_hit.png"
+    "dance/dance_arrow_left.png",
+    "dance/dance_arrow_up.png",
+    "dance/dance_arrow_down.png",
+    "dance/dance_arrow_right.png",
+    "dance/dance_incoming_left.png",
+    "dance/dance_incoming_up.png",
+    "dance/dance_incoming_down.png",
+    "dance/dance_incoming_right.png",
+    "dance/dance_arrow_up_hit.png",
+    "dance/dance_arrow_down_hit.png",
+    "dance/dance_arrow_left_hit.png",
+    "dance/dance_arrow_right_hit.png"
   ],
   sounds: [
-    "dance_hit_1.mp3",
-    "dance_hit_2.mp3",
-    "dance_hit_3.mp3",
-    "dance_hit_4.mp3"
+    "dance/dance_hit_1.mp3",
+    "dance/dance_hit_2.mp3",
+    "dance/dance_hit_3.mp3",
+    "dance/dance_hit_4.mp3"
   ],
   /* If your mini-game contains textures, enter them in here. default path is /textures. */
 
@@ -58,7 +58,7 @@ var danceDude = {
     this.arrowsHit = 0;
     this.hitGoal = (4) + (dif * 2);
     this.danceStart = true;
-    this.sprites = importSpriteSheet("danceDude_bg/danceDude_bg_XXXXX.png", 60);
+    this.sprites = importSpriteSheet("dance/danceDude_bg/danceDude_bg_XXXXX.png", 60);
     this.progress = 0;
 
     /* This function runs when the mini-game starts, variables that needs to be reset should be initiatied here. Difficulty is the increasing difficulty (starts at 0). The difficulty variable should be used to set the difficulty of the mini-game*/

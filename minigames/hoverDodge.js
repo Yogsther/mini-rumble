@@ -5,8 +5,8 @@ var hoverDodge = {
     timed: true,
     timedWin: true,
     textures: [
-        "hover_board.png", 
-        "warning.png"
+        "hover_dodge/hover_board.png", 
+        "hover_dodge/warning.png"
     ],
     introText: "Dodge!",
     init: function (dif) {

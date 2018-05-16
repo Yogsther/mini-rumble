@@ -5,20 +5,20 @@ var cock_n_shoot = {
     introText: "Lock n Load!",
     timed: true,
     textures: [
-        "cock_arm.png", 
-        "cock_barrel.png", 
-        "cock_bg.png", 
-        "cock_hatch.png", 
-        "shoot_bg.png", 
-        "shoot_enemy.png", 
-        "shoot_player.png", 
-        "shoot_bullet.png",
-        "shoot_flash.png"
+        "cock_n_shoot/cock_arm.png", 
+        "cock_n_shoot/cock_barrel.png", 
+        "cock_n_shoot/cock_bg.png", 
+        "cock_n_shoot/cock_hatch.png", 
+        "cock_n_shoot/shoot_bg.png", 
+        "cock_n_shoot/shoot_enemy.png", 
+        "cock_n_shoot/shoot_player.png", 
+        "cock_n_shoot/shoot_bullet.png",
+        "cock_n_shoot/shoot_flash.png"
     ],
     sounds: [
-        "cock_lock.ogg", 
-        "cock_load.ogg", 
-        "shoot_bang.ogg"
+        "cock_n_shoot/cock_lock.ogg", 
+        "cock_n_shoot/cock_load.ogg", 
+        "cock_n_shoot/shoot_bang.ogg"
     ],
     init: function(dif) {
         

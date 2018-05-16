@@ -58,20 +58,20 @@ var backgroundSound = undefined;
 var playingMenuMusic = false;
 
 var soundEffects = [
-    "yoshi-mount.mp3",
-    "faster.mp3",
-    "menu-click.mp3"
+    "rumble/sfx/yoshi-mount.mp3",
+    "rumble/sfx/faster.mp3",
+    "rumble/sfx/menu-click.mp3"
 ];
 var mainMenuMusic = [
-    "SmoothMoves.mp3",
-    "Ware.mp3"
+    "rumble/ts_music/SmoothMoves.mp3",
+    "rumble/ts_music/Ware.mp3"
 ];
 var titleSounds = [
-    "yoshi-island.mp3",
-    "WaluigiPinball.mp3",
-    "ComeOn.mp3",
-    "KingDedede.mp3",
-    "DiggaLeg.mp3"
+    "rumble/bg_music/yoshi-island.mp3",
+    "rumble/bg_music/WaluigiPinball.mp3",
+    "rumble/bg_music/ComeOn.mp3",
+    "rumble/bg_music/KingDedede.mp3",
+    "rumble/bg_music/DiggaLeg.mp3"
 ];
 
 
@@ -131,7 +131,7 @@ var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = ["neon_bg.jpg", "stopwatch.png"]
+var textureNames = []
 var textures = new Object();
 var sounds = new Object();
 
@@ -177,7 +177,7 @@ var optionsRender = {
         source: "limitFPS"
     }],
     spriteIndex: 0,
-    backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
+    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     paint: function () {
 
         /* Draw background */
@@ -340,7 +340,7 @@ var onlineRender = {
 }
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
-    backgroundSprites: importSpriteSheet("minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
+    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     spriteIndex: 0,
     lastUpdate: Date.now(),
     buttonColors: [
@@ -596,7 +596,7 @@ function checkForMobileUser() {
 var overlaySprites = new Array();
 
 function readyOverlay() {
-    overlaySprites = importSpriteSheet("overlay/overlay_XX.png", 20);
+    overlaySprites = importSpriteSheet("rumble/overlay/overlay_XX.png", 20);
 }
 
 

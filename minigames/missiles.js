@@ -116,9 +116,9 @@ var missiles = {
       this.player.velocityX += this.playerSpeed;
     }
     /* jump */
-    if ((keyDown(keys.up) || keyDown(keys.action)) && this.player.grounded) {
+    if ((keyDown(keys.up)) || (keyDown(keys.action)) && this.player.grounded) {
       this.player.velocityY = -15;
-    } else if ((keyDown(keys.up) || keyDown(keys.action)) && this.player.velocityY < 0) {
+    } else if ((keyDown(keys.up)) || (keyDown(keys.action)) && this.player.velocityY < 0) {
       this.player.velocityY -= 1.3;
     }
     /* gravity */

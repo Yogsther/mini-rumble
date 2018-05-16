@@ -4,10 +4,10 @@ var carrotCatch = {
     displayName: "Carrot Catch",
     timed: false,
     textures: [
-        "carrot.png", 
-        "rabbit_closed.png", 
-        "rabbit_open.png", 
-        "sunny_grass.png"
+        "carrot_catch/carrot.png", 
+        "carrot_catch/rabbit_closed.png", 
+        "carrot_catch/rabbit_open.png", 
+        "carrot_catch/sunny_grass.png"
     ],
     introText: "Catch!",
     init: function (dif) {
