@@ -7,9 +7,9 @@ var typeMaster = {
         "type_master/pixel_pointer.png"
     ],
     sounds: [
-        "key_0.mp3",
-        "key_2.mp3", 
-        "key_3.mp3"
+        "type_master/key_0.mp3",
+        "type_master/key_2.mp3", 
+        "type_master/key_3.mp3"
     ],
     requiresKeyboard: true,
     introText: "Type!",
