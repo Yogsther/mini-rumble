@@ -5,8 +5,8 @@ var danceDude = {
   /* Weather or not the mini-game is timebased or not. If this is false, the timer will be disabled. */
   introText: "Dance!",
   /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
-  sounds: ["muh.ogg"],
-  textures: ["dance_arrow_left.png", "dance_arrow_up.png", "dance_arrow_down.png", "dance_arrow_right.png", "dance_incoming_left.png", "dance_incoming_up.png", "dance_incoming_down.png", "dance_incoming_right.png", "dance_arrow_up_hit.png", "dance_arrow_down_hit.png", "dance_arrow_left_hit.png", "dance_arrow_right_hit.png" /* missing texture: "dance_bg.png"*/ ],
+  sounds: ["muh.ogg", "dance_hit_1.mp3", "dance_hit_2.mp3", "dance_hit_3.mp3", "dance_hit_4.mp3"],
+  textures: ["dance_arrow_left.png", "dance_arrow_up.png", "dance_arrow_down.png", "dance_arrow_right.png", "dance_incoming_left.png", "dance_incoming_up.png", "dance_incoming_down.png", "dance_incoming_right.png", "dance_arrow_up_hit.png", "dance_arrow_down_hit.png", "dance_arrow_left_hit.png", "dance_arrow_right_hit.png"],
   /* If your mini-game contains textures, enter them in here. default path is /textures. */
 
   init: function (dif) {
@@ -126,22 +126,22 @@ var danceDude = {
 
     if (this.hitLeft == true) {
       this.arrowsHit = this.arrowsHit + 1;
-      playSound("muh.ogg");
+      playSound("dance_hit_1");
       setTimeout(()=>{this.hitLeft = false;},70);
     }
     if (this.hitUp == true) {
       this.arrowsHit = this.arrowsHit + 1;
-      playSound("muh.ogg");
+      playSound("dance_hit_3");
       setTimeout(()=>{this.hitUp = false;},70);
     }
     if (this.hitDown == true) {
       this.arrowsHit = this.arrowsHit + 1;
-      playSound("muh.ogg");
+      playSound("dance_hit_4");
       setTimeout(()=>{this.hitDown = false;},70);
     }
     if (this.hitRight == true) {
       this.arrowsHit = this.arrowsHit + 1;
-      playSound("muh.ogg");
+      playSound("dance_hit_2");
       setTimeout(()=>{this.hitRight = false;},70);
     }
 

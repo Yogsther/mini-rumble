@@ -879,7 +879,7 @@ function cleared(ms) {
         if (score % 3 == 0) {
             sound = "faster";
             difficulty++;
-            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate += .05;
+            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate = (1 + (difficulty / 20));
 
             display = {
                 text: "Faster!",
