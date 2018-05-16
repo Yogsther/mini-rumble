@@ -3,7 +3,7 @@
  */
 
 /* Debug options */
-var instaStart = false; /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
+var instaStart = false; // !! BROKEN, DONT USE - TODO: FIX /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
 var initialDifficulty = 0; /* This needs to be 0 whenever a commit is made! */
 /* These are already enabled if Dev-mode is enabled! */
 var disableGameOver = false;
@@ -537,18 +537,6 @@ function getAmountOfCommits() {
 
 var version = "Beta";
 
-/* 
-    Old way of getting the current version via the README
-    function getVersion(){
-    var client = new XMLHttpRequest();
-    client.open('GET', '/README.md');
-    client.onreadystatechange = function() {
-        var s = JSON.stringify(client.responseText)
-        version = s.substr(s.indexOf("(") + 1, s.indexOf(")") -17);
-    }
-    client.send();
-} */
-
 var startedLoading = false;
 
 function loadFinalStuff() {
@@ -710,8 +698,57 @@ function checkCollision(obj1, obj2) {
      * Usage: if(checkCollision(obj1, obj2).fromLeft) // Do something
      */
 
+    if (obj1.texture === undefined) obj1.texture = obj1.sprite;
+    if (obj2.texture === undefined) obj2.texture = obj2.sprite;
+    if(obj1.texture.constructor == String) obj1.texture = t(obj1.texture)
+    if(obj2.texture.constructor == String) obj2.texture = t(obj2.texture)
 
+    if (obj1.x < obj2.x + obj2.texture.width &&
+        obj1.x + obj1.texture.width > obj2.x &&
+        obj1.y < obj2.y + obj2.texture.height &&
+        obj1.texture.height + obj1.y > obj2.y) {
+        
+        /* Collision has happened, calculate further */
 
+        var distances = []; /* Distance between center of each side point of the objects, to see from what
+        way the collision occurred. */
+        obj1.centerX = (obj1.x+obj1.texture.width/2);
+        obj1.centerY = (obj1.y+obj1.texture.height/2);
+
+        obj2.centerX = (obj2.x+obj2.texture.width/2);
+        obj2.centerY = (obj2.y+obj2.texture.height/2);
+
+        distances[0] = Math.sqrt(Math.pow(obj1.centerX - obj2.x, 2) + Math.pow(obj1.centerY - obj2.centerY, 2));
+        distances[1] = Math.sqrt(Math.pow(obj1.centerX - obj2.centerX, 2) + Math.pow(obj1.centerY - obj2.y, 2));
+        distances[2] = Math.sqrt(Math.pow(obj1.centerX - obj2.x + obj2.texture.width, 2) + Math.pow(obj1.centerY - obj2.centerY, 2));
+                        console.log(obj1.centerX - obj2.x + obj2.texture.width, obj1.centerY - obj2.centerY);
+        distances[3] = Math.sqrt(Math.pow(obj1.centerX - obj2.centerX, 2) + Math.pow(obj1.centerY - obj2.y + obj2.texture.height, 2));
+
+        var shortest = 0;
+        for(let i = 0; i < distances.length; i++){
+            if(distances[i] < distances[shortest]) shortest = i;
+        }
+
+        
+        ctx.fillStyle = "red";
+        ctx.fillRect(obj1.centerX-5, obj1.centerY-5, 10, 10); 
+        ctx.fillStyle = "blue"
+        ctx.fillRect(obj2.x - 5, obj2.centerY - 5, 10, 10);
+        ctx.fillRect(obj2.centerX -5, obj2.y -5, 10, 10);
+        ctx.fillRect(obj2.x + obj2.texture.width - 5, obj2.centerY - 5,10, 10);
+        ctx.fillRect(obj2.centerX - 5, obj2.y + obj2.texture.height - 5,10, 10);
+        //console.log(distances);
+
+        return {
+            fromLeft: shortest == 0,
+            fromTop: shortest == 1,
+            fromRight: shortest == 2,
+            fromBottom: shortest == 3
+        }
+
+    }
+
+    return false;
 }
 
 
@@ -1051,14 +1088,15 @@ function draw(sprite, x, y, scale) {
      */
     if (scale == undefined) scale = 1;
     if (sprite.constructor == String) sprite = t(sprite);
-    if(x === undefined && y === undefined){
-        x = c.width/2 - sprite.width/2;
-        y = c.height/2 - sprite.height/2;
+    if (y === undefined) {
+        if (x !== undefined) scale = x;
+        x = c.width / 2 - sprite.width / 2;
+        y = c.height / 2 - sprite.height / 2;
     }
     ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
 }
 
-function drawC(sprite, x, y, scale){
+function drawC(sprite, x, y, scale) {
     /**
      * Draw a centered texture on screen, provide a scale if you want.
      * x and y will be the center location.
@@ -1066,19 +1104,11 @@ function drawC(sprite, x, y, scale){
      */
     if (scale == undefined) scale = 1;
     if (sprite.constructor == String) sprite = t(sprite);
-    if(x === undefined && y === undefined){
-        x = c.width/2 - sprite.width/2;
-        y = c.height/2 - sprite.height/2;
+    if (x === undefined && y === undefined) {
+        x = c.width / 2 - sprite.width / 2;
+        y = c.height / 2 - sprite.height / 2;
     }
-    ctx.drawImage(sprite, x - (sprite.width/2)*scale, y - (sprite.height/2)*scale, sprite.width * scale, sprite.height * scale);
-}
-
-function checkCollision(sprite1, x1, y1, scale1, sprite2, x2, y2, scale2) {
-    if (scale1 == false) scale1 = 1;
-    if (scale2 == false) scale2 = 1;
-
-    // TODO
-
+    ctx.drawImage(sprite, x - (sprite.width / 2) * scale, y - (sprite.height / 2) * scale, sprite.width * scale, sprite.height * scale);
 }
 
 

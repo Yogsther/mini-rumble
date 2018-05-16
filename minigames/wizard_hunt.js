@@ -10,19 +10,44 @@ var wizard_hunt = {
       "wizard_hunt/wall.png",
       "wizard_hunt/wizard.png"
     ],
-
+    walls: [{x: 250, y: 250}, {x: 50, y: 50}],
     init: function(difficulty){
-     
+      this.player = {
+        x: 100,
+        y: 100,
+        speed: 5
+      }
     },
     paint: function(){
         /* Draw player */
-        draw("wizard");
+        fill("#111");
+
+        for(let i = 0; i < this.walls.length; i++){
+          draw("wall", this.walls[i].x, this.walls[i].y)
+        }
+        
+        draw("wizard", this.player.x, this.player.y);
+
+        // TODO MOVE TO LOGIC
+        for(let i = 0; i < this.walls.length; i++){
+          var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
+          var wall = {x: this.walls[i].x, y: this.walls[i].y, texture: "wall"}
+          var col = checkCollision(player, wall);
+          //console.log(col);
+        }
+
     },
     loop: function(){
+      if(keyDown(keys.right)) this.player.x+=this.player.speed;
+      if(keyDown(keys.left)) this.player.x-=this.player.speed;
+      if(keyDown(keys.up)) this.player.y-=this.player.speed;
+      if(keyDown(keys.down)) this.player.y+=this.player.speed;
+
+      
 
     },
     logic: function(key){
-
+      
     }
   }
 
