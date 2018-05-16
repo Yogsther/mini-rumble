@@ -6,7 +6,7 @@ Try it out in your browser:
 [mini.livfor.it](http://mini.livfor.it)
 
 Documentation & API: 
-[mini.livfor.it/docs](http://mini.livfor.it/docs)
+[Mini-Rumble Wiki](https://github.com/Yogsther/mini-rumble/wiki)
 
 ##### What is it?
 
