@@ -8,7 +8,6 @@ var typeMaster = {
     ],
     sounds: [
         "key_0.mp3",
-        "key_1.mp3", 
         "key_2.mp3", 
         "key_3.mp3"
     ],
