@@ -806,6 +806,7 @@ function startGame() {
     /* First start of the game, total reset. */
 
     inGame = true;
+    window.lives = 3;
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound.pause();
@@ -817,7 +818,7 @@ function startGame() {
     }
 
     showClearedScreen("Ready? Go!", "#66a0ff");
-    setTimeout(() => {
+    window.startTimout = setTimeout(() => {
         score = 0;
         window.difficulty = initialDifficulty;
         newGame();
@@ -933,12 +934,36 @@ function detectMobileInput(value) {
     document.getElementById("keyboard-controlls").value = "";
 }
 
+function endGame(){
+    try {
+        backgroundSound.pause();
+        backgroundSound.playbackRate = 1;
+        backgroundSound.currentTime = 0;
+        //setTimeout(()=> {clearInterval(slowDown);}, 250);
+    } catch (e) {}
+   
+    showingClearedScreen = false;
+    showingOpeningAnimation = false;
+    failedCalled = false;
+    miniGame = undefined;
+    disableInputs = false
+    inGame = false;
+    playingMenuMusic = false;
+    try{ clearTimeout(newGameTimout); } catch(e) {}
+    try{ clearTimeout(setClearedTimeout); } catch(e) {}
+    try{ clearTimeout(lifeTimeout); } catch(e) {}
+    try{ clearTimeout(updateTimout); } catch(e) {}
+    try{ clearTimeout(startTimout); } catch(e) {}
+    try{ clearTimeout(finalTimeout); } catch(e) {}
+}
 
 function click(code, char) {
     /**
      * Key event emiter.
      * Emits a click event to the current mini-game or scene.
      */
+    if(inGame && code == 27) endGame();
+    
     if (!ready) return;
     if (disableInputs) return;
     var key = {
@@ -970,7 +995,7 @@ function cleared(ms) {
     if (ms == undefined) ms = 0;
     globalOptions.disableGameOver = true;
 
-    setTimeout(() => {
+    window.setClearedTimeout = setTimeout(() => {
         disableKeyboard = false;
         score++;
         var sound = "yoshi-mount";
@@ -990,12 +1015,14 @@ function cleared(ms) {
         }
         playSound(sound);
         showClearedScreen(display.text, display.color);
-        setTimeout(() => {
+        window.newGameTimout = setTimeout(() => {
             newGame();
             globalOptions.disableGameOver = false;
         }, 1000);
     }, ms);
 }
+
+
 
 
 document.addEventListener("keyup", e => {
@@ -1053,8 +1080,10 @@ function drawOverlay() {
     ctx.fillText(timePrint, 591, 440)
 
     ctx.fillStyle = "#f4d942",
-        ctx.textAlign = "left";
-    ctx.fillText(score.toString(), 418, 440)
+    ctx.textAlign = "left";
+    ctx.fillText(score.toString(), 418, 440);
+    ctx.fillStyle = "#fb183b",
+    ctx.fillText(lives.toString(), 508, 440);
 }
 
 var failedCalled = false;
@@ -1066,23 +1095,40 @@ function failed(ms) {
     if (ms == undefined) ms = 0;
     disableInputs = true;
 
-    setTimeout(() => {
-        disableKeyboard = false;
-        miniGame = undefined;
-        showClearedScreen("Game Over!", "#8c2424");
-        setTimeout(() => {
-            try {
-                backgroundSound.pause();
-                backgroundSound.playbackRate = 1;
-                backgroundSound.currentTime = 0;
-                //setTimeout(()=> {clearInterval(slowDown);}, 250);
-            } catch (e) {}
-            failedCalled = false;
-            disableInputs = false
-            inGame = false;
-            playingMenuMusic = false;
-        }, 400);
-    }, ms)
+
+    if(lives == 1 /* Boi has no more lives left! */){
+        window.lifeTimeout = setTimeout(() => {
+            disableKeyboard = false;
+            miniGame = undefined;
+            showClearedScreen("Game Over!", "#8c2424");
+            window.finalTimeout = setTimeout(() => {
+                try {
+                    backgroundSound.pause();
+                    backgroundSound.playbackRate = 1;
+                    backgroundSound.currentTime = 0;
+                    //setTimeout(()=> {clearInterval(slowDown);}, 250);
+                } catch (e) {}
+                failedCalled = false;
+                disableInputs = false
+                inGame = false;
+                playingMenuMusic = false;
+            }, 400);
+        }, ms)
+    } else {
+        lives--;
+        window.liveTimout = setTimeout(() => {
+            disableKeyboard = false;
+            showClearedScreen(lives + " left!", "#e5376b");
+            window.updateTimout = setTimeout(() => {
+                disableInputs = false
+                playSound("nom_1");
+                globalOptions.disableGameOver = false;
+                failedCalled = false;
+                cleared(700);
+            }, 400);
+        }, ms)
+    }
+    
 }
 
 function draw(sprite, x, y, scale) {

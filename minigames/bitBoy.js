@@ -123,7 +123,7 @@ var bitBoy = {
         };
 
         var colliding = checkCollision(player.sprite, player.x, player.y, box.sprite, box.x, box.y);
-
+        
         if (colliding) {
             if ((this.playerPos + 90) < this.box) {
                 this.playerBlockedDown = true;

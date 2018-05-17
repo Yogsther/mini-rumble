@@ -13,7 +13,7 @@ var bounce = {
         this.dot = {
             x: canvas.width /2,
             y: 25,
-            dir: Math.floor(Math.random()*360),
+            dir: Math.floor(Math.random()*110)+200,
             vel: (((dif + 1) * 2) + 6),
             width: 20,
             length: 20,
