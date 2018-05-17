@@ -125,18 +125,18 @@ var cock_n_shoot = {
 
         /* logic - Pump Scene */
         if ((key.is(keys.left)) && (this.gameprogress == 0)) {
-            playSound("cock_lock");
+            playSound("cock_lock", 0.1);
             this.gameprogress = 1;
         }
         if ((key.is(keys.right)) && (this.gameprogress == 1) && (this.armPos.x == -120)) {
-            playSound("cock_load");
+            playSound("cock_load", 0.1);
             this.gameprogress = 2;
         }
 
         /* logic - Shoot Scene */
         if ((key.is(keys.action)) && (this.shootActive) && (this.gunFired == false)) {
             this.shootFlashPos.x = 0;
-            playSound("shoot_bang");
+            playSound("shoot_bang", 0.1);
             this.gunFired = true;
         }
     }

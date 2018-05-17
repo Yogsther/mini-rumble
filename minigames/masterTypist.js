@@ -68,7 +68,35 @@ var typeMaster = {
             "Hey",
             "Now",
             "All",
-            "Star"
+            "Star",
+            "Do",
+            "You",
+            "Have",
+            "The",
+            "Bird",
+            "Gas",
+            "Gas",
+            "Gas",
+            "Im",
+            "Gonna",
+            "Step",
+            "On",
+            "The",
+            "Gas",
+            "Oof",
+            "My",
+            "Body",
+            "Is",
+            "Ready",
+            "But",
+            "Can",
+            "You",
+            "Do",
+            "This",
+            "For",
+            "Only",
+            "399"
+
         ]
         this.wordsToType = (dif + 1);
         this.completedWords = 0;
