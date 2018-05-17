@@ -22,7 +22,12 @@ var loadingMessages = [
     "Working hard",
     "Hardly working",
     "Sorting things out",
-    "Downloading information"
+    "Downloading information",
+    "Adding RNG",
+    "Fixsung typos",
+    "Buffing the buttons",
+    "Cooking spaghetti",
+    "Building bootlegs"
 ]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 renderLoadingScreen();
@@ -40,7 +45,8 @@ var globalOptions = {
 
 // TOOD: Document this process
 var miniGames = [ // Minigames are now added to this array in their own file.
-    /* mash,
+    /*
+    mash,
     carrotCatch,
     hoverDodge,
     typeMaster,
@@ -49,8 +55,13 @@ var miniGames = [ // Minigames are now added to this array in their own file.
     cock_n_shoot,
     bounce,
     missiles,
-    wizard_hunt */
+    wizard_hunt
+    */
 ];
+var unfinishedGames = [
+    wizard_hunt,
+    mines
+]
 var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
