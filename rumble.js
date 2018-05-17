@@ -58,10 +58,6 @@ var miniGames = [ // Minigames are now added to this array in their own file.
     wizard_hunt
     */
 ];
-var unfinishedGames = [
-    wizard_hunt,
-    mines
-]
 var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
