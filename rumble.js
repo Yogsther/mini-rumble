@@ -717,40 +717,37 @@ function checkCollision(obj1, obj2) {
         
         /* Collision has happened, calculate further */
 
-        var distances = []; /* Distance between center of each side point of the objects, to see from what
-        way the collision occurred. */
-        obj1.centerX = (obj1.x+obj1.texture.width/2);
-        obj1.centerY = (obj1.y+obj1.texture.height/2);
-
-        obj2.centerX = (obj2.x+obj2.texture.width/2);
-        obj2.centerY = (obj2.y+obj2.texture.height/2);
-
-        distances[0] = Math.sqrt(Math.pow(obj1.centerX - obj2.x, 2) + Math.pow(obj1.centerY - obj2.centerY, 2));
-        distances[1] = Math.sqrt(Math.pow(obj1.centerX - obj2.centerX, 2) + Math.pow(obj1.centerY - obj2.y, 2));
-        distances[2] = Math.sqrt(Math.pow(obj1.centerX - obj2.x + obj2.texture.width, 2) + Math.pow(obj1.centerY - obj2.centerY, 2));
-                        console.log(obj1.centerX - obj2.x + obj2.texture.width, obj1.centerY - obj2.centerY);
-        distances[3] = Math.sqrt(Math.pow(obj1.centerX - obj2.centerX, 2) + Math.pow(obj1.centerY - obj2.y + obj2.texture.height, 2));
-
-        var shortest = 0;
-        for(let i = 0; i < distances.length; i++){
-            if(distances[i] < distances[shortest]) shortest = i;
+        info = {
+            fromLeft: false,
+            fromRight: false,
+            fromTop: false,
+            fromBottom: false
         }
 
-        
-        ctx.fillStyle = "red";
-        ctx.fillRect(obj1.centerX-5, obj1.centerY-5, 10, 10); 
-        ctx.fillStyle = "blue"
-        ctx.fillRect(obj2.x - 5, obj2.centerY - 5, 10, 10);
-        ctx.fillRect(obj2.centerX -5, obj2.y -5, 10, 10);
-        ctx.fillRect(obj2.x + obj2.texture.width - 5, obj2.centerY - 5,10, 10);
-        ctx.fillRect(obj2.centerX - 5, obj2.y + obj2.texture.height - 5,10, 10);
-        //console.log(distances);
+        values = new Array();
+
+        /* From left value */
+        values[0] = ((obj1.x + obj1.texture.width - obj2.x)) /* * obj1.texture.width; / Possible addition */
+        /* From right value */
+        values[1] = (obj2.x+obj2.texture.width - obj1.x);
+        /* From top values */
+        values[2] = (obj1.y + obj1.texture.height - obj2.y);
+        /* From bottom value */        
+        values[3] =  obj2.texture.height + obj2.y - obj1.y;
+
+        /**
+         * Get the shortest distance from values, the shortest one will be the direction of overlap.
+         */
+        short = 0;
+        for(let i = 0; i < values.length; i++){
+            if(values[i] < values[short]) short = i;
+        }
 
         return {
-            fromLeft: shortest == 0,
-            fromTop: shortest == 1,
-            fromRight: shortest == 2,
-            fromBottom: shortest == 3
+            fromLeft: short == 0,
+            fromRight: short == 1,
+            fromTop: short == 2,
+            fromBottom: short == 3
         }
 
     }

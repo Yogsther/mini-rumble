@@ -28,13 +28,8 @@ var wizard_hunt = {
         
         draw("wizard", this.player.x, this.player.y);
 
-        // TODO MOVE TO LOGIC
-        for(let i = 0; i < this.walls.length; i++){
-          var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
-          var wall = {x: this.walls[i].x, y: this.walls[i].y, texture: "wall"}
-          var col = checkCollision(player, wall);
-          //console.log(col);
-        }
+
+        
 
     },
     loop: function(){
@@ -43,6 +38,32 @@ var wizard_hunt = {
       if(keyDown(keys.up)) this.player.y-=this.player.speed;
       if(keyDown(keys.down)) this.player.y+=this.player.speed;
 
+      for(let i = 0; i < this.walls.length; i++){
+        /* Define objects to check collisions for */
+        var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
+        var wall = {x: this.walls[i].x, y: this.walls[i].y, texture: "wall"}
+        /* Check collision for the objects */
+        var col = checkCollision(player, wall);
+        var breakStop = 0; // To prevent freeze
+        while(col){
+          if(breakStop > 500) break; /* Prevent freeze */
+          /**
+           * Check collisions for each direction, and prevent
+           * by moving the player in the opposite direction!
+           */
+          if(col.fromTop) this.player.y--;
+          if(col.fromBottom) this.player.y++;
+          if(col.fromLeft) this.player.x--;
+          if(col.fromRight) this.player.x++; 
+
+          /* Update collisison data */
+          player.x = this.player.x;
+          player.y = this.player.y;
+          col = checkCollision(player, wall);
+
+          breakStop++; /* Count up break prevention, if this loop runs more than 500 times, it's probably stuck on a bug. */
+        }
+      }
       
 
     },
