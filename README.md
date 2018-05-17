@@ -38,7 +38,7 @@ Currently the game is avalible to play online, but will later also be avalible a
 
 #### Documentation:
 
-Check out the full documentation here: [mini.livfor.it/docs](http://mini.livfor.it/docs)
+Check out the full documentation here: [Mini-Rumble Wiki](https://github.com/Yogsther/mini-rumble/wiki)
 
 ##### Understand the version number
 
