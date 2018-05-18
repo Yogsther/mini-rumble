@@ -9,29 +9,47 @@ var wizard_hunt = {
     textures: [
       "wizard_hunt/lantern.png",
       "wizard_hunt/wall.png",
-      "wizard_hunt/wizard.png"
+      "wizard_hunt/wizard.png",
+      "wizard_hunt/light.png"
     ],
     walls: [{x: 250, y: 250}, {x: 50, y: 50}],
     init: function(difficulty){
       this.player = {
-        x: 100,
-        y: 100,
+        x: 0,
+        y: 0,
         speed: 5
+      }
+      this.camera = {
+        x: this.player.x + c.width/2,
+        y: this.player.y + c.height/2
+      }
+
+      this.lantern = {
+        x: 100,
+        y: 100
       }
     },
     paint: function(){
+      
+
         /* Draw player */
         fill("#111");
 
         for(let i = 0; i < this.walls.length; i++){
-          draw("wall", this.walls[i].x, this.walls[i].y)
+          draw("wall", this.walls[i].x - this.camera.x + c.width/2, this.walls[i].y - this.camera.y + c.height/2)
         }
         
-        draw("wizard", this.player.x, this.player.y);
+        draw("wizard", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
 
+        drawC("light", 391 , 320, .2);
 
+        if(true){
+          draw("lantern", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
+        }
+        ctx.fillStyle = "black";
+        ctx.fillRect(0, 0, c.width, 320 - t("lantern").height*1.2);
+        ctx.fillRect(0, 0, 391 - t("lantern").width * 1.2, c.height);
         
-
     },
     loop: function(){
       if(keyDown(keys.right)) this.player.x+=this.player.speed;
@@ -64,6 +82,12 @@ var wizard_hunt = {
 
           breakStop++; /* Count up break prevention, if this loop runs more than 500 times, it's probably stuck on a bug. */
         }
+      }
+
+      /* Update camera */
+      this.camera = {
+        x: this.player.x,
+        y: this.player.y
       }
       
 
