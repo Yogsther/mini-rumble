@@ -30,7 +30,7 @@ var bitBoy = {
 
 		this.livesLeft = 1;
 
-		this.playerPos = {
+		this.player = {
 			x: 200,
 			y: 200
 		};
@@ -39,15 +39,10 @@ var bitBoy = {
 		this.playerFallSpeed = 0;
 
 		//game objects
-		this.boxPos = {
-			x: 500,
-			y: 230
-		};
+		this.walls = [{x: 360, y: 200, width: 60, height: 60}, {x: 0, y: 0, width: 20, height: 480}],
 
 		this.scrollAcceleration = 0;
 		this.scrollAmount = 0;
-		this.playerBlockedRight = false;
-		this.playerBlockedDown = false;
 	},
 
 	paint: function () {
@@ -88,8 +83,10 @@ var bitBoy = {
 
 		if (this.scene == 2) {
 			draw("bitboy_bg", 0, 0);
-			draw("bitboy_player", this.playerPos.x, this.playerPos.y);
-			draw("bitboy_box", this.boxPos.x - this.scrollAmount, this.boxPos.y);
+			draw("bitboy_player", this.player.x, this.player.y);
+			//draw("bitboy_box", this.walls.x, this.walls.y);
+			ctx.fillStyle = "#fff";
+			ctx.fillRect(this.walls[i].x, this.walls[i].y, this.walls[i].width, this.walls[i].height);
 		}
 
 		//draws the "console" that bitBoy is being played on, this should always be on top of everything else
@@ -99,90 +96,10 @@ var bitBoy = {
 
 	loop: function () {
 		//scrolls the screen right/left
-		this.scrollAmount += this.scrollAcceleration;
-
-		if ((this.scene == 2) && (keyDown(keys.right))) {
-			if (this.scrollAcceleration < 10) {
-				if (this.scrollAcceleration > 0) {
-					this.scrollAcceleration += 0.5;
-				} else {
-					this.scrollAcceleration += 2;
-				}
-			}
-		} else {
-			if (this.scrollAcceleration > 0) {
-				this.scrollAcceleration -= 0.5;
+		if (this.scene == 2) {
+			if (keyDown(keys.right)) {
 			}
 		}
-
-		/*
-		var player = {
-		    x: 60,
-		    y: 90,
-		    sprite: t("bitboy_player")
-		};
-
-		var box = {
-		    x: 60, 
-		    y: 60, 
-		    sprite: t("bitboy_box")
-		};
-
-		var colliding = checkCollision(player.sprite, player.x, player.y, box.sprite, box.x, box.y);
-        
-		if (colliding) {
-		    if ((this.playerPos + 90) < this.box) {
-		        this.playerBlockedDown = true;
-		        this.playerBlockedRight = false;
-		    } else {
-		        this.playerBlockedDown = false;
-		        this.playerBlockedRight = true;
-		    }
-		}
-		*/
-
-		if ((this.scene == 2) && (keyDown(keys.left))) {
-			if (this.scrollAcceleration > -10) {
-				if (this.scrollAcceleration > 0) {
-					this.scrollAcceleration -= 0.5;
-				} else {
-					this.scrollAcceleration -= 2;
-				}
-			}
-		} else {
-			if (this.scrollAcceleration < 0) {
-				this.scrollAcceleration += 1;
-			}
-		}
-
-		//early collision detection
-		if (((this.playerPos.x + 60) >= (this.boxPos.x - this.scrollAmount) && ((this.playerPos.y + 90) > this.boxPos.y))) {
-			this.playerBlockedRight = true;
-		} else {
-			this.playerBlockedRight = false;
-		}
-
-		if ((this.playerPos.y + 100) >= (this.boxPos.y) && ((this.playerPos.x + 60) > this.boxPos.x - this.scrollAmount)) {
-			this.playerPos.y = 140;
-			this.playerBlockedDown = true;
-		} else {
-			this.playerBlockedDown = false;
-		}
-
-		this.playerPos.y -= this.playerJumpSpeed;
-
-		if (this.playerJumpSpeed > 0) {
-			this.playerJumpSpeed -= 0.5;
-		}
-
-		this.playerFallSpeed = (16 - this.playerJumpSpeed);
-		if (this.playerBlockedDown == false) {
-			this.playerPos.y += this.playerFallSpeed;
-		}
-		if (this.playerPos.y > 200) {
-			this.playerPos.y = 200;
-		}
-
 	},
 
 	logic: function (key) {
@@ -190,10 +107,6 @@ var bitBoy = {
 		if ((this.scene == 0) && (this.tsProgress >= 90) && (key.is(keys.action))) {
 			this.scene = 1;
 		}
-		if ((this.playerPos.y == 200) && (key.is(keys.action)) && (this.scene == 2) || (this.playerBlockedDown) && (key.is(keys.action)) && (this.scene == 2)) {
-			this.playerJumpSpeed = 16;
-		}
-
 	}
 }
 
