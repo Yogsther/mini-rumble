@@ -814,7 +814,7 @@ function startGame() {
         window.lives = 3;
     } else {
         window.lives = 1;
-        initialDifficulty = 5;
+        difficulty = 3;
     }
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
