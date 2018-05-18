@@ -73,7 +73,7 @@ var wizard_hunt = {
           if(col.fromRight) this.player.x++; 
 
           /* Update collisison data */
-          player.x = this.player.x;
+          player.x = this.player.x 
           player.y = this.player.y;
           col = checkCollision(player, wall);
 
@@ -83,8 +83,8 @@ var wizard_hunt = {
 
       /* Update camera */
       this.camera = {
-        x: this.player.x,
-        y: this.player.y
+        x: this.player.x + t("wizard").width/2,
+        y: this.player.y + t("wizard").height/2
       }
       
 
