@@ -809,7 +809,7 @@ function keyDown(keys) {
 
 function startGame() {
     /* First start of the game, total reset. */
-
+    window.difficulty = initialDifficulty;
     inGame = true;
     if (!globalOptions.hardcoreMode) {
         window.lives = 3;
@@ -830,7 +830,6 @@ function startGame() {
     showClearedScreen("Ready? Go!", "#66a0ff");
     window.startTimout = setTimeout(() => {
         score = 0;
-        window.difficulty = initialDifficulty;
         newGame();
     }, 1000)
 }
@@ -1111,6 +1110,9 @@ function failed(ms) {
             disableKeyboard = false;
             miniGame = undefined;
             showClearedScreen("Game Over!", "#8c2424");
+            s("hurt").playbackRate = .2;
+            s("hurt").play();
+            s("hurt").onended = () => {s("hurt").playbackRate = 1};
             window.finalTimeout = setTimeout(() => {
                 try {
                     backgroundSound.pause();
