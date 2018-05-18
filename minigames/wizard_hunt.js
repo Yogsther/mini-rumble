@@ -5,6 +5,7 @@ var wizard_hunt = {
     timedWin: false, /* Weather or not the mini-game should be won when the time runs out. */
     introText: "Find the orb!", 
     /* This is the text that will displayed during the game intro, this should be a short explaination of what the objective in the mini-game is.*/
+    wip: true,
     textures: [
       "wizard_hunt/lantern.png",
       "wizard_hunt/wall.png",

@@ -66,7 +66,8 @@ var playingMenuMusic = false;
 var soundEffects = [
     "rumble/sfx/yoshi-mount.mp3",
     "rumble/sfx/faster.mp3",
-    "rumble/sfx/menu-click.mp3"
+    "rumble/sfx/menu-click.mp3",
+    "rumble/sfx/hurt.mp3"
 ];
 var mainMenuMusic = [
     "rumble/ts_music/SmoothMoves.mp3",
@@ -830,7 +831,7 @@ function newGame() {
     var miniGamesArray = miniGames.concat(); // Copy array
 
     for (let i = 0; i < miniGamesArray.length; i++) {
-        if (eval("globalOptions." + miniGamesArray[i].varName)) {
+        if (eval("globalOptions." + miniGamesArray[i].varName) || (miniGamesArray[i].wip && !globalOptions.devTools)) {
             miniGamesArray.splice(i, 1);
             i--;
         }
@@ -1121,7 +1122,7 @@ function failed(ms) {
             showClearedScreen(lives + " left!", "#e5376b");
             window.updateTimout = setTimeout(() => {
                 disableInputs = false
-                playSound("nom_1");
+                playSound("hurt");
                 globalOptions.disableGameOver = false;
                 failedCalled = false;
                 cleared(700);

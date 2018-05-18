@@ -2,6 +2,7 @@ var mines = {
   varName: "mines",
   displayName: "Mines",
   timed: false,
+  wip: true,
   timedWin: false,
   introText: "Sweep!", 
   textures: [

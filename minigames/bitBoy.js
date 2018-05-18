@@ -3,6 +3,7 @@ var bitBoy = {
     varName: "bitBoy",
     displayName: "Bit Boy",
     timed: false,
+    wip: true,
     timedWin: false,
     introText: "It's a me!", 
     textures: [
