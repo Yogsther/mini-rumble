@@ -33,22 +33,22 @@ var danceDude = {
     // Decides the starting position of the incoming arrows
     this.incomingLeftPos = {
       x: 20,
-      y: Math.floor((Math.random() * 64) + 48) * 10
+      y: (Math.floor(Math.random() * 16) * 25) + 480
     };
     this.incomingUpPos = {
       x: 120,
-      y: Math.floor((Math.random() * 64) + 48) * 10
+      y: (Math.floor(Math.random() * 16) * 25) + 480
     };
     this.incomingDownPos = {
       x: 220,
-      y: Math.floor((Math.random() * 64) + 48) * 10
+      y: (Math.floor(Math.random() * 16) * 25) + 480
     };
     this.incomingRightPos = {
       x: 320,
-      y: Math.floor((Math.random() * 64) + 48) * 10
+      y: (Math.floor(Math.random() * 16) * 25) + 480
     };
 
-    this.hitPos = Math.floor((Math.random() * 64) + 48) * 10;
+    this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
 
     // Hit Status
     this.hitLeft = false;
@@ -98,8 +98,8 @@ var danceDude = {
     }
   },
   loop: function () {
-    /* Loop function, called every frame before paint() */
-    this.hitPos = Math.floor((Math.random() * 64) + 32) * 10;
+    console.log(this.hitPos);
+    this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
 
     // Ends in a fail on missing one arrow
     if (this.incomingLeftPos.y < -10) failed();
@@ -122,22 +122,22 @@ var danceDude = {
     if ((key.is(keys.down)) && (this.incomingDownPos.y > 70) && (this.danceStart)) failed();
     if ((key.is(keys.right)) && (this.incomingRightPos.y > 70) && (this.danceStart)) failed();
 
-    if ((key.is(keys.left)) & (this.incomingLeftPos.y < 70) & (this.incomingLeftPos.y > -10)) {
-      this.incomingLeftPos.y += this.hitPos;
+    if ((key.is(keys.left)) && (this.incomingLeftPos.y < 70)) {
+      this.incomingLeftPos.y = this.hitPos;
       this.hitLeft = true;
     }
 
-    if ((key.is(keys.up)) & (this.incomingUpPos.y < 70) & (this.incomingLeftPos.y > -10)) {
+    if ((key.is(keys.up)) && (this.incomingUpPos.y < 70)) {
       this.incomingUpPos.y += this.hitPos;
       this.hitUp = true;
     }
 
-    if ((key.is(keys.down)) & (this.incomingDownPos.y < 70) & (this.incomingLeftPos.y > -10)) {
+    if ((key.is(keys.down)) && (this.incomingDownPos.y < 70)) {
       this.incomingDownPos.y += this.hitPos;
       this.hitDown = true;
     }
 
-    if ((key.is(keys.right)) & (this.incomingRightPos.y < 70) & (this.incomingLeftPos.y > -10)) {
+    if ((key.is(keys.right)) && (this.incomingRightPos.y < 70)) {
       this.incomingRightPos.y += this.hitPos;
       this.hitRight = true;
     }
@@ -171,7 +171,7 @@ var danceDude = {
       }, 70);
     }
 
-    if ((this.arrowsHit > this.hitGoal) & (this.danceStart == true)) {
+    if ((this.arrowsHit > this.hitGoal) && (this.danceStart == true)) {
       cleared();
       this.danceStart = false;
     }
