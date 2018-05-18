@@ -41,14 +41,11 @@ var wizard_hunt = {
         
         draw("wizard", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
 
-        drawC("light", 391 , 320, .2);
+        drawC("light", 391 , 320, 1);
 
         if(true){
           draw("lantern", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
         }
-        ctx.fillStyle = "black";
-        ctx.fillRect(0, 0, c.width, 320 - t("lantern").height*1.2);
-        ctx.fillRect(0, 0, 391 - t("lantern").width * 1.2, c.height);
         
     },
     loop: function(){
