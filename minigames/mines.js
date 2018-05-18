@@ -20,11 +20,9 @@ var mines = {
     "mines/mines_flag.png",
     "mines/mines_selector.png"
   ],
-  /*
   sounds: [
 
   ],
-  */
   init: function(difficulty) {
     
     this.panel = t("mines_panel");

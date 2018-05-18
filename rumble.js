@@ -36,6 +36,7 @@ renderLoadingScreen();
 var warningSigns = new Array();
 
 var globalOptions = {
+    hardcoreMode: false,
     displayFPS: false,
     devTools: false,
     disableSound: false,
@@ -380,6 +381,9 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
+        text: "Enable hardcore mode",
+        source: "hardcoreMode"
+    }, {
         text: "Display FPS",
         source: "displayFPS"
     }, {
@@ -807,7 +811,12 @@ function startGame() {
     /* First start of the game, total reset. */
 
     inGame = true;
-    window.lives = 3;
+    if (!globalOptions.hardcoreMode) {
+        window.lives = 3;
+    } else {
+        window.lives = 1;
+        difficulty = 3;
+    }
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound.pause();
