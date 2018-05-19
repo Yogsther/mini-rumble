@@ -539,7 +539,7 @@ function getAmountOfCommits() {
 
                     if (message.indexOf("v.") != -1) {
                         version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
-                        console.log('%c'+ "Mini-Rumble " + version + " 👌", 'background: #111; color: #f4425c; font-size:15px;font-family:Ubuntu;');
+                        console.log('%c'+ "Mini-Rumble " + version + " 👌", 'color: #f4425c; font-size:15px;font-family:Ubuntu;');
                         finalVersion = true;
                     }
                     i++;
