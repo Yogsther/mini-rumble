@@ -14,6 +14,7 @@ var logCoordinates = false;
 const canvas = c = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 
+/* All overlay textures, can be multible sprites to form a spritesheet. */
 
 var loadingScreenDotJump = 0;
 var loadingMessages = [
@@ -139,7 +140,7 @@ var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = []
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -223,7 +224,6 @@ var onlineRender = {
  */
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
-    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     spriteIndex: 0,
     lastUpdate: Date.now(),
     buttonColors: [
@@ -255,8 +255,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         }
 
         /* Draw background */
-        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
+        fill("#111")
         this.spriteIndex++;
+        // Draw logo
+        drawC("rumble_logo", c.width/2, 150  + (Math.sin(this.spriteIndex*.08)*8), .8);
+        drawC("mini_logo", c.width/2, 60 + (Math.sin((this.spriteIndex+10)*.08)*5), .8);
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
@@ -557,8 +560,6 @@ function loadFinalStuff() {
     startedLoading = true;
     importTextures();
     importSounds();
-    //loadControlpanel();
-    readyOverlay();
     ready = true;
     instaLoad();
 }
@@ -610,11 +611,6 @@ function checkForMobileUser() {
     }
 }
 
-var overlaySprites = new Array();
-
-function readyOverlay() {
-    overlaySprites = importSpriteSheet("rumble/overlay/overlay_XX.png", 20);
-}
 
 
 function t(name) {
@@ -671,6 +667,8 @@ function importTextures() {
     textureNames.forEach(texture => {
         importTexture(texture);
     });
+
+    window.overlaySprites = [importSpriteSheet("rumble/overlay/overlay_XX.png", 20), importTexture("rumble/overlay_mystery.png"), importTexture("rumble/overlay_turbo.png")];
 
 }
 
@@ -812,6 +810,7 @@ function keyDown(keys) {
 function startGame() {
     /* First start of the game, total reset. */
     window.difficulty = initialDifficulty;
+    window.overlaySprite = overlaySprites[Math.floor(Math.random()*overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
         window.lives = 3;
@@ -1081,7 +1080,12 @@ function drawOverlay() {
 
     }
     overlayProgress += 0.3; // Speed
-    ctx.drawImage(overlaySprites[Math.round(overlayProgress) % overlaySprites.length], 0, 0);
+    if(overlaySprite.constructor == Array){
+        ctx.drawImage(overlaySprite[Math.round(overlayProgress) % overlaySprite.length], 0, 0);
+    } else {
+        ctx.drawImage(overlaySprite, 0, 0);
+    }
+    
 
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
