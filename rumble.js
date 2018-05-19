@@ -547,9 +547,7 @@ function getAmountOfCommits() {
             })
         } catch (e) {}
     }
-
     client.send();
-    
 }
 
 var version = "Beta";
@@ -607,6 +605,7 @@ function checkForMobileUser() {
             '<button class="dpad" id="down" onclick="buttonClick(this.id)">▼</button> ' +
             '</div><div id="zyButtons"><button id="z" onclick="buttonClick(this.id)">Z</button> <button id="x" onclick="buttonClick(this.id)">X</button></div>';
         document.body.style.background = "black";
+        canvas.style.top = "0px";
         onMobile = true;
     }
 }
