@@ -1,6 +1,6 @@
 # Mini Rumble  (Beta)
 
-![Banner](https://i.imgur.com/oiMil2D.png)
+![Banner](https://i.imgur.com/6UlyyTk.png)
 
 Try it out in your browser:
 [mini.livfor.it](http://mini.livfor.it)
