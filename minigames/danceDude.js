@@ -32,19 +32,19 @@ var danceDude = {
 		// Decides the starting position of the incoming arrows
 		this.incomingLeftPos = {
 			x: 55,
-			y: (Math.floor(Math.random() * 16) * 25) + 480
+			y: (Math.floor(Math.random() * 7) * 70) + 480
 		};
 		this.incomingUpPos = {
 			x: 155,
-			y: (Math.floor(Math.random() * 16) * 25) + 480
+			y: (Math.floor(Math.random() * 7) * 70) + 480
 		};
 		this.incomingDownPos = {
 			x: 255,
-			y: (Math.floor(Math.random() * 16) * 25) + 480
+			y: (Math.floor(Math.random() * 7) * 70) + 480
 		};
 		this.incomingRightPos = {
 			x: 355,
-			y: (Math.floor(Math.random() * 16) * 25) + 480
+			y: (Math.floor(Math.random() * 7) * 70) + 480
 		};
 
 		this.arrowScaleL = 1;
@@ -52,7 +52,7 @@ var danceDude = {
 		this.arrowScaleD = 1;
 		this.arrowScaleR = 1;
 
-		this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
+		this.hitPos = (Math.floor(Math.random() * 7) * 70) + 480;
 
 		// Hit Status
 		this.hitLeft = false;
@@ -101,7 +101,7 @@ var danceDude = {
 	},
 	loop: function () {
 		console.log(this.hitPos);
-		this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
+		this.hitPos = (Math.floor(Math.random() * 7) * 70) + 480;
 
 		// Ends in a fail on missing one arrow
 		if (this.incomingLeftPos.y < 20) failed();
