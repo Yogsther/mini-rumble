@@ -815,7 +815,7 @@ function startGame() {
         window.lives = 3;
     } else {
         window.lives = 1;
-        difficulty = 3;
+        //difficulty = 3;
     }
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
@@ -1012,7 +1012,7 @@ function cleared(ms) {
             text: "Cleared!",
             color: "#38ed4a"
         }
-        if (score % 3 == 0) {
+        if ((score % 3 == 0) || (globalOptions.hardcoreMode)) {
             sound = "faster";
             difficulty++;
             if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate = (1 + (difficulty / 20));

@@ -31,21 +31,26 @@ var danceDude = {
 
 		// Decides the starting position of the incoming arrows
 		this.incomingLeftPos = {
-			x: 20,
+			x: 55,
 			y: (Math.floor(Math.random() * 16) * 25) + 480
 		};
 		this.incomingUpPos = {
-			x: 120,
+			x: 155,
 			y: (Math.floor(Math.random() * 16) * 25) + 480
 		};
 		this.incomingDownPos = {
-			x: 220,
+			x: 255,
 			y: (Math.floor(Math.random() * 16) * 25) + 480
 		};
 		this.incomingRightPos = {
-			x: 320,
+			x: 355,
 			y: (Math.floor(Math.random() * 16) * 25) + 480
 		};
+
+		this.arrowScaleL = 1;
+		this.arrowScaleU = 1;
+		this.arrowScaleD = 1;
+		this.arrowScaleR = 1;
 
 		this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
 
@@ -69,16 +74,16 @@ var danceDude = {
 		draw(this.sprites[this.progress % this.sprites.length], 0, 0);
 
 		// Draw "slot arrows"
-		draw("dance_arrow_left", 0, 10);
-		draw("dance_arrow_up", 0, 10);
-		draw("dance_arrow_down", 0, 10);
-		draw("dance_arrow_right", 0, 10);
+		drawC("dance_arrow_left", 55, 75, this.arrowScaleL);
+		drawC("dance_arrow_up", 155, 75, this.arrowScaleU);
+		drawC("dance_arrow_down", 255, 75, this.arrowScaleD);
+		drawC("dance_arrow_right", 355, 75, this.arrowScaleR);
 
 		// Draw incoming arrows
-		draw("dance_incoming_left", this.incomingLeftPos.x, this.incomingLeftPos.y);
-		draw("dance_incoming_up", this.incomingUpPos.x, this.incomingUpPos.y);
-		draw("dance_incoming_down", this.incomingDownPos.x, this.incomingDownPos.y);
-		draw("dance_incoming_right", this.incomingRightPos.x, this.incomingRightPos.y);
+		drawC("dance_incoming_left", this.incomingLeftPos.x, this.incomingLeftPos.y, this.arrowScaleL);
+		drawC("dance_incoming_up", this.incomingUpPos.x, this.incomingUpPos.y, this.arrowScaleU);
+		drawC("dance_incoming_down", this.incomingDownPos.x, this.incomingDownPos.y, this.arrowScaleD);
+		drawC("dance_incoming_right", this.incomingRightPos.x, this.incomingRightPos.y, this.arrowScaleR);
 
 		// Draw hit animations
 		if (this.hitUp) {
@@ -99,10 +104,10 @@ var danceDude = {
 		this.hitPos = (Math.floor(Math.random() * 16) * 25) + 480;
 
 		// Ends in a fail on missing one arrow
-		if (this.incomingLeftPos.y < -10) failed();
-		if (this.incomingUpPos.y < -10) failed();
-		if (this.incomingDownPos.y < -10) failed();
-		if (this.incomingRightPos.y < -10) failed();
+		if (this.incomingLeftPos.y < 20) failed();
+		if (this.incomingUpPos.y < 20) failed();
+		if (this.incomingDownPos.y < 20) failed();
+		if (this.incomingRightPos.y < 20) failed();
 
 		if (this.danceStart == true) {
 			this.incomingLeftPos.y -= this.incomingSpeed;
@@ -110,70 +115,106 @@ var danceDude = {
 			this.incomingDownPos.y -= this.incomingSpeed;
 			this.incomingRightPos.y -= this.incomingSpeed;
 		}
+		if (this.incomingLeftPos.y < 95) {
+			if (this.arrowScaleL <= 1.03) {
+				this.arrowScaleL += 0.03;
+			}
+		} else {
+			if (this.arrowScaleL >= 1.05) {
+				this.arrowScaleL -= 0.05;
+			}
+		}
+		if (this.incomingUpPos.y < 95) {
+			if (this.arrowScaleU <= 1.05) {
+				this.arrowScaleU += 0.05;
+			}
+		} else {
+			if (this.arrowScaleU >= 1.05) {
+				this.arrowScaleU -= 0.05;
+			}
+		}
+		if (this.incomingDownPos.y < 95) {
+			if (this.arrowScaleD <= 1.05) {
+				this.arrowScaleD += 0.05;
+			}
+		} else {
+			if (this.arrowScaleD >= 1.05) {
+				this.arrowScaleD -= 0.05;
+			}
+		}
+		if (this.incomingRightPos.y < 95) {
+			if (this.arrowScaleR <= 1.05) {
+				this.arrowScaleR += 0.05;
+			}
+		} else {
+			if (this.arrowScaleR >= 1.05) {
+				this.arrowScaleR -= 0.05;
+			}
+		}
 	},
 	logic: function (key) {
 		/* Logic is called on a keypress, you can use this for key initiated actions. */
 		// Ends game with a fail on pressing a key too early
-		if ((key.is(keys.left)) && (this.incomingLeftPos.y > 70) && (this.danceStart)) {
+		if ((key.is(keys.left)) && (this.incomingLeftPos.y > 110) && (this.danceStart)) {
 			failed();
 		}
-		if ((key.is(keys.up)) && (this.incomingUpPos.y > 70) && (this.danceStart)) {
+		if ((key.is(keys.up)) && (this.incomingUpPos.y > 110) && (this.danceStart)) {
 			failed();
 		}
-		if ((key.is(keys.down)) && (this.incomingDownPos.y > 70) && (this.danceStart)) {
+		if ((key.is(keys.down)) && (this.incomingDownPos.y > 110) && (this.danceStart)) {
 			failed();
 		}
-		if ((key.is(keys.right)) && (this.incomingRightPos.y > 70) && (this.danceStart)) {
+		if ((key.is(keys.right)) && (this.incomingRightPos.y > 110) && (this.danceStart)) {
 			failed();
 		};
 
-		if ((key.is(keys.left)) && (this.incomingLeftPos.y < 70)) {
+		if ((key.is(keys.left)) && (this.incomingLeftPos.y < 110)) {
 			this.incomingLeftPos.y = this.hitPos;
 			this.hitLeft = true;
 		}
-		if ((key.is(keys.up)) && (this.incomingUpPos.y < 70)) {
+		if ((key.is(keys.up)) && (this.incomingUpPos.y < 110)) {
 			this.incomingUpPos.y += this.hitPos;
 			this.hitUp = true;
 		}
-		if ((key.is(keys.down)) && (this.incomingDownPos.y < 70)) {
+		if ((key.is(keys.down)) && (this.incomingDownPos.y < 110)) {
 			this.incomingDownPos.y += this.hitPos;
 			this.hitDown = true;
 		}
-		if ((key.is(keys.right)) && (this.incomingRightPos.y < 70)) {
+		if ((key.is(keys.right)) && (this.incomingRightPos.y < 110)) {
 			this.incomingRightPos.y += this.hitPos;
 			this.hitRight = true;
 		}
 
 		if (this.hitLeft == true) {
-			this.arrowsHit = this.arrowsHit + 1;
+			this.arrowsHit += 1;
 			playSound("dance_hit_1");
 			setTimeout(() => {
 				this.hitLeft = false;
 			}, 70);
 		}
 		if (this.hitUp == true) {
-			this.arrowsHit = this.arrowsHit + 1;
+			this.arrowsHit += 1;
 			playSound("dance_hit_3");
 			setTimeout(() => {
 				this.hitUp = false;
 			}, 70);
 		}
 		if (this.hitDown == true) {
-			this.arrowsHit = this.arrowsHit + 1;
+			this.arrowsHit += 1;
 			playSound("dance_hit_4");
 			setTimeout(() => {
 				this.hitDown = false;
 			}, 70);
 		}
 		if (this.hitRight == true) {
-			this.arrowsHit = this.arrowsHit + 1;
+			this.arrowsHit += 1;
 			playSound("dance_hit_2");
 			setTimeout(() => {
 				this.hitRight = false;
 			}, 70);
 		}
 
-		if ((this.arrowsHit > this.hitGoal) && (this.danceStart == true)) {
+		if ((this.arrowsHit >= this.hitGoal) && (this.danceStart == true)) {
 			cleared();
 			this.danceStart = false;
 		}
