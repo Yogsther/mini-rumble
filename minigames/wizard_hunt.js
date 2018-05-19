@@ -8,16 +8,25 @@ var wizard_hunt = {
     wip: true,
     textures: [
       "wizard_hunt/lantern.png",
-      "wizard_hunt/wall.png",
+      "wizard_hunt/ground.png",
       "wizard_hunt/wizard.png",
-      "wizard_hunt/light.png"
+      "wizard_hunt/wizard_flipped.png",
+      "wizard_hunt/wizard_walk_0.png",
+      "wizard_hunt/wizard_walk_1.png",
+      "wizard_hunt/wizard_walk_0_flipped.png",
+      "wizard_hunt/wizard_walk_1_flipped.png",
+      "wizard_hunt/light.png",
+      "wizard_hunt/compass.png",
+      "wizard_hunt/pointer.png",
+      "wizard_hunt/orb_01.png"
     ],
-    walls: [{x: 250, y: 250}, {x: 50, y: 50}],
+    objects: [],
     init: function(difficulty){
       this.player = {
         x: 0,
         y: 0,
-        speed: 5
+        speed: 5,
+        flip: false
       }
       this.camera = {
         x: this.player.x + c.width/2,
@@ -25,41 +34,111 @@ var wizard_hunt = {
       }
 
       this.lantern = {
-        x: 100,
-        y: 100
+        x: 0,
+        y: -100,
+        picked: false,
+        texture: t("lantern")
+      }
+
+      this.pastLocations = [];
+      this.walkCycle = 0;
+
+      this.map = new Array();
+      for(let i = 0; i < 100; i++){
+        this.map[i] = Math.floor(Math.random() * 4); 
+      }
+      
+      this.pointerRotation = 0;
+      this.removeTimer = 0;
+      this.orb = {
+        x: 300,
+        y: 300,
+        texture: t("orb_01")
       }
     },
     paint: function(){
-      
 
-        /* Draw player */
-        fill("#111");
+        this.walkCycle+=.1;
 
-        for(let i = 0; i < this.walls.length; i++){
-          draw("wall", this.walls[i].x - this.camera.x + c.width/2, this.walls[i].y - this.camera.y + c.height/2)
+        /* Dash animation */
+        if(this.removeTimer > 0) this.removeTimer--;
+        if(this.removeTimer == 0 && this.pastLocations.length > 0){
+          this.pastLocations.splice(0, 1);
+          this.removeTimer+=2;
         }
         
-        draw("wizard", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
-
-        drawC("light", 391 , 320, 1);
-
-        if(true){
-          draw("lantern", this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
+      
+        fill("#111")
+        // Draw ground
+        // Tile width = 150px
+        for(let i = 0; i < 200; i++){
+          let x = i % 20;
+          let y = (i - x) / 20;
+          draw("ground", x*150 - this.camera.x + c.width/2, y * 150 - this.camera.y + c.height/2, 1, this.map[i]*90)
         }
+
+        for(let i = 0; i < this.objects.length; i++){
+          draw("object", this.objects[i].x - this.camera.x + c.width/2, this.objects[i].y - this.camera.y + c.height/2)
+        }
+    
+        // Draw orb
+        draw(this.orb.texture, this.orb.x - this.camera.x + c.width/2, this.orb.y - this.camera.y + c.height/2);
+        for(let i = 0; i < this.pastLocations.length; i++){
+          opcaity = i / this.pastLocations.length
+          draw(this.pastLocations[i].sprite, this.pastLocations[i].x - this.camera.x + c.width/2, this.pastLocations[i].y - this.camera.y + c.height/2, 1, 0, opcaity);
+        }
+        /* Draw player */
+        sprite = "wizard";
+        if(keyDown(keys.up) || keyDown(keys.down) || keyDown(keys.left) ||keyDown(keys.right)){
+          sprite+="_walk_" + Math.floor(this.walkCycle%2);
+        }
+        if(this.player.flip) sprite+="_flipped";
+
+        if(this.player.speed > 5){
+          this.pastLocations.push({x: this.player.x, y: this.player.y, sprite: sprite});
+        }
+        draw(sprite, this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
+        /* Draw light pattern */
+        drawC("light", 67 + this.lantern.x - this.camera.x + c.width/2, 84 + this.lantern.y - this.camera.y + c.height/2, 2);
+        /* Draw lantern sprite */
+        lanternFlip = 60;
+        lanternOffsetY = 0;
+        if(this.lantern.picked) lanternOffsetY = 78;
+        if(!this.lantern.picked) lanternFlip = 0;
+        if(this.player.flip && this.lantern.picked) lanternFlip = -6; // Correct lantern position if flipped
+        draw("lantern", lanternFlip + this.lantern.x - this.camera.x + c.width/2, lanternOffsetY + this.lantern.y - this.camera.y + c.height/2);
+        
+        /* Draw compass */
+        draw("compass", 20, (c.height - t("compass").height) - 20);
+        draw("pointer", 20, (c.height - t("compass").height) - 20, 1, this.pointerRotation - 90);
+        
         
     },
     loop: function(){
-      if(keyDown(keys.right)) this.player.x+=this.player.speed;
-      if(keyDown(keys.left)) this.player.x-=this.player.speed;
+      if(keyDown(keys.right)){
+        this.player.x+=this.player.speed;
+        this.player.flip = false;
+      }
+      if(keyDown(keys.left)){
+        this.player.x-=this.player.speed;
+        this.player.flip = true;
+      }
+
       if(keyDown(keys.up)) this.player.y-=this.player.speed;
       if(keyDown(keys.down)) this.player.y+=this.player.speed;
 
-      for(let i = 0; i < this.walls.length; i++){
+      /* Calculate angle for compass */
+      distanceX = this.orb.x - this.player.x;
+      distanceY = this.orb.y - this.player.y;
+      this.pointerRotation = Math.atan(distanceY / distanceX) * (180 / Math.PI);
+      if(distanceX >= 0) this.pointerRotation += 180;
+
+      for(let i = 0; i < this.objects.length; i++){
         /* Define objects to check collisions for */
         var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
-        var wall = {x: this.walls[i].x, y: this.walls[i].y, texture: "wall"}
+        var object = {x: this.objects[i].x, y: this.objects[i].y, texture: "object"}
         /* Check collision for the objects */
-        var col = checkCollision(player, wall);
+        var col = checkCollision(player, object);
         var breakStop = 0; // To prevent freeze
         while(col){
           if(breakStop > 500) break; /* Prevent freeze */
@@ -75,7 +154,7 @@ var wizard_hunt = {
           /* Update collisison data */
           player.x = this.player.x 
           player.y = this.player.y;
-          col = checkCollision(player, wall);
+          col = checkCollision(player, object);
 
           breakStop++; /* Count up break prevention, if this loop runs more than 500 times, it's probably stuck on a bug. */
         }
@@ -86,11 +165,27 @@ var wizard_hunt = {
         x: this.player.x + t("wizard").width/2,
         y: this.player.y + t("wizard").height/2
       }
-      
-
+      if(this.lantern.picked){
+        this.lantern.x = this.player.x;
+        this.lantern.y = this.player.y;
+      } else {
+        var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
+        var col = checkCollision(player, this.lantern);
+        console.log(col)
+        if(col){
+          this.lantern.picked = true;
+          this.lantern.x = this.player.x;
+          this.lantern.y = this.player.y;
+        }
+      }
     },
     logic: function(key){
-      
+      //log(key.code);
+      if(key.code == 67) log("Player pos: " + this.player.x + " : " + this.player.y)
+      if(key.is(keys.action)){
+        this.player.speed = 15;
+        setTimeout(() => {this.player.speed = 5}, 200);
+      }
     }
   }
 

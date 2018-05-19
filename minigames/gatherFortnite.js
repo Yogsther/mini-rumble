@@ -55,16 +55,10 @@ var gatherFortnite = {
             // Draw materials
             this.materials.forEach(material => {
                 if(!material.collected){
-                ctx.drawImage(t("wood"), material.x, material.y, t("wood").width * this.woodScale, t("wood").height * this.woodScale);
+                draw(t("wood"), material.x, material.y, this.woodScale);
             }
             })
-    
-            // Draw player
-            var playerDrawPoint = this.getDrawPoint(this.player.x, this.player.y, this.player.sprite);
-    
-    
-            ctx.save();
-            ctx.translate(playerDrawPoint.x, playerDrawPoint.y);
+
             var desiredDirection = (90 * this.player.direction);
             for(let i = 0; i < 6; i++){
                 var distance = (desiredDirection - (this.player.superDirection % 360))
@@ -75,12 +69,9 @@ var gatherFortnite = {
     
                 if(Math.abs(distance) == 180) this.player.superDirection++; // Correct if user is stuck at 180 turn    
             }
-    
-            ctx.rotate(this.player.superDirection * Math.PI / 180);
-            ctx.translate(-this.player.x, -this.player.y);
-            ctx.drawImage(this.player.sprite, playerDrawPoint.x, playerDrawPoint.y, this.player.sprite.width * this.player.scale, this.player.sprite.height * this.player.scale);
-            ctx.restore();
-        } else if(this.drawScene = 1){
+
+            draw(this.player.sprite, this.player.x, this.player.y, this.player.scale, this.player.superDirection)
+        } else if(this.drawScene == 1){
             // Draw finish scene
             if(this.finalScene.timer > 25){
                 this.finalScene.timer = 0;

@@ -536,6 +536,7 @@ function getAmountOfCommits() {
 
                     if (message.indexOf("v.") != -1) {
                         version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
+                        console.log('%c'+ "Mini-Rumble " + version + " 👌", 'background: #111; color: #f4425c; font-size:15px;font-family:Ubuntu;');
                         finalVersion = true;
                     }
                     i++;
@@ -545,6 +546,7 @@ function getAmountOfCommits() {
     }
 
     client.send();
+    
 }
 
 var version = "Beta";
@@ -869,7 +871,7 @@ canvas.addEventListener("click", e => {
     var x = Math.round(e.clientX - rect.left);
     var y = Math.round(e.clientY - rect.top);
 
-    if (logCoordinates) console.log("X: ", x, "Y: ", y);
+    if (logCoordinates) log("X: " + x + " Y: " + y);
 })
 
 
@@ -958,12 +960,13 @@ function endGame(){
     disableInputs = false
     inGame = false;
     playingMenuMusic = false;
-    try{ clearTimeout(newGameTimout); } catch(e) {}
-    try{ clearTimeout(setClearedTimeout); } catch(e) {}
-    try{ clearTimeout(lifeTimeout); } catch(e) {}
-    try{ clearTimeout(updateTimout); } catch(e) {}
-    try{ clearTimeout(startTimout); } catch(e) {}
-    try{ clearTimeout(finalTimeout); } catch(e) {}
+    /* End all possible timeouts */
+    try{ clearTimeout( newGameTimout); } catch(e) {}
+    try{ clearTimeout( setClearedTimeout); } catch(e) {}
+    try{ clearTimeout( lifeTimeout); } catch(e) {}
+    try{ clearTimeout( updateTimout); } catch(e) {}
+    try{ clearTimeout( startTimout); } catch(e) {}
+    try{ clearTimeout( finalTimeout); } catch(e) {}
 }
 
 function click(code, char) {
@@ -1143,34 +1146,93 @@ function failed(ms) {
     
 }
 
-function draw(sprite, x, y, scale) {
-    /**
-     * Draw a texture on screen, provide a scale if you want.
-     * You can either submit an Image or a string of the name.
-     */
-    if (scale == undefined) scale = 1;
-    if (sprite.constructor == String) sprite = t(sprite);
-    if (y === undefined) {
-        if (x !== undefined) scale = x;
-        x = c.width / 2 - sprite.width / 2;
-        y = c.height / 2 - sprite.height / 2;
+function log(){
+    for(let i = 0; i < arguments.length; i++){
+        if(globalOptions.devTools){
+            string = "";
+            if(arguments[i].constructor == String && arguments.length == 1){
+                string = arguments[i];
+            } else {
+                string = JSON.stringify(arguments);
+            }
+            console.log('%c'+ string, 'background: #111; color: #bada55;');
+        }
     }
-    ctx.drawImage(sprite, x, y, sprite.width * scale, sprite.height * scale);
 }
 
-function drawC(sprite, x, y, scale) {
+function draw(sprite, x, y, scale, rotation, opacity) {
+    /**
+     * Draw a texture on screen, provide a scale if you want.
+     * You need to provide a scale if you want to change the rotation.
+     * You can either submit an Image or a string of the name.
+     * Q: How do I flip a sprite? A: Flipping sprites in a canvas is very resource intensive,
+     * please instead make a second flipped sprite.
+     */
+
+     /* Import texture if a String is provided. */
+    if (sprite.constructor == String) sprite = t(sprite);
+    if (rotation === undefined) rotation = 0;
+    if (scale === undefined) scale = 1;
+    if( opacity === undefined) opacity = 1;
+
+    
+
+    width = sprite.width * scale; // Get width of the sprite
+    height = sprite.height * scale; // Get height of the sprite
+    center = {x: x + width/2, y: y + height/2}
+
+    if (y === undefined) {
+        if (x !== undefined) scale = x;
+        x = c.width / 2 - width / 2;
+        y = c.height / 2 - height / 2;
+    }
+
+    ctx.save(); // Save context
+    // Rotate and move origin
+    ctx.translate(center.x, center.y);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.translate(-center.x, -center.y);
+    // Set opacity
+    ctx.globalAlpha = opacity;
+    // Draw image
+    ctx.drawImage(sprite, x, y, width, height);
+    
+    ctx.restore();
+}
+
+function drawC(sprite, x, y, scale, rotation, opacity) {
     /**
      * Draw a centered texture on screen, provide a scale if you want.
      * x and y will be the center location.
      * You can either submit an Image or a string of the name.
+     * For more info, see draw() ^^
      */
-    if (scale == undefined) scale = 1;
+
     if (sprite.constructor == String) sprite = t(sprite);
-    if (x === undefined && y === undefined) {
-        x = c.width / 2 - sprite.width / 2;
-        y = c.height / 2 - sprite.height / 2;
+    if (rotation === undefined) rotation = 0;
+    if (scale === undefined) scale = 1;
+
+    width = sprite.width * scale; // Get width of the sprite
+    height = sprite.height * scale; // Get height of the sprite
+    center = {x: x + width/2, y: y + height/2}
+    centerDraw = {x: x - width/2, y: y - height/2}
+
+    if (y === undefined) {
+        if (x !== undefined) scale = x;
+        x = c.width / 2 - width / 2;
+        y = c.height / 2 - height / 2;
     }
-    ctx.drawImage(sprite, x - (sprite.width / 2) * scale, y - (sprite.height / 2) * scale, sprite.width * scale, sprite.height * scale);
+
+    ctx.save(); // Save context
+    // Rotate and move origin
+    ctx.translate(center.x, center.y);
+    ctx.rotate(rotation * Math.PI / 180);
+    ctx.translate(-center.x, -center.y);
+     // Set opacity
+    ctx.globalAlpha = opacity;
+    // Draw image
+    ctx.drawImage(sprite, centerDraw.x, centerDraw.y, width, height);
+    ctx.restore();
 }
 
 
