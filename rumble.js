@@ -140,7 +140,7 @@ var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png"]
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/pin_placeholder.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -225,6 +225,7 @@ var onlineRender = {
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
     spriteIndex: 0,
+    pinIndex: 0,
     lastUpdate: Date.now(),
     buttonColors: [
         [209, 66, 66],
@@ -258,8 +259,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         fill("#111")
         this.spriteIndex++;
         // Draw logo
-        drawC("rumble_logo", c.width/2, 150  + (Math.sin(this.spriteIndex*.08)*8), .8);
-        drawC("mini_logo", c.width/2, 60 + (Math.sin((this.spriteIndex+10)*.08)*5), .8);
+        drawC("rumble_logo", c.width/2, 140  + (Math.sin(this.spriteIndex*.08)*8), .8);
+        drawC("mini_logo", c.width/2, 50 + (Math.sin((this.spriteIndex+10)*.08)*5), .8);
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
@@ -273,20 +274,20 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.fillStyle = "black";
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
             if (this.selectedButton == i) {
-                ctx.fillStyle = "#9e1f1f"
+                ctx.fillStyle = "#ff7d00"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
-                ctx.fillStyle = "#2d0a0a"
+                ctx.fillStyle = "#a61815"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
-                ctx.fillStyle = "#e83333"
+                ctx.fillStyle = "#ffbc00"
                 //ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
-                ctx.fillStyle = "#9b2323"
+                ctx.fillStyle = "#f22e2b"
                 //ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 * this.buttonScale);
@@ -321,10 +322,21 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.textAlign = "left";
             ctx.fillText(version, 15, 30);
 
+            // Draw board
+            this.pinIndex+=.09;
+            draw("table", 340, 220, 1.06)
+            for(let i = 0; i < 12; i++){
+                let x = i % 4;
+                let y = (i - x) / 4;
+                jump = 0;
+                if(Math.round(this.pinIndex) % 20 == i) jump = -3;
+                drawC("pin_placeholder", 397 + x * 60, jump + 275 + y * 60)
+            }
+
             /* Warning signs */
 
-            for (let i = 0; i < warningSigns.length; i++) {
-                /* Black box */
+            /* for (let i = 0; i < warningSigns.length; i++) {
+                
                 height = 60;
                 width = 230;
                 x = 390;
@@ -339,7 +351,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 ctx.fillStyle = "white";
                 ctx.font = "14px mario-maker"
                 ctx.fillText(warningSigns[i].description, x + 10, y + 45)
-            }
+            } */
         }
     },
     logic: function (key) {
@@ -403,11 +415,10 @@ var optionsRender = {
         source: "limitFPS"
     }],
     spriteIndex: 0,
-    backgroundSprites: importSpriteSheet("rumble/minirumble_titlescreen/minirumble_titlescreen_XXXXX.png", 60),
     paint: function () {
 
         /* Draw background */
-        ctx.drawImage(this.backgroundSprites[this.spriteIndex % this.backgroundSprites.length], 0, 0);
+        fill("#111");
         this.spriteIndex++;
 
         ctx.fillStyle = "rgba(0,0,0,0.75)";
@@ -1178,8 +1189,6 @@ function draw(sprite, x, y, scale, rotation, opacity) {
     if (scale === undefined) scale = 1;
     if( opacity === undefined) opacity = 1;
 
-    
-
     width = sprite.width * scale; // Get width of the sprite
     height = sprite.height * scale; // Get height of the sprite
     center = {x: x + width/2, y: y + height/2}
@@ -1237,7 +1246,6 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
     ctx.drawImage(sprite, centerDraw.x, centerDraw.y, width, height);
     ctx.restore();
 }
-
 
 
 function startOpeningAnimation() {
