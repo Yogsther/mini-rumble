@@ -1,0 +1,55 @@
+x = previous letter
+n = next letter
+
+for normal letters/symbols:
+x + 7 = n
+
+for thin leters/symbols (i.!:;):
+x + 3 = n
+
+for wide letters (m, w):
+x + 9 = n
+
+var miniRumbleFont = [
+    "fonts/miniRumble_font/#colon.png",
+    "fonts/miniRumble_font/#dot.png",
+    "fonts/miniRumble_font/#e_mark.png",
+    "fonts/miniRumble_font/#q_mark.png",
+    "fonts/miniRumble_font/#s_colon.png",
+    "fonts/miniRumble_font/0.png",
+    "fonts/miniRumble_font/1.png",
+    "fonts/miniRumble_font/2.png",
+    "fonts/miniRumble_font/3.png",
+    "fonts/miniRumble_font/4.png",
+    "fonts/miniRumble_font/5.png",
+    "fonts/miniRumble_font/6.png",
+    "fonts/miniRumble_font/7.png",
+    "fonts/miniRumble_font/8.png",
+    "fonts/miniRumble_font/9.png",
+    "fonts/miniRumble_font/a.png",
+    "fonts/miniRumble_font/b.png",
+    "fonts/miniRumble_font/c.png",
+    "fonts/miniRumble_font/d.png",
+    "fonts/miniRumble_font/e.png",
+    "fonts/miniRumble_font/f.png",
+    "fonts/miniRumble_font/g.png",
+    "fonts/miniRumble_font/h.png",
+    "fonts/miniRumble_font/i.png",
+    "fonts/miniRumble_font/j.png",
+    "fonts/miniRumble_font/k.png",
+    "fonts/miniRumble_font/l.png",
+    "fonts/miniRumble_font/m.png",
+    "fonts/miniRumble_font/n.png",
+    "fonts/miniRumble_font/o.png",
+    "fonts/miniRumble_font/p.png",
+    "fonts/miniRumble_font/q.png",
+    "fonts/miniRumble_font/r.png",
+    "fonts/miniRumble_font/s.png",
+    "fonts/miniRumble_font/t.png",
+    "fonts/miniRumble_font/u.png",
+    "fonts/miniRumble_font/v.png",
+    "fonts/miniRumble_font/w.png",
+    "fonts/miniRumble_font/x.png",
+    "fonts/miniRumble_font/y.png",
+    "fonts/miniRumble_font/z.png"
+];
