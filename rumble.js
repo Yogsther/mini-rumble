@@ -1229,7 +1229,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight){
     alpha = "abcdefghijklmnopqrstuvwxyz";
     special = {
         in: [':', '.', '!', '?', ';', ',', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ['_colon', "_dot", "_e_mark", "_q_mark", "_s_colon", "_comma", '_0','_1','_2','_3','_4','_5','_6','_7','_8','_9']
+        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", '0_0','0_1','0_2','0_3','0_4','0_5','0_6','0_7','0_8','0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */
