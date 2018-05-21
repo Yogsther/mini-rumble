@@ -279,8 +279,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             var globalOffset = -30 * this.buttonScale; 
 
 
-            this.progress+=0.1;
-            if(this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 20);
+            this.progress+=0.05;
+            if(this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 10);
                 else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
             
             /* for (let j = 0; j < text.length; j++) {
@@ -1236,7 +1236,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight){
     letterIndex = 0;
     jump = 0;
     /* Account for unassigned variables */
-    if(jumpHeight == undefined) jumpHeight = 5;
+    if(jumpHeight == undefined) jumpHeight = 15;
     if(size == undefined) size = 2;
 
     text.forEach(letter => {
@@ -1263,7 +1263,8 @@ function type(text, x, y, size, jumpIndex, jumpHeight){
                 if(jumpIndex !== undefined){
                     if(Math.floor(jumpIndex) == letterIndex){
                         jump = Math.floor(jumpIndex) - jumpIndex;
-                        jump = .5 - jump;
+                        jump = jump+1;
+                        if(jump > .5) jump = 1-jump;
                         jump = jump*jumpHeight;
                     }
                 }
