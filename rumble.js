@@ -13,6 +13,7 @@ var logCoordinates = false;
 /* Engine variables */
 const canvas = c = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+ctx.imageSmoothingEnabled = false;
 
 /* All overlay textures, can be multible sprites to form a spritesheet. */
 
@@ -45,21 +46,7 @@ var globalOptions = {
     limitFPS: false
 }
 
-// TOOD: Document this process
-var miniGames = [ // Minigames are now added to this array in their own file.
-    /*
-    mash,
-    carrotCatch,
-    hoverDodge,
-    typeMaster,
-    danceDude,
-    gatherFortnite,
-    cock_n_shoot,
-    bounce,
-    missiles,
-    wizard_hunt
-    */
-];
+var miniGames = new Array();
 var activeMinigames = miniGames.slice();
 
 var backgroundSound = undefined;
@@ -248,13 +235,6 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     buttonSpacing: 80,
     paint: function () {
         ctx.textAlign = "left"
-        /* Fade colors for buttons */
-        for (let j = 0; j < 5; j++) {
-            for (let i = 0; i < this.buttonColors.length; i++) {
-                this.buttonColors[i] = fadeColor(this.buttonColors[i][0], this.buttonColors[i][1], this.buttonColors[i][2]);
-            }
-        }
-
         /* Draw background */
         fill("#111")
         this.spriteIndex++;
@@ -273,8 +253,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             // Draw black background for darkness instead of transparency 
             ctx.fillStyle = "black";
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
-            if (this.selectedButton == i) {
-                ctx.fillStyle = "#ff7d00"
+            if (this.selectedButton % this.buttonColors.length == i) {
+                ctx.fillStyle = "#ad1145"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
                 ctx.fillStyle = "#a61815"
@@ -284,7 +264,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
-                ctx.fillStyle = "#ffbc00"
+                ctx.fillStyle = "#d81355"
                 //ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
                 ctx.fillStyle = "#f22e2b"
@@ -293,34 +273,32 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 * this.buttonScale);
 
             /* Draw button-text */
-            ctx.font = 55 * this.buttonScale + "px mario-kart";
+            /* ctx.font = 55 * this.buttonScale + "px mario-kart";
             ctx.textAlign = "left";
-            ctx.fillStyle = "white";
-            var globalOffset = -30 * this.buttonScale;
+            ctx.fillStyle = "white"; */
+            var globalOffset = -30 * this.buttonScale; 
 
-            var text = this.buttonTitles[i].toUpperCase();
-            for (let j = 0; j < text.length; j++) {
-                var jump = 0;
+
+            this.progress+=0.1;
+            if(this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 20);
+                else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
+            
+            /* for (let j = 0; j < text.length; j++) {
                 if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
-                ctx.fillText(text[j], tilt + this.buttonPositions.x + (j * 40 * this.buttonScale) - globalOffset + 80 * this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
+                type(text[j], tilt + this.buttonPositions.x + (j * 40 * this.buttonScale) - globalOffset + 80 * this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
                 if (text[j] == "I") globalOffset += 12;
-            }
+            } */
 
-            var hopSpeed = 50; // ms
-            var maxHopLength = this.buttonTitles[this.selectedButton % this.buttonTitles.length].length + 10; // chars
-            if (Date.now() - this.lastUpdate > hopSpeed) {
-                this.progress += 1;
-                this.lastUpdate = Date.now();
-                if (this.progress > maxHopLength) this.progress = 0;
-            }
 
-            ctx.fillStyle = "#111";
+            /* ctx.fillStyle = "#111";
             ctx.font = "20px mario-maker",
-                ctx.textAlign = "right";
+            ctx.textAlign = "right";
             ctx.fillText("Z: Back X: Select", 630, 470);
             ctx.fillStyle = "rgba(0,0,0,0.3)";
             ctx.textAlign = "left";
-            ctx.fillText(version, 15, 30);
+            ctx.fillText(version, 15, 30); */
+            type("Z: Back X: Select", 510, 460, 1)
+            type(version, 15, 10, 1);
 
             // Draw board
             this.pinIndex+=.09;
@@ -917,7 +895,7 @@ function loadLast() {
         elements[i].addEventListener("touchend", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
-
+            buttonClick(translate[index]);
             while (keyDown(key)) {
                 for (let i = 0; i < keysDown.length; i++) {
                     if (keysDown[i] == key) {
@@ -1188,7 +1166,7 @@ function draw(sprite, x, y, scale, rotation, opacity) {
     if (rotation === undefined) rotation = 0;
     if (scale === undefined) scale = 1;
     if( opacity === undefined) opacity = 1;
-
+    
     width = sprite.width * scale; // Get width of the sprite
     height = sprite.height * scale; // Get height of the sprite
     center = {x: x + width/2, y: y + height/2}
@@ -1245,6 +1223,56 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
     // Draw image
     ctx.drawImage(sprite, centerDraw.x, centerDraw.y, width, height);
     ctx.restore();
+}
+
+function type(text, x, y, size, jumpIndex, jumpHeight){
+    alpha = "abcdefghijklmnopqrstuvwxyz";
+    special = {
+        in: [':', '.', '!', '?', ';', ',', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ['_colon', "_dot", "_e_mark", "_q_mark", "_s_colon", "_comma", '_0','_1','_2','_3','_4','_5','_6','_7','_8','_9']
+    }
+    text = text.toLowerCase().split(""); /* Split text into a char-array */
+    position = x; /* Where to write the next letter, increases for each letter a varied amount. */
+    letterIndex = 0;
+    jump = 0;
+    /* Account for unassigned variables */
+    if(jumpHeight == undefined) jumpHeight = 5;
+    if(size == undefined) size = 2;
+
+    text.forEach(letter => {
+        /* Draw out letter by letter */
+        /* Special spacing for some characters */
+        spacing = 7;
+        /* Thinner letters */
+        if(['i', '.', '!', ':', ';'].indexOf(letter) != -1) spacing = 3;
+        /* Wider letters */
+        if(['m', 'w'].indexOf(letter) != -1) spacing = 9;
+        if(letter != " "){
+            finalLetter = "";
+            if(alpha.indexOf(letter) != -1){
+                /* Letter is alpha */
+                finalLetter = letter;
+            } else if (special.in.indexOf(letter) != -1){
+                /* Special symbol supported! */
+                finalLetter = special.translate[special.in.indexOf(letter)];
+            } else {
+                console.warn("Symbol not supported! " + letter);
+            }
+            if(finalLetter !== ""){
+                jump = 0;
+                if(jumpIndex !== undefined){
+                    if(Math.floor(jumpIndex) == letterIndex){
+                        jump = Math.floor(jumpIndex) - jumpIndex;
+                        jump = .5 - jump;
+                        jump = jump*jumpHeight;
+                    }
+                }
+                draw(finalLetter, position, y - jump, size);
+            }
+        }
+        position+=spacing * size;
+        letterIndex++;
+    })
 }
 
 
