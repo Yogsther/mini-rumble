@@ -298,7 +298,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.textAlign = "left";
             ctx.fillText(version, 15, 30); */
             type("Z: Back X: Select", 510, 460, 1)
-            type(version, 15, 10, 1);
+            type(version, 10, 10, 1);
 
             // Draw board
             this.pinIndex+=.09;
@@ -434,8 +434,8 @@ var optionsRender = {
                 button.color = "#353535"
                 // Text
                 text.scale = 1.15;
-                text.x -= 10;
-                text.y -= -1;
+                text.x -= 20;
+                text.y -= 20;
                 text.otherScale = 1.1;
             }
 
@@ -444,7 +444,7 @@ var optionsRender = {
             ctx.fillStyle = "white";
             ctx.font = (20 * text.scale) + "px mario-maker";
             ctx.textAlign = "left";
-            ctx.fillText(text.display + ":", text.x, text.y);
+            type(text.display + ":", text.x, text.y);
             // Status
             var statusText = {
                 text: "No",
@@ -456,7 +456,7 @@ var optionsRender = {
             };
             ctx.textAlign = "right";
             ctx.fillStyle = statusText.color;
-            ctx.fillText(statusText.text, text.x + 340 * (text.otherScale), text.y)
+            type(statusText.text, text.x + 300 * (text.otherScale), text.y)
 
         }
         ctx.fillStyle = "#111";
@@ -1081,13 +1081,13 @@ function drawOverlay() {
     var timePrint = timeLeft.toString();
     if (timeLeft < 0) timePrint = "0";
     if (!timed) timePrint = "?";
-    ctx.fillText(timePrint, 591, 440)
+    type(timePrint, 575, 411, 3);
 
     ctx.fillStyle = "#f4d942",
     ctx.textAlign = "left";
-    ctx.fillText(score.toString(), 418, 440);
+    type(score.toString(), 415, 417, 2);
     ctx.fillStyle = "#fb183b",
-    ctx.fillText(lives.toString(), 508, 440);
+    type(lives.toString(), 505, 417, 2);
 }
 
 var failedCalled = false;

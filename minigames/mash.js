@@ -2,7 +2,7 @@
 
 var mash = {
     varName: "mash",
-    displayName: "Eat the Sandwich",
+    displayName: "Sandwich",
     timed: true,
     textures: [
         "mash/sandwich_front.png", 
