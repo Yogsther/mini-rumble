@@ -127,7 +127,7 @@ var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/pin_placeholder.png"]
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "gameicons/typeMaster_icon.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -149,7 +149,7 @@ var onlineRender = {
     selectedButton: 0,
     paint: function () {
         fill("#111");
-
+        
         dots = canvas.width;
         speed = .1;
         spacing = .005;
@@ -236,7 +236,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     paint: function () {
         ctx.textAlign = "left"
         /* Draw background */
-        fill("#111")
+        fill("#000000")
         this.spriteIndex++;
         // Draw logo
         drawC("rumble_logo", c.width/2, 140  + (Math.sin(this.spriteIndex*.08)*8), .8);
@@ -254,20 +254,20 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.fillStyle = "black";
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
             if (this.selectedButton % this.buttonColors.length == i) {
-                ctx.fillStyle = "#ad1145"
+                ctx.fillStyle = "#800020"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
-                ctx.fillStyle = "#a61815"
+                ctx.fillStyle = "#400020"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
 
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
-                ctx.fillStyle = "#d81355"
+                ctx.fillStyle = "#c00020"
                 //ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
-                ctx.fillStyle = "#f22e2b"
+                ctx.fillStyle = "#800020"
                 //ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 * this.buttonScale);
@@ -308,7 +308,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 let y = (i - x) / 4;
                 jump = 0;
                 if(Math.round(this.pinIndex) % 20 == i) jump = -3;
-                drawC("pin_placeholder", 397 + x * 60, jump + 275 + y * 60)
+                drawC("typeMaster_icon", 397 + x * 60, jump + 275 + y * 60, 4)
             }
 
             /* Warning signs */
@@ -389,14 +389,14 @@ var optionsRender = {
         text: "Disable music",
         source: "disableMusic"
     }, {
-        text: "Limit FPS (60)",
+        text: "Lock to 60 FPS",
         source: "limitFPS"
     }],
     spriteIndex: 0,
     paint: function () {
 
         /* Draw background */
-        fill("#111");
+        fill("#4286f4");
         this.spriteIndex++;
 
         ctx.fillStyle = "rgba(0,0,0,0.75)";
@@ -420,23 +420,27 @@ var optionsRender = {
                 display: this.options[i].text,
                 state: this.options[i].source,
                 x: button.x + 30,
-                y: button.y + 36,
+                y: button.y + 18,
                 scale: 1,
                 otherScale: 1
             }
-
+            
             if (this.selectedOption % this.options.length == i) {
                 // Selected button
+                /*
                 button.x -= this.buttonZoom;
                 button.y -= this.buttonZoom;
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
+                */
                 button.color = "#353535"
                 // Text
+                /*
                 text.scale = 1.15;
                 text.x -= 20;
                 text.y -= 20;
                 text.otherScale = 1.1;
+                */
             }
 
             ctx.fillStyle = button.color;
@@ -447,11 +451,11 @@ var optionsRender = {
             type(text.display + ":", text.x, text.y);
             // Status
             var statusText = {
-                text: "No",
+                text: "OFF",
                 color: "#912f2f"
             };
             if (eval("globalOptions." + this.options[i].source)) statusText = {
-                text: "Yes",
+                text: "ON",
                 color: "#2f9146"
             };
             ctx.textAlign = "right";
@@ -459,10 +463,7 @@ var optionsRender = {
             type(statusText.text, text.x + 300 * (text.otherScale), text.y)
 
         }
-        ctx.fillStyle = "#111";
-        ctx.font = "20px mario-maker",
-            ctx.textAlign = "right";
-        ctx.fillText("Z: Back X: Select", 630, 470);
+        type("Z: Back X: Select", 510, 460, 1);
     },
     logic: function (key) {
         var playEffect = false;
@@ -1081,7 +1082,7 @@ function drawOverlay() {
     var timePrint = timeLeft.toString();
     if (timeLeft < 0) timePrint = "0";
     if (!timed) timePrint = "?";
-    type(timePrint, 575, 411, 3);
+    type(timePrint, 580, 417, 2);
 
     ctx.fillStyle = "#f4d942",
     ctx.textAlign = "left";
@@ -1373,7 +1374,7 @@ function render() {
         if (size > maxSize) size = maxSize;
         ctx.font = size + "px mario-kart"
         var text = miniGame.introText.toUpperCase();
-        ctx.fillText(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2)
+        ctx.fillText(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2);
         if (Date.now() - lastOpeningDate > 50) {
             openingProgress++;
             lastOpeningDate = Date.now();
@@ -1433,13 +1434,13 @@ function render() {
         }
         var text = clearedText;
         var textOffset = 10;
-        var textSpacing = 50;
+        var textSpacing = 45;
         ctx.font = "50px mario-maker"
         for (let i = 0; i < (clearedProgress / textDisplayTimeout) - text.length; i++) {
             if (i < text.length) {
                 var localProgress = clearedProgress - (i * textOffset)
                 ctx.fillStyle = "rgba(255,255,255, 1)";
-                ctx.fillText(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing / 2) + 25, 10 + canvas.height / 2 + (dampedSin((localProgress - (i + 100)) * 0.02)));
+                type(text[i], canvas.width / 2 + (i * textSpacing) - (text.length * textSpacing / 2), canvas.height / 2 + (dampedSin((localProgress - (i + 100)) * 0.02)) - 40, 6);
             }
         }
 

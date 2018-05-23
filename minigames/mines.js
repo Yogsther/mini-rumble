@@ -24,7 +24,7 @@ var mines = {
 
 	],
 	init: function (difficulty) {
-
+		this.mines = [];
 		//selector draw position
 		this.selectorPos = {
 			x: 290,
@@ -33,12 +33,15 @@ var mines = {
 		//current selector space id
 		this.selectedSpace = 23;
 	},
+	placeMines: function() {
+
+	},
 	paint: function () {
 		fill("#111");
 
 		//draw background
 		draw("mines_bg", 0, 0);
-
+		
 		
 
 		//draw selector
