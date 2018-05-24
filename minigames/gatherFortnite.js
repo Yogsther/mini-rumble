@@ -93,12 +93,13 @@ var gatherFortnite = {
             ctx.drawImage(t("thot_big"), this.finalScene.x, 50 + this.finalScene.y, t("thot_big").width*triceraScale, t("thot_big").height*triceraScale);
 
         }
+        
 
 
     },
-    getCenter: function(sprite, x, y){
-        let superX = x + (sprite.width / 2);
-        let superY = y + (sprite.height / 2);
+    getCenter: function(sprite, x, y, scale){
+        let superX = x + ((sprite.width * scale) / 2);
+        let superY = y + ((sprite.height * scale) / 2);
         return {x: superX, y: superY};
     },
     loop: function () {
@@ -109,11 +110,11 @@ var gatherFortnite = {
             
             if(!material.collected){
             notCollected++;
-            var superMaterial = this.getCenter(t("wood"), material.x, material.y);
-            var superPlayer = this.getCenter(this.player.sprite, this.player.x, this.player.y);
+            var superMaterial = this.getCenter(t("wood"), material.x, material.y, this.woodScale);
+            var superPlayer = this.getCenter(this.player.sprite, this.player.x, this.player.y, this.player.scale);
             var distance = {
-                x: ((superMaterial.x ) - (superPlayer.x * (this.player.scale*2))),
-                y: ((superMaterial.y) - (superPlayer.y * (this.player.scale * 2)))
+                x: ((superMaterial.x ) - (superPlayer.x)),
+                y: ((superMaterial.y) - (superPlayer.y))
             }
 
             var totalDistance = Math.sqrt(Math.pow(distance.x, 2) + Math.pow(distance.y, 2));
