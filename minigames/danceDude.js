@@ -1,7 +1,7 @@
 var danceDude = {
 	varName: "danceDude",
 	displayName: "Dance Dude",
-	gameIcon: "gameicons/danceDude_icon.png",
+	icon: "gameicons/danceDude_icon.png",
 	timed: false,
 	introText: "Dance!",
 	textures: [

@@ -308,7 +308,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 let y = (i - x) / 4;
                 jump = 0;
                 if(Math.round(this.pinIndex) % 20 == i) jump = -3;
-                drawC("typeMaster_icon", 397 + x * 60, jump + 275 + y * 60, 4)
+                drawC("typeMaster_icon", 397 + x * 60, jump + 275 + y * 60, 2)
             }
 
             /* Warning signs */

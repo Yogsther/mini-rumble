@@ -1,6 +1,7 @@
 var missiles = {
   varName: "missiles",
   displayName: "Missiles",
+  icon: "gameicons/missiles_icon.png",
   timed: true,
   timedWin: true,
   textures: [],

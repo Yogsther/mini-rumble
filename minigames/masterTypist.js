@@ -1,6 +1,7 @@
 var typeMaster = {
     varName: "typeMaster",
     displayName: "Type Master",
+    icon: "gameicons/typeMaster_icon.png",
     timed: true,
     timedWin: false,
     textures: [
