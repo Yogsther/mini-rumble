@@ -4,9 +4,20 @@ var missiles = {
   icon: "gameicons/missiles_icon.png",
   timed: true,
   timedWin: true,
-  textures: [],
+  textures: [
+    "missiles/missiles_player_stopped.png",
+    "missiles/missiles_player_L.png",
+    "missiles/missiles_player_R.png",
+    "missiles/missiles_missile_L.png",
+    "missiles/missiles_missile_R.png"
+  ],
   introText: "Avoid!",
   init: function (dif) {
+
+    //plater variables
+    this.playerTextureStopped = t("missiles_player_stopped");
+    this.playerTextureL = t("missiles_player_L");
+    this.playerTextureR = t("missiles_player_R");
     this.playerSpeed = 0.5;
     this.maxPlayerSpeed = 10;
     this.gravitySpeed = 2;
@@ -22,14 +33,18 @@ var missiles = {
       grounded: false
     }
     this.friction = 1.05
+
+    //missile variables
     this.Missile = function (x, y) {
+      this.missileTextureL = t("missiles_missile_L");
+      this.missileTextureR = t("missiles_missile_R");
       this.x = x;
       this.y = y;
       this.velocityX = 0;
       this.maxSpeed = 10;
       this.explosionSize = 180;
-      this.width = 40;
-      this.height = 20;
+      this.width = 54;
+      this.height = 27;
       this.direction;
       this.fuse = Date.now() + Math.floor(Math.random() * 100);
       this.running = false;
@@ -80,12 +95,23 @@ var missiles = {
   paint: function () {
     fill("#111");
     ctx.fillStyle = "white";
-    ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+    draw(this.playerTextureStopped ,this.player.x, this.player.y, 2);
+    if (keyDown(keys.left)) {
+      draw(this.playerTextureL ,this.player.x, this.player.y, 2);
+    }
+    if (keyDown(keys.right)) {
+      draw(this.playerTextureR ,this.player.x, this.player.y, 2);
+    }
+    //ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
     ctx.fillStyle = "gray";
     ctx.fillRect(0, this.groundLevel, canvas.width, canvas.height - this.groundLevel);
     ctx.fillStyle = "red"
     for (let i = 0; i < this.missiles.length; i++) {
-      ctx.fillRect(this.missiles[i].x, this.missiles[i].y, this.missiles[i].width, this.missiles[i].height);
+      if (this.missiles[i].direction == 1) {
+        draw(this.missiles[i].missileTextureL, this.missiles[i].x, this.missiles[i].y, 3);
+      } else {
+        draw(this.missiles[i].missileTextureR, this.missiles[i].x, this.missiles[i].y, 3);
+      }
     }
     for (let i = 0; i < explosions.length; i++) {
       ctx.fillStyle = "rgba(255, 255, 255, " + (1 - explosions[i].progress / explosions[i].size) + ")";
@@ -117,7 +143,7 @@ var missiles = {
       this.player.velocityX += this.playerSpeed;
     }
     /* jump */
-    if ((keyDown(keys.up)) || (keyDown(keys.action)) && this.player.grounded) {
+    if (((keyDown(keys.up)) || (keyDown(keys.action))) && this.player.grounded) {
       this.player.velocityY = -15;
     } else if ((keyDown(keys.up)) || (keyDown(keys.action)) && this.player.velocityY < 0) {
       this.player.velocityY -= 1.3;
@@ -166,7 +192,7 @@ var missiles = {
       this.lastUpdate = Date.now();
       let x;
       if (Math.random() > 0.5) {
-        x = -40; 
+        x = -57; 
       } else {
         x = canvas.width;
       }

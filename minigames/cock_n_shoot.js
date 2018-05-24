@@ -1,6 +1,6 @@
 var cock_n_shoot = {
     varName: "cock_n_shoot",
-    displayName: "Cock n Shoot",
+    displayName: "Lock n Load",
     introText: "Lock n Load!",
     icon: "gameicons/lockNload_icon.png",
     timed: true,
