@@ -3,6 +3,7 @@
 var mash = {
     varName: "mash",
     displayName: "Sandwich",
+    icon: "gameicons/sandwich_icon.png",
     timed: true,
     textures: [
         "mash/sandwich_front.png", 
@@ -101,6 +102,9 @@ var mash = {
     loop: function () {
         if (this.sandwich.length < 1) {
             // Sandwich is empty!
+            if (this.dif > 8) {
+				achieve();
+			}
             cleared();
         }
 

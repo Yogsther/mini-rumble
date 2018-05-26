@@ -15,6 +15,7 @@ var typeMaster = {
     requiresKeyboard: true,
     introText: "Type!",
     init: function (dif) {
+        this.dif = dif;
         this.words = [
             "Wahoo",
             "Ohyeah",
@@ -208,7 +209,9 @@ var typeMaster = {
                 this.completedWords++;
                 if (this.wordsToType == this.completedWords) {
                     this.cleared = true;
-                    badgeGet("typeMaster_icon");
+                    if (this.dif > 8) {
+                        achieve();
+                    }
                     cleared(900);
                 } else {
                     this.wordStart++;

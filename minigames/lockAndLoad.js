@@ -21,6 +21,7 @@ var lockAndLoad = {
         "cock_n_shoot/shoot_bang.ogg"
     ],
     init: function (dif) {
+        this.dif = dif;
 
         /* init - Pump Scene */
         this.gameprogress = 0
@@ -118,7 +119,9 @@ var lockAndLoad = {
         }
         if (this.enemyShot) {
             this.shootBulletPos.y = 500;
-            badgeGet("lockAndLoad_icon");
+            if (this.dif > 8) {
+				achieve();
+			}
             cleared();
         }
     },

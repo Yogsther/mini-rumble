@@ -2,6 +2,7 @@
 var carrotCatch = {
     varName: "carrotCatch",
     displayName: "Carrot Catch",
+    icon: "gameicons/carrotCatch_icon.png",
     timed: false,
     textures: [
         "carrot_catch/carrot.png", 
@@ -11,6 +12,7 @@ var carrotCatch = {
     ],
     introText: "Catch!",
     init: function (dif) {
+        this.dif = dif;
         this.startTime = Date.now();
         this.carrotSpeed = (10) * ((dif + 2) * .5);
         this.carrotPosition = {
@@ -56,6 +58,9 @@ var carrotCatch = {
             setTimeout(() => {
                 disableInputs = false;
                 if (this.carrotCatchSuccess == true) {
+                    if (this.dif > 8) {
+                        achieve();
+                    }
                     cleared();
                 } else {
                     failed();

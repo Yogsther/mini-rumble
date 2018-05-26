@@ -2,6 +2,7 @@
 var bounce = {
     varName: "bounce",
     displayName: "Bounce",
+    icon: "gameicons/bounce_icon.png",
     timed: true,
     timedWin: true,
     textures: [],

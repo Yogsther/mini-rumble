@@ -27,6 +27,7 @@ var danceDude = {
 	],
 
 	init: function (dif) {
+		this.dif = dif;
 		this.startTime = Date.now();
 		this.incomingSpeed = (1) * (dif + 2);
 
@@ -215,7 +216,9 @@ var danceDude = {
 		}
 
 		if ((this.arrowsHit >= this.hitGoal) && (this.danceStart == true)) {
-			badgeGet("danceDude_icon");
+			if (this.dif > 8) {
+				achieve();
+			}
 			cleared();
 			this.danceStart = false;
 		}

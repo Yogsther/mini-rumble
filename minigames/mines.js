@@ -1,6 +1,7 @@
 var mines = {
 	varName: "mines",
 	displayName: "Mines",
+	icon: "gameicons/mines_icon.png",
 	timed: false,
 	wip: true,
 	timedWin: false,

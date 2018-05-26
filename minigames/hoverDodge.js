@@ -2,6 +2,7 @@
 var hoverDodge = {
     varName: "hoverDodge",
     displayName: "Hover Dodge",
+    icon: "gameicons/hoverDodge_icon.png",
     timed: true,
     timedWin: true,
     textures: [
