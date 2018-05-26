@@ -406,7 +406,7 @@ var optionsRender = {
         ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
         ctx.fillRect(540, 30, 20, height);
         ctx.fillStyle = "#ffbf00";
-        ctx.fillRect(545, 35 + this.selectedOption * 10, 10, height - this.options.length * 10);
+        ctx.fillRect(545, 35 + this.startPoint * 10, 10, height - (this.options.length - 4) * 10);
         
         while ((this.selectedOption % this.options.length > this.startPoint + 2) && (this. startPoint < this.options.length - 5)) this.startPoint++;
         while ((this.selectedOption % this.options.length < this.startPoint + 2) && (this.startPoint > 0)) this.startPoint--;
