@@ -43,8 +43,5 @@ var miniRumbleFont = [
     "fonts/miniRumble_font/y.png",
     "fonts/miniRumble_font/z.png"
 ];
-var miniGameIcon = [
-    "gameicons/danceDude_icon.png"
-]
 
 miniRumbleFont.forEach(font => {importTexture(font)});

@@ -101,7 +101,6 @@ var danceDude = {
 		}
 	},
 	loop: function () {
-		console.log(this.hitPos);
 		this.hitPos = (Math.floor(Math.random() * 7) * 70) + 480;
 
 		// Ends in a fail on missing one arrow
@@ -216,6 +215,7 @@ var danceDude = {
 		}
 
 		if ((this.arrowsHit >= this.hitGoal) && (this.danceStart == true)) {
+			badgeGet("danceDude_icon");
 			cleared();
 			this.danceStart = false;
 		}

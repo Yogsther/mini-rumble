@@ -1,8 +1,8 @@
-var cock_n_shoot = {
-    varName: "cock_n_shoot",
+var lockAndLoad = {
+    varName: "lockAndLoad",
     displayName: "Lock n Load",
     introText: "Lock n Load!",
-    icon: "gameicons/lockNload_icon.png",
+    icon: "gameicons/lockAndLoad_icon.png",
     timed: true,
     textures: [
         "cock_n_shoot/cock_arm.png",
@@ -111,7 +111,6 @@ var cock_n_shoot = {
             this.shootFlashPos.x = 650;
         }
         if ((this.shootBulletPos.x > 160) && (this.shootBulletPos.x < 200) && (this.enemyPos.y > 340) && (this.enemyPos.y < 400)) {
-            console.log(this.enemyPos)
             this.enemyShot = true;
         }
         if ((this.enemyShot == false) && (this.shootBulletPos.x > 630)) {
@@ -119,6 +118,7 @@ var cock_n_shoot = {
         }
         if (this.enemyShot) {
             this.shootBulletPos.y = 500;
+            badgeGet("lockAndLoad_icon");
             cleared();
         }
     },
@@ -144,4 +144,4 @@ var cock_n_shoot = {
 
 }
 
-miniGames.push(cock_n_shoot);
+miniGames.push(lockAndLoad);

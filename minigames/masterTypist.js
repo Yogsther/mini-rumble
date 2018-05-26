@@ -208,6 +208,7 @@ var typeMaster = {
                 this.completedWords++;
                 if (this.wordsToType == this.completedWords) {
                     this.cleared = true;
+                    badgeGet("typeMaster_icon");
                     cleared(900);
                 } else {
                     this.wordStart++;

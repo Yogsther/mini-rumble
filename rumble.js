@@ -127,7 +127,8 @@ var timer = 0;
 
 
 /* All texture name to be imported during the importTextures process. */
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "gameicons/typeMaster_icon.png"]
+var miniGameIcons = []
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -236,7 +237,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     paint: function () {
         ctx.textAlign = "left"
         /* Draw background */
-        fill("#000000")
+        fill("#000")
         this.spriteIndex++;
         // Draw logo
         drawC("rumble_logo", c.width/2, 140  + (Math.sin(this.spriteIndex*.08)*8), .8);
@@ -302,13 +303,13 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
             // Draw board
             this.pinIndex+=.09;
-            draw("table", 340, 220, 1.06)
-            for(let i = 0; i < 12; i++){
+            draw("table", 337, 220, 2)
+            for(let i = 0; i < unlockedIcons.length; i++){
                 let x = i % 4;
                 let y = (i - x) / 4;
                 jump = 0;
-                if(Math.round(this.pinIndex) % 20 == i) jump = -3;
-                drawC("typeMaster_icon", 397 + x * 60, jump + 275 + y * 60, 2)
+                if(Math.round(this.pinIndex) % 20 == i) jump = -2;
+                drawC(unlockedIcons[i], 389 + x * 64, jump + 272 + y * 64, 2);
             }
 
             /* Warning signs */
@@ -367,7 +368,7 @@ var optionsRender = {
     },
     buttonPositions: {
         x: 0,
-        y: 100
+        y: 50
     },
     scrollPosition: 0,
     buttonSpacing: 20,
@@ -380,7 +381,7 @@ var optionsRender = {
         text: "Display FPS",
         source: "displayFPS"
     }, {
-        text: "Enable Dev-tools",
+        text: "Enable Dev tools",
         source: "devTools"
     }, {
         text: "Disable sound",
@@ -391,29 +392,32 @@ var optionsRender = {
     }, {
         text: "Lock to 60 FPS",
         source: "limitFPS"
-    }],
+    },],
     spriteIndex: 0,
     paint: function () {
 
         /* Draw background */
-        fill("#4286f4");
+        fill("#305a82");
         this.spriteIndex++;
-
-        ctx.fillStyle = "rgba(0,0,0,0.75)";
+        
+        ctx.fillStyle = "rgba(0,0,0,0.50)";
         var width = canvas.width - (canvas.width / 4)
         var height = canvas.height - (canvas.height / 8);
         ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
-
-        while (this.selectedOption % this.options.length > this.startPoint + 3) this.startPoint++;
-        while (this.selectedOption % this.options.length < this.startPoint) this.startPoint--;
-
-        for (let i = this.startPoint; i < this.startPoint + 4; i++) {
+        ctx.fillRect(540, 30, 20, height);
+        ctx.fillStyle = "#ffbf00";
+        ctx.fillRect(545, 35 + this.selectedOption * 10, 10, height - this.options.length * 10);
+        
+        while ((this.selectedOption % this.options.length > this.startPoint + 2) && (this. startPoint < this.options.length - 5)) this.startPoint++;
+        while ((this.selectedOption % this.options.length < this.startPoint + 2) && (this.startPoint > 0)) this.startPoint--;
+        
+        for (let i = this.startPoint; i < this.startPoint + 5; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
                 y: this.buttonPositions.y + ((i - this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
                 width: this.buttonStyles.width,
                 height: this.buttonStyles.height,
-                color: "#111"
+                color: "#0c1620"
             }
 
             var text = {
@@ -427,20 +431,20 @@ var optionsRender = {
             
             if (this.selectedOption % this.options.length == i) {
                 // Selected button
-                /*
+                
                 button.x -= this.buttonZoom;
                 button.y -= this.buttonZoom;
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
-                */
-                button.color = "#353535"
+                
+                button.color = "#3d3d3d"
                 // Text
-                /*
-                text.scale = 1.15;
+                
+                text.scale = 1;
                 text.x -= 20;
-                text.y -= 20;
+                text.y -= 0;
                 text.otherScale = 1.1;
-                */
+                
             }
 
             ctx.fillStyle = button.color;
@@ -471,6 +475,7 @@ var optionsRender = {
         if (key.is(keys.down)) {
             this.selectedOption++;
             playEffect = true;
+            if (this.selectedOption > this.options.length - 1) this.selectedOption = 0;
         }
         if (key.is(keys.up)) {
             this.selectedOption--;
@@ -546,6 +551,7 @@ var startedLoading = false;
 
 function loadFinalStuff() {
     startedLoading = true;
+    importIcons();
     importTextures();
     importSounds();
     ready = true;
@@ -657,7 +663,11 @@ function importTextures() {
         importTexture(texture);
     });
 
-    window.overlaySprites = [importSpriteSheet("rumble/overlay/overlay_XX.png", 20), importTexture("rumble/overlay_mystery.png"), importTexture("rumble/overlay_turbo.png")];
+    window.overlaySprites = [
+        importSpriteSheet("rumble/overlay/overlay_XX.png", 20), 
+        importTexture("rumble/overlay_mystery.png"), 
+        importTexture("rumble/overlay_turbo.png")
+    ];
 
 }
 
@@ -688,6 +698,17 @@ function importSounds() {
                 importSound(sound);
             })
         }
+    });
+}
+
+function importIcons() {
+    miniGames.forEach(minigame => {
+        if (minigame.icon != undefined) {
+            miniGameIcons.push(minigame.icon);
+        }
+    });
+    miniGameIcons.forEach(icon => {
+        importTexture(icon);
     });
 }
 
@@ -892,7 +913,7 @@ function loadLast() {
             var key = keys[index];
             if (!keyDown(key)) keysDown.push(key);
         });
-
+        /*
         elements[i].addEventListener("touchend", e => {
             var index = translate.indexOf(elements[i].id);
             var key = keys[index];
@@ -905,6 +926,7 @@ function loadLast() {
                 }
             }
         });
+        */
     }
 }
 
@@ -1022,6 +1044,12 @@ function cleared(ms) {
     }, ms);
 }
 
+function badgeGet(iconName) {
+    if (unlockedIcons.indexOf(iconName) == -1) {
+        unlockedIcons.push(iconName);
+    }
+}
+var unlockedIcons = [];
 
 
 
