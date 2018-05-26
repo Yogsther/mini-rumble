@@ -32,6 +32,7 @@ var loadingMessages = [
     "Building bootlegs"
 ]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+var unlockedAchievements = new Array();
 renderLoadingScreen();
 
 
@@ -69,6 +70,18 @@ var titleSounds = [
     "rumble/bg_music/KingDedede.mp3",
     "rumble/bg_music/DiggaLeg.mp3"
 ];
+
+function loadAchievements() {
+    var unlockedAchievements = localStorage.getItem("achievements");
+    if (unlockedAchievements === undefined) {
+        unlockedAchievements = new Array();
+        localStorage.setItem("achievements", unlockedAchievements);
+    }
+}
+
+function saveAchievements() {
+    localStorage.setItem("achievements", unlockedAchievements);
+}
 
 
 function loadSettings() {
@@ -150,7 +163,7 @@ var onlineRender = {
     selectedButton: 0,
     paint: function () {
         fill("#111");
-        
+
         dots = canvas.width;
         speed = .1;
         spacing = .005;
@@ -240,8 +253,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         fill("#000")
         this.spriteIndex++;
         // Draw logo
-        drawC("rumble_logo", c.width/2, 140  + (Math.sin(this.spriteIndex*.08)*8), .8);
-        drawC("mini_logo", c.width/2, 50 + (Math.sin((this.spriteIndex+10)*.08)*5), .8);
+        drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
+        drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
@@ -277,13 +290,13 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             /* ctx.font = 55 * this.buttonScale + "px mario-kart";
             ctx.textAlign = "left";
             ctx.fillStyle = "white"; */
-            var globalOffset = -30 * this.buttonScale; 
+            var globalOffset = -30 * this.buttonScale;
 
 
-            this.progress+=0.05;
-            if(this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 10);
-                else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
-            
+            this.progress += 0.05;
+            if (this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 10);
+            else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
+
             /* for (let j = 0; j < text.length; j++) {
                 if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
                 type(text[j], tilt + this.buttonPositions.x + (j * 40 * this.buttonScale) - globalOffset + 80 * this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
@@ -302,15 +315,15 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             type(version, 10, 10, 1);
 
             // Draw board
-            this.pinIndex+=.09;
-            draw("table", 337, 220, 2)
-            for(let i = 0; i < unlockedIcons.length; i++){
+            this.pinIndex += .09;
+            /*draw("table", 337, 220, 2)
+            for (let i = 0; i < unlockedIcons.length; i++) {
                 let x = i % 4;
                 let y = (i - x) / 4;
                 jump = 0;
-                if(Math.round(this.pinIndex) % 20 == i) jump = -2;
+                if (Math.round(this.pinIndex) % 20 == i) jump = -2;
                 drawC(unlockedIcons[i], 389 + x * 64, jump + 272 + y * 64, 2);
-            }
+            }*/
 
             /* Warning signs */
 
@@ -392,14 +405,14 @@ var optionsRender = {
     }, {
         text: "Lock to 60 FPS",
         source: "limitFPS"
-    },],
+    }, ],
     spriteIndex: 0,
     paint: function () {
 
         /* Draw background */
         fill("#305a82");
         this.spriteIndex++;
-        
+
         ctx.fillStyle = "rgba(0,0,0,0.50)";
         var width = canvas.width - (canvas.width / 4)
         var height = canvas.height - (canvas.height / 8);
@@ -407,10 +420,10 @@ var optionsRender = {
         ctx.fillRect(540, 30, 20, height);
         ctx.fillStyle = "#ffbf00";
         ctx.fillRect(545, 35 + this.selectedOption * 10, 10, height - this.options.length * 10);
-        
-        while ((this.selectedOption % this.options.length > this.startPoint + 2) && (this. startPoint < this.options.length - 5)) this.startPoint++;
+
+        while ((this.selectedOption % this.options.length > this.startPoint + 2) && (this.startPoint < this.options.length - 5)) this.startPoint++;
         while ((this.selectedOption % this.options.length < this.startPoint + 2) && (this.startPoint > 0)) this.startPoint--;
-        
+
         for (let i = this.startPoint; i < this.startPoint + 5; i++) {
             var button = {
                 x: this.buttonPositions.x = (canvas.width / 2) - (this.buttonStyles.width / 2),
@@ -428,23 +441,23 @@ var optionsRender = {
                 scale: 1,
                 otherScale: 1
             }
-            
+
             if (this.selectedOption % this.options.length == i) {
                 // Selected button
-                
+
                 button.x -= this.buttonZoom;
                 button.y -= this.buttonZoom;
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
-                
+
                 button.color = "#3d3d3d"
                 // Text
-                
+
                 text.scale = 1;
                 text.x -= 20;
                 text.y -= 0;
                 text.otherScale = 1.1;
-                
+
             }
 
             ctx.fillStyle = button.color;
@@ -534,7 +547,7 @@ function getAmountOfCommits() {
 
                     if (message.indexOf("v.") != -1) {
                         version = message.substr(message.indexOf("v."), message.indexOf(" ")) + "." + i;
-                        console.log('%c'+ "Mini-Rumble " + version + " 👌", 'color: #f4425c; font-size:15px;font-family:Ubuntu;');
+                        console.log('%c' + "Mini-Rumble " + version + " 👌", 'color: #f4425c; font-size:15px;font-family:Ubuntu;');
                         finalVersion = true;
                     }
                     i++;
@@ -664,8 +677,8 @@ function importTextures() {
     });
 
     window.overlaySprites = [
-        importSpriteSheet("rumble/overlay/overlay_XX.png", 20), 
-        importTexture("rumble/overlay_mystery.png"), 
+        importSpriteSheet("rumble/overlay/overlay_XX.png", 20),
+        importTexture("rumble/overlay_mystery.png"),
         importTexture("rumble/overlay_turbo.png")
     ];
 
@@ -722,14 +735,14 @@ function checkCollision(obj1, obj2) {
 
     if (obj1.texture === undefined) obj1.texture = obj1.sprite;
     if (obj2.texture === undefined) obj2.texture = obj2.sprite;
-    if(obj1.texture.constructor == String) obj1.texture = t(obj1.texture)
-    if(obj2.texture.constructor == String) obj2.texture = t(obj2.texture)
+    if (obj1.texture.constructor == String) obj1.texture = t(obj1.texture)
+    if (obj2.texture.constructor == String) obj2.texture = t(obj2.texture)
 
     if (obj1.x < obj2.x + obj2.texture.width &&
         obj1.x + obj1.texture.width > obj2.x &&
         obj1.y < obj2.y + obj2.texture.height &&
         obj1.texture.height + obj1.y > obj2.y) {
-        
+
         /* Collision has happened, calculate further */
 
         info = {
@@ -744,18 +757,18 @@ function checkCollision(obj1, obj2) {
         /* From left value */
         values[0] = ((obj1.x + obj1.texture.width - obj2.x)) /* * obj1.texture.width; / Possible addition */
         /* From right value */
-        values[1] = (obj2.x+obj2.texture.width - obj1.x);
+        values[1] = (obj2.x + obj2.texture.width - obj1.x);
         /* From top values */
         values[2] = (obj1.y + obj1.texture.height - obj2.y);
-        /* From bottom value */        
-        values[3] =  obj2.texture.height + obj2.y - obj1.y;
+        /* From bottom value */
+        values[3] = obj2.texture.height + obj2.y - obj1.y;
 
         /**
          * Get the shortest distance from values, the shortest one will be the direction of overlap.
          */
         short = 0;
-        for(let i = 0; i < values.length; i++){
-            if(values[i] < values[short]) short = i;
+        for (let i = 0; i < values.length; i++) {
+            if (values[i] < values[short]) short = i;
         }
 
         return {
@@ -781,7 +794,7 @@ function importSound(sound) {
 }
 
 function s(name) {
-    /* Return a sound file from name */
+    /* Return a sound varaible from name */
     if (name.indexOf(".") != -1) {
         var sound = name;
         var soundName = sound.substr(sound.lastIndexOf("/") + 1);
@@ -792,7 +805,10 @@ function s(name) {
 }
 
 function playSound(name, volume) {
-
+    /**
+     * Play a previously imported sound from the name or path. 
+     * Volume does not have to be provided and will be defaulted to .4
+     */
     if (globalOptions.disableSound) return;
     if (name.indexOf(".") != -1) {
         var sound = name;
@@ -809,6 +825,10 @@ function playSound(name, volume) {
 var keysDown = new Array();
 
 function keyDown(keys) {
+    /**
+     * Check if a key or any of multible kayes in an array are down. 
+     * Provide the keycode(s)
+     */
     if (!isNaN(keys)) keys = [keys];
     for (let i = 0; i < keysDown.length; i++) {
         if (keys.indexOf(keysDown[i]) != -1) return true;
@@ -820,7 +840,7 @@ function keyDown(keys) {
 function startGame() {
     /* First start of the game, total reset. */
     window.difficulty = initialDifficulty;
-    window.overlaySprite = overlaySprites[Math.floor(Math.random()*overlaySprites.length)];
+    window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
         window.lives = 3;
@@ -955,14 +975,14 @@ function detectMobileInput(value) {
     document.getElementById("keyboard-controlls").value = "";
 }
 
-function endGame(){
+function endGame() {
     try {
         backgroundSound.pause();
         backgroundSound.playbackRate = 1;
         backgroundSound.currentTime = 0;
         //setTimeout(()=> {clearInterval(slowDown);}, 250);
     } catch (e) {}
-   
+
     showingClearedScreen = false;
     showingOpeningAnimation = false;
     failedCalled = false;
@@ -971,12 +991,24 @@ function endGame(){
     inGame = false;
     playingMenuMusic = false;
     /* End all possible timeouts */
-    try{ clearTimeout( newGameTimout); } catch(e) {}
-    try{ clearTimeout( setClearedTimeout); } catch(e) {}
-    try{ clearTimeout( lifeTimeout); } catch(e) {}
-    try{ clearTimeout( updateTimout); } catch(e) {}
-    try{ clearTimeout( startTimout); } catch(e) {}
-    try{ clearTimeout( finalTimeout); } catch(e) {}
+    try {
+        clearTimeout(newGameTimout);
+    } catch (e) {}
+    try {
+        clearTimeout(setClearedTimeout);
+    } catch (e) {}
+    try {
+        clearTimeout(lifeTimeout);
+    } catch (e) {}
+    try {
+        clearTimeout(updateTimout);
+    } catch (e) {}
+    try {
+        clearTimeout(startTimout);
+    } catch (e) {}
+    try {
+        clearTimeout(finalTimeout);
+    } catch (e) {}
 }
 
 function click(code, char) {
@@ -984,8 +1016,8 @@ function click(code, char) {
      * Key event emiter.
      * Emits a click event to the current mini-game or scene.
      */
-    if(inGame && code == 27) endGame();
-    
+    if (inGame && code == 27) endGame();
+
     if (!ready) return;
     if (disableInputs) return;
     var key = {
@@ -1044,12 +1076,27 @@ function cleared(ms) {
     }, ms);
 }
 
-function badgeGet(iconName) {
-    if (unlockedIcons.indexOf(iconName) == -1) {
-        unlockedIcons.push(iconName);
+
+
+function achieve(achievement) {
+    /* achievement variable does NOT have to be provided, to unlock the default achievement for the mini-game, just call achieve(); */
+    /**
+     * achievement = {icon: "iconName", displayName: "Short description", varName: "CODE_FOR_ACHIEVEMENT"}
+     */
+
+    if (achievement === undefined) {
+        achievement = {
+            icon: miniGame.achievement,
+            displayName: miniGame.displayName,
+            varName: miniGame.varName
+        }
     }
+
+
+
+
 }
-var unlockedIcons = [];
+
 
 
 
@@ -1097,12 +1144,12 @@ function drawOverlay() {
 
     }
     overlayProgress += 0.3; // Speed
-    if(overlaySprite.constructor == Array){
+    if (overlaySprite.constructor == Array) {
         ctx.drawImage(overlaySprite[Math.round(overlayProgress) % overlaySprite.length], 0, 0);
     } else {
         ctx.drawImage(overlaySprite, 0, 0);
     }
-    
+
 
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
@@ -1113,10 +1160,10 @@ function drawOverlay() {
     type(timePrint, 580, 417, 2);
 
     ctx.fillStyle = "#f4d942",
-    ctx.textAlign = "left";
+        ctx.textAlign = "left";
     type(score.toString(), 415, 417, 2);
     ctx.fillStyle = "#fb183b",
-    type(lives.toString(), 505, 417, 2);
+        type(lives.toString(), 505, 417, 2);
 }
 
 var failedCalled = false;
@@ -1129,14 +1176,16 @@ function failed(ms) {
     disableInputs = true;
 
 
-    if(lives == 1 /* Boi has no more lives left! */){
+    if (lives == 1 /* Boi has no more lives left! */ ) {
         window.lifeTimeout = setTimeout(() => {
             disableKeyboard = false;
             miniGame = undefined;
             showClearedScreen("Game Over!", "#8c2424");
             s("hurt").playbackRate = .2;
             s("hurt").play();
-            s("hurt").onended = () => {s("hurt").playbackRate = 1};
+            s("hurt").onended = () => {
+                s("hurt").playbackRate = 1
+            };
             window.finalTimeout = setTimeout(() => {
                 try {
                     backgroundSound.pause();
@@ -1164,19 +1213,19 @@ function failed(ms) {
             }, 400);
         }, ms)
     }
-    
+
 }
 
-function log(){
-    for(let i = 0; i < arguments.length; i++){
-        if(globalOptions.devTools){
+function log() {
+    for (let i = 0; i < arguments.length; i++) {
+        if (globalOptions.devTools) {
             string = "";
-            if(arguments[i].constructor == String && arguments.length == 1){
+            if (arguments[i].constructor == String && arguments.length == 1) {
                 string = arguments[i];
             } else {
                 string = JSON.stringify(arguments);
             }
-            console.log('%c'+ string, 'background: #111; color: #bada55;');
+            console.log('%c' + string, 'background: #111; color: #bada55;');
         }
     }
 }
@@ -1190,15 +1239,18 @@ function draw(sprite, x, y, scale, rotation, opacity) {
      * please instead make a second flipped sprite.
      */
 
-     /* Import texture if a String is provided. */
+    /* Import texture if a String is provided. */
     if (sprite.constructor == String) sprite = t(sprite);
     if (rotation === undefined) rotation = 0;
     if (scale === undefined) scale = 1;
-    if( opacity === undefined) opacity = 1;
-    
+    if (opacity === undefined) opacity = 1;
+
     width = sprite.width * scale; // Get width of the sprite
     height = sprite.height * scale; // Get height of the sprite
-    center = {x: x + width/2, y: y + height/2}
+    center = {
+        x: x + width / 2,
+        y: y + height / 2
+    }
 
     if (y === undefined) {
         if (x !== undefined) scale = x;
@@ -1215,7 +1267,7 @@ function draw(sprite, x, y, scale, rotation, opacity) {
     ctx.globalAlpha = opacity;
     // Draw image
     ctx.drawImage(sprite, x, y, width, height);
-    
+
     ctx.restore();
 }
 
@@ -1233,8 +1285,14 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
     width = sprite.width * scale; // Get width of the sprite
     height = sprite.height * scale; // Get height of the sprite
-    center = {x: x + width/2, y: y + height/2}
-    centerDraw = {x: x - width/2, y: y - height/2}
+    center = {
+        x: x + width / 2,
+        y: y + height / 2
+    }
+    centerDraw = {
+        x: x - width / 2,
+        y: y - height / 2
+    }
 
     if (y === undefined) {
         if (x !== undefined) scale = x;
@@ -1247,60 +1305,59 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
     ctx.translate(center.x, center.y);
     ctx.rotate(rotation * Math.PI / 180);
     ctx.translate(-center.x, -center.y);
-     // Set opacity
+    // Set opacity
     ctx.globalAlpha = opacity;
     // Draw image
     ctx.drawImage(sprite, centerDraw.x, centerDraw.y, width, height);
     ctx.restore();
 }
 
-function type(text, x, y, size, jumpIndex, jumpHeight){
+function type(text, x, y, size, jumpIndex, jumpHeight) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
-    special = {
-        in: [':', '.', '!', '?', ';', ',', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", '0_0','0_1','0_2','0_3','0_4','0_5','0_6','0_7','0_8','0_9']
+    special = { in: [':', '.', '!', '?', ';', ',', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */
     letterIndex = 0;
     jump = 0;
     /* Account for unassigned variables */
-    if(jumpHeight == undefined) jumpHeight = 15;
-    if(size == undefined) size = 2;
+    if (jumpHeight == undefined) jumpHeight = 15;
+    if (size == undefined) size = 2;
 
     text.forEach(letter => {
         /* Draw out letter by letter */
         /* Special spacing for some characters */
         spacing = 7;
         /* Thinner letters */
-        if(['i', '.', '!', ':', ';'].indexOf(letter) != -1) spacing = 3;
+        if (['i', '.', '!', ':', ';'].indexOf(letter) != -1) spacing = 3;
         /* Wider letters */
-        if(['m', 'w'].indexOf(letter) != -1) spacing = 9;
-        if(letter != " "){
+        if (['m', 'w'].indexOf(letter) != -1) spacing = 9;
+        if (letter != " ") {
             finalLetter = "";
-            if(alpha.indexOf(letter) != -1){
+            if (alpha.indexOf(letter) != -1) {
                 /* Letter is alpha */
                 finalLetter = letter;
-            } else if (special.in.indexOf(letter) != -1){
+            } else if (special.in.indexOf(letter) != -1) {
                 /* Special symbol supported! */
                 finalLetter = special.translate[special.in.indexOf(letter)];
             } else {
                 console.warn("Symbol not supported! " + letter);
             }
-            if(finalLetter !== ""){
+            if (finalLetter !== "") {
                 jump = 0;
-                if(jumpIndex !== undefined){
-                    if(Math.floor(jumpIndex) == letterIndex){
+                if (jumpIndex !== undefined) {
+                    if (Math.floor(jumpIndex) == letterIndex) {
                         jump = Math.floor(jumpIndex) - jumpIndex;
-                        jump = jump+1;
-                        if(jump > .5) jump = 1-jump;
-                        jump = jump*jumpHeight;
+                        jump = jump + 1;
+                        if (jump > .5) jump = 1 - jump;
+                        jump = jump * jumpHeight;
                     }
                 }
                 draw(finalLetter, position, y - jump, size);
             }
         }
-        position+=spacing * size;
+        position += spacing * size;
         letterIndex++;
     })
 }

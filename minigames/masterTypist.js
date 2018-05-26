@@ -1,6 +1,7 @@
 var typeMaster = {
     varName: "typeMaster",
     displayName: "Type Master",
+    achievement: "iconpath.png",
     icon: "gameicons/typeMaster_icon.png",
     timed: true,
     timedWin: false,
@@ -9,7 +10,7 @@ var typeMaster = {
     ],
     sounds: [
         "type_master/key_0.mp3",
-        "type_master/key_2.mp3", 
+        "type_master/key_2.mp3",
         "type_master/key_3.mp3"
     ],
     requiresKeyboard: true,
