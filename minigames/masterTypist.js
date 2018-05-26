@@ -1,7 +1,6 @@
 var typeMaster = {
     varName: "typeMaster",
     displayName: "Type Master",
-    achievement: "iconpath.png",
     icon: "gameicons/typeMaster_icon.png",
     timed: true,
     timedWin: false,

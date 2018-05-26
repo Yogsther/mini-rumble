@@ -32,7 +32,7 @@ var loadingMessages = [
     "Building bootlegs"
 ]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
-var unlockedAchievements = new Array();
+
 renderLoadingScreen();
 
 
@@ -49,6 +49,7 @@ var globalOptions = {
 
 var miniGames = new Array();
 var activeMinigames = miniGames.slice();
+var unlockedAchievements = [];
 
 var backgroundSound = undefined;
 var playingMenuMusic = false;
@@ -72,15 +73,17 @@ var titleSounds = [
 ];
 
 function loadAchievements() {
-    var unlockedAchievements = localStorage.getItem("achievements");
-    if (unlockedAchievements === undefined) {
+    window.unlockedAchievements = localStorage.getItem("achievements");
+    if (unlockedAchievements == null) {
         unlockedAchievements = new Array();
-        localStorage.setItem("achievements", unlockedAchievements);
+        localStorage.setItem("achievements", JSON.stringify(unlockedAchievements));
+    } else {
+        unlockedAchievements = JSON.parse(unlockedAchievements);
     }
 }
 
 function saveAchievements() {
-    localStorage.setItem("achievements", unlockedAchievements);
+    localStorage.setItem("achievements", JSON.stringify(unlockedAchievements));
 }
 
 
@@ -219,6 +222,31 @@ var onlineRender = {
 }
 
 
+
+function getAchievement(varName){
+    var achievement = undefined;
+    for(let i = 0; i < miniGames.length; i++){
+        if(miniGames[i].varName == varName){
+            return {
+                varName: varName,
+                icon: miniGames[i].icon,
+                displayName: miniGames[i].displayName
+            }            
+            
+        }
+    }
+
+    if(achievement === undefined){
+        for(let i = 0; i < achievements.length; i++){
+            if(achievement[i].varName == varName){
+                return achievement[i];
+            }
+        }
+    }
+
+}
+
+
 /**
  * Menu renders,
  * Simular structure to minigames but a little diffrent.
@@ -316,14 +344,14 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
 
             // Draw board
             this.pinIndex += .09;
-            /*draw("table", 337, 220, 2)
-            for (let i = 0; i < unlockedIcons.length; i++) {
+            draw("table", 337, 220, 2)
+            for (let i = 0; i < unlockedAchievements.length; i++) {
                 let x = i % 4;
                 let y = (i - x) / 4;
                 jump = 0;
                 if (Math.round(this.pinIndex) % 20 == i) jump = -2;
-                drawC(unlockedIcons[i], 389 + x * 64, jump + 272 + y * 64, 2);
-            }*/
+                drawC(getAchievement(unlockedAchievements[i]).icon, 389 + x * 64, jump + 272 + y * 64, 2);
+            }
 
             /* Warning signs */
 
@@ -519,6 +547,7 @@ window.onload = () => {
     ready = false;
     checkForMobileUser()
     loadSettings();
+    loadAchievements();
     getAmountOfCommits();
     loadFinalStuff();
     loadLast();
@@ -623,6 +652,8 @@ function checkForMobileUser() {
 
 
 function t(name) {
+    if(name.indexOf("/") != -1) name = name.substr(name.lastIndexOf("/")+1, name.length-1);
+    if(name.indexOf(".") != -1) name = name.substr(0, name.lastIndexOf("."));    
     return textures[name];
 }
 
@@ -1078,24 +1109,21 @@ function cleared(ms) {
 }
 
 
+var achievements = [
+    {
+        /* Example */
+        icon: "test.png", displayName: "Short description", varName: "CODE_FOR_ACHIEVEMENT"
+    }
+]
 
 function achieve(achievement) {
     /* achievement variable does NOT have to be provided, to unlock the default achievement for the mini-game, just call achieve(); */
-    /**
-     * achievement = {icon: "iconName", displayName: "Short description", varName: "CODE_FOR_ACHIEVEMENT"}
-     */
-
-    if (achievement === undefined) {
-        achievement = {
-            icon: miniGame.achievement,
-            displayName: miniGame.displayName,
-            varName: miniGame.varName
-        }
+    /* If you want to unlock another achievement, provide the varName for that achievement */
+    if (achievement === undefined) achievement = miniGame.varName;
+    if(unlockedAchievements.indexOf(achievement) == -1){
+        unlockedAchievements.push(achievement);
+        saveAchievements();
     }
-
-
-
-
 }
 
 
