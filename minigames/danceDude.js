@@ -100,6 +100,10 @@ var danceDude = {
 		if (this.hitRight) {
 			draw("dance_arrow_right_hit", 0, 10);
 		}
+
+		// Draw progress counter
+		this.arrowsLeft = this.hitGoal - this.arrowsHit;
+		type(this.arrowsHit + "/" + this.hitGoal, 400, 100);
 	},
 	loop: function () {
 		this.hitPos = (Math.floor(Math.random() * 7) * 70) + 480;
@@ -216,7 +220,7 @@ var danceDude = {
 		}
 
 		if ((this.arrowsHit >= this.hitGoal) && (this.danceStart == true)) {
-			if (this.dif > 8) {
+			if (this.dif >= 8) {
 				achieve();
 			}
 			cleared();

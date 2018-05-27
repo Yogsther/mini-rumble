@@ -58,7 +58,7 @@ var carrotCatch = {
             setTimeout(() => {
                 disableInputs = false;
                 if (this.carrotCatchSuccess == true) {
-                    if (this.dif > 8) {
+                    if (this.dif >= 8) {
                         achieve();
                     }
                     cleared();

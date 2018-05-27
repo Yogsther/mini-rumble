@@ -1,6 +1,6 @@
 var lockAndLoad = {
     varName: "lockAndLoad",
-    displayName: "Lock n Load",
+    displayName: "Lock-n-Load",
     introText: "Lock n Load!",
     icon: "gameicons/lockAndLoad_icon.png",
     timed: true,
@@ -119,7 +119,7 @@ var lockAndLoad = {
         }
         if (this.enemyShot) {
             this.shootBulletPos.y = 500;
-            if (this.dif > 8) {
+            if (this.dif >= 8) {
 				achieve();
 			}
             cleared();

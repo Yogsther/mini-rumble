@@ -144,7 +144,7 @@ var timer = 0;
 
 /* All texture name to be imported during the importTextures process. */
 var miniGameIcons = []
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png"]
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/hardcore_logo.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -183,10 +183,7 @@ var onlineRender = {
         }
 
         // Online text
-        ctx.fillStyle = "white";
-        ctx.textAlign = "left";
-        ctx.font = "50px mario-maker";
-        ctx.fillText("Online!", 50, 70)
+        type("Online!", 50, 70)
 
 
         /* Buttons */
@@ -202,10 +199,7 @@ var onlineRender = {
             zoom = this.buttonZoom[i]
             ctx.fillStyle = "#7092d1";
             ctx.fillRect(25 - zoom, 140 + (i * (100 + 20)) - zoom, 200 + zoom * 2, 100 + zoom * 2);
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center";
-            ctx.font = 30 + (zoom * 2) + "px mario-maker";
-            ctx.fillText(this.buttons[i], 25 + (200 / 2) - (zoom / 2) + 5, 140 + (i * (100 + 20)) - zoom)
+            type(this.buttons[i], 25 + (200 / 2) - (zoom / 2) + 5, 140 + (i * (100 + 20)) - zoom)
 
         }
 
@@ -282,7 +276,12 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         this.spriteIndex++;
         // Draw logo
         drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
+        //Changes the titlescreen if hardcore mode is enabled
+        if (!globalOptions.hardcoreMode) {
         drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+        } else {
+            drawC("hardcore_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+        }
 
         /* Draw buttons */
         for (let i = 0; i < 3; i++) {
@@ -422,7 +421,7 @@ var optionsRender = {
         text: "Display FPS",
         source: "displayFPS"
     }, {
-        text: "Enable Dev tools",
+        text: "Enable Dev-tools",
         source: "devTools"
     }, {
         text: "Disable sound",
@@ -491,9 +490,6 @@ var optionsRender = {
 
             ctx.fillStyle = button.color;
             ctx.fillRect(button.x, button.y, button.width, button.height);
-            ctx.fillStyle = "white";
-            ctx.font = (20 * text.scale) + "px mario-maker";
-            ctx.textAlign = "left";
             type(text.display + ":", text.x, text.y);
             // Status
             var statusText = {
@@ -1180,16 +1176,11 @@ function drawOverlay() {
     }
 
 
-    ctx.fillStyle = "white";
-    ctx.textAlign = "center";
-    ctx.font = "30px mario-maker"
     var timePrint = timeLeft.toString();
     if (timeLeft < 0) timePrint = "0";
     if (!timed) timePrint = "?";
     type(timePrint, 580, 417, 2);
 
-    ctx.fillStyle = "#f4d942",
-        ctx.textAlign = "left";
     type(score.toString(), 415, 417, 2);
     ctx.fillStyle = "#fb183b",
         type(lives.toString(), 505, 417, 2);
@@ -1343,8 +1334,8 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
 function type(text, x, y, size, jumpIndex, jumpHeight) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
-    special = { in: [':', '.', '!', '?', ';', ',', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
+    special = { in: [':', '.', '!', '?', ';', ',', '_', '-', '/', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */

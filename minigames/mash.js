@@ -102,7 +102,7 @@ var mash = {
     loop: function () {
         if (this.sandwich.length < 1) {
             // Sandwich is empty!
-            if (this.dif > 8) {
+            if (this.dif >= 10) {
 				achieve();
 			}
             cleared();
