@@ -7,7 +7,8 @@ var nitroRace = {
 	textures: [
 		"nitroRace/nitro_player.png",
 		"nitroRace/nitro_playerShadow.png",
-		"nitroRace/nitro_road.png"
+		"nitroRace/nitro_road.png",
+		"nitroRace/nitro_finishline.png"
 	],
 	sprites: [
 
@@ -38,12 +39,12 @@ var nitroRace = {
 
 		//Draw road
 		draw("nitro_road", 0, (this.player.distance % 480) - 480, 4);
-		draw("nitro_road", 0, (this.player.distance % 480), 4);
 
 		//Draw Finish line
-		ctx.fillRect((canvas.width / 2) - 250, this.goal.y + this.player.distance, 500, 50)
+		draw("nitro_finishline", 120, this.goal.y + this.player.distance, 4);
+
 		//Draw player
-		draw("nitro_playerShadow", this.player.x, this.player.y + 20, 4, this.player.dir);
+		draw("nitro_playerShadow", this.player.x, this.player.y + 15, 4, this.player.dir);
 		draw("nitro_player", this.player.x, this.player.y, this.player.scale, this.player.dir);
 
 		//Draw speedometer
@@ -59,9 +60,9 @@ var nitroRace = {
 			this.player.vel += this.player.acc;
 		} else if (this.player.vel > 0) {
 			this.player.vel -= this.player.deacc;
-		} 
+		}
 
-		//prevents the player from gaining a negative velocity
+		//prevents the player from having a negative velocity
 		if (this.player.vel <= 0) {
 			this.player.vel = 0;
 		}
