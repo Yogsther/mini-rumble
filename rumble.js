@@ -1322,9 +1322,9 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
     ctx.save(); // Save context
     // Rotate and move origin
-    ctx.translate(center.x, center.y);
+    ctx.translate(x, y);
     ctx.rotate(rotation * Math.PI / 180);
-    ctx.translate(-center.x, -center.y);
+    ctx.translate(-x, -y);
     // Set opacity
     ctx.globalAlpha = opacity;
     // Draw image
