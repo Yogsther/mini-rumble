@@ -98,10 +98,15 @@ function loadSettings() {
 function expandOptions() {
     for (let i = 0; i < miniGames.length; i++) {
         eval("globalOptions." + miniGames[i].varName + " = false");
-        optionsRender.options.push({
-            text: "Disable " + miniGames[i].displayName,
-            source: miniGames[i].varName
-        });
+        for (let j = 0; j < optionsRender.options.length; j++) {
+            if (optionsRender.options[j].text == "Disable Gamemodes") {
+                optionsRender.options[j].source.push({
+                    text: "Enable " + miniGames[i].displayName,
+                    source: miniGames[i].varName,
+                    type: "boolean"
+                });
+            }
+        }
     }
 }
 
@@ -217,22 +222,22 @@ var onlineRender = {
 
 
 
-function getAchievement(varName){
+function getAchievement(varName) {
     var achievement = undefined;
-    for(let i = 0; i < miniGames.length; i++){
-        if(miniGames[i].varName == varName){
+    for (let i = 0; i < miniGames.length; i++) {
+        if (miniGames[i].varName == varName) {
             return {
                 varName: varName,
                 icon: miniGames[i].icon,
                 displayName: miniGames[i].displayName
-            }            
-            
+            }
+
         }
     }
 
-    if(achievement === undefined){
-        for(let i = 0; i < achievements.length; i++){
-            if(achievement[i].varName == varName){
+    if (achievement === undefined) {
+        for (let i = 0; i < achievements.length; i++) {
+            if (achievement[i].varName == varName) {
                 return achievement[i];
             }
         }
@@ -278,7 +283,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
         //Changes the titlescreen if hardcore mode is enabled
         if (!globalOptions.hardcoreMode) {
-        drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
         } else {
             drawC("hardcore_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
         }
@@ -415,29 +420,68 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
+        text: "Disable Gamemodes",
+        source: [ {
+            text: "Enable all gamemodes",
+            source: function() {
+                for(let i = 0; i < miniGames.length; i++){
+                    eval("globalOptions."+miniGames[i].varName+" = true");
+                }
+            },
+            type: "function"
+        },{
+            text: "Disable all gamemodes",
+            source: function() {
+                for(let i = 0; i < miniGames.length; i++){
+                    eval("globalOptions."+miniGames[i].varName+" = false");
+                }
+            },
+            type: "function"
+        }],
+        type: "link"
+    }, {
         text: "Enable hardcore mode",
-        source: "hardcoreMode"
+        source: "hardcoreMode",
+        type: "boolean"
     }, {
         text: "Display FPS",
-        source: "displayFPS"
+        source: "displayFPS",
+        type: "boolean"
     }, {
         text: "Enable Dev-tools",
-        source: "devTools"
+        source: "devTools",
+        type: "boolean"
     }, {
-        text: "Disable sound",
-        source: "disableSound"
+        text: "Enable sound",
+        source: "disableSound",
+        type: "boolean",
+        flip: true
     }, {
-        text: "Disable music",
-        source: "disableMusic"
+        text: "Enable music",
+        source: "disableMusic",
+        type: "boolean",
+        flip: true
     }, {
         text: "Lock to 60 FPS",
-        source: "limitFPS"
-    }, ],
+        source: "limitFPS",
+        type: "boolean"
+    }],
+    selectedOptions: undefined,
     spriteIndex: 0,
     paint: function () {
 
+        var colors = {
+            disabled: "#351d1d",
+            enabled: "#18281c",
+            link: "#162733",
+            background: "#111",
+            scroll: "#ffbf00",
+            border: "#ffbc00"
+        }
+
+        if (this.selectedOptions === undefined) this.selectedOptions = this.options;
         /* Draw background */
-        fill("#305a82");
+        fill(colors.background);
         this.spriteIndex++;
 
         ctx.fillStyle = "rgba(0,0,0,0.50)";
@@ -445,12 +489,12 @@ var optionsRender = {
         var height = canvas.height - (canvas.height / 8);
         ctx.fillRect((canvas.width - width) / 2, (canvas.height - height) / 2, width, height);
         ctx.fillRect(540, 30, 20, height);
-        ctx.fillStyle = "#ffbf00";
+        ctx.fillStyle = colors.scroll;
 
-        ctx.fillRect(545, 35 + this.startPoint * 10, 10, height - (this.options.length - 4) * 10);
+        ctx.fillRect(545, 35 + this.startPoint * 10, 10, height - (this.selectedOptions.length - 4) * 10);
 
-        while ((this.selectedOption % this.options.length > this.startPoint + 2) && (this. startPoint < this.options.length - 5)) this.startPoint++;
-        while ((this.selectedOption % this.options.length < this.startPoint + 2) && (this.startPoint > 0)) this.startPoint--;
+        while ((this.selectedOption % this.selectedOptions.length > this.startPoint + 2) && (this.startPoint < this.selectedOptions.length - 5)) this.startPoint++;
+        while ((this.selectedOption % this.selectedOptions.length < this.startPoint + 2) && (this.startPoint > 0)) this.startPoint--;
 
         for (let i = this.startPoint; i < this.startPoint + 5; i++) {
             var button = {
@@ -458,19 +502,37 @@ var optionsRender = {
                 y: this.buttonPositions.y + ((i - this.startPoint) * (this.buttonSpacing + this.buttonStyles.height)),
                 width: this.buttonStyles.width,
                 height: this.buttonStyles.height,
-                color: "#0c1620"
+                color: colors.enabled
             }
 
+            if(this.selectedOptions[i].flip){
+                button.color = colors.disabled;
+            }
+            if (this.selectedOptions[i].type == 'boolean') {
+                if (eval("!globalOptions." + this.selectedOptions[i].source)) {
+                    button.color = colors.disabled
+                    if(this.selectedOptions[i].flip) {
+                        button.color = colors.enabled;
+                    }
+                }
+            }
+
+            if (this.selectedOptions[i].type !== 'boolean') {
+                button.color = colors.link
+                // TODO: Other color for functions
+            }
+
+            /* Set properties for text */
             var text = {
-                display: this.options[i].text,
-                state: this.options[i].source,
+                display: this.selectedOptions[i].text,
+                state: this.selectedOptions[i].source,
                 x: button.x + 30,
                 y: button.y + 18,
                 scale: 1,
                 otherScale: 1
             }
 
-            if (this.selectedOption % this.options.length == i) {
+            if (this.selectedOption % this.selectedOptions.length == i) {
                 // Selected button
 
                 button.x -= this.buttonZoom;
@@ -478,7 +540,6 @@ var optionsRender = {
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
 
-                button.color = "#3d3d3d"
                 // Text
 
                 text.scale = 1;
@@ -486,24 +547,33 @@ var optionsRender = {
                 text.y -= 0;
                 text.otherScale = 1.1;
 
+                // Draw border
+                borderWidth = 5;
+                ctx.fillStyle = colors.border;
+                ctx.fillRect(button.x - borderWidth, button.y - borderWidth, button.width + borderWidth * 2, button.height + borderWidth * 2);
+
             }
 
             ctx.fillStyle = button.color;
             ctx.fillRect(button.x, button.y, button.width, button.height);
-            type(text.display + ":", text.x, text.y);
+            type(text.display, text.x, text.y);
             // Status
-            var statusText = {
-                text: "OFF",
-                color: "#912f2f"
-            };
-            if (eval("globalOptions." + this.options[i].source)) statusText = {
-                text: "ON",
-                color: "#2f9146"
-            };
-            ctx.textAlign = "right";
-            ctx.fillStyle = statusText.color;
-            type(statusText.text, text.x + 300 * (text.otherScale), text.y)
-
+            if (this.selectedOptions[i].type == "boolean") {
+                var statusText = {
+                    text: "OFF",
+                    color: "#912f2f"
+                };
+                if(this.selectedOptions[i].flip) statusText.text = "ON";
+                
+                if (eval("globalOptions." + this.selectedOptions[i].source)){
+                    statusText.text = "ON";
+                    if(this.selectedOptions[i].flip) statusText.text = "OFF";
+                }
+                
+                ctx.textAlign = "right";
+                ctx.fillStyle = statusText.color;
+                type(statusText.text, text.x + 300 * (text.otherScale), text.y)
+            }
         }
         type("Z: Back X: Select", 510, 460, 1);
     },
@@ -513,23 +583,38 @@ var optionsRender = {
         if (key.is(keys.down)) {
             this.selectedOption++;
             playEffect = true;
-            if (this.selectedOption > this.options.length - 1) this.selectedOption = 0;
+            if (this.selectedOption > this.selectedOptions.length - 1) this.selectedOption = 0;
         }
         if (key.is(keys.up)) {
             this.selectedOption--;
             playEffect = true;
-            if (this.selectedOption < 0) this.selectedOption = this.options.length - 1;
+            if (this.selectedOption < 0) this.selectedOption = this.selectedOptions.length - 1;
         }
         if (key.is(keys.action)) {
             // Toggle option
             playEffect = true;
-            eval("globalOptions." + this.options[this.selectedOption % this.options.length].source + "= !globalOptions." + this.options[this.selectedOption % this.options.length].source);
+            if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "boolean") {
+                eval("globalOptions." + this.selectedOptions[this.selectedOption % this.selectedOptions.length].source + "= !globalOptions." + this.selectedOptions[this.selectedOption % this.selectedOptions.length].source);
+            } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "link") {
+                oldSelectedOption = this.selectedOption
+                this.selectedOption = 0;
+                this.selectedOptions = this.selectedOptions[oldSelectedOption % this.selectedOptions.length].source;
+            } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "function"){
+                this.selectedOptions[this.selectedOption % this.selectedOptions.length].source();
+            }
+
             saveSettings();
         }
         if (key.is(keys.back)) {
             // Go back to manu
             playEffect = true;
-            selectedScene = 0;
+            if (this.selectedOptions !== this.options) {
+                this.selectedOption = 0;
+                this.selectedOptions = this.options
+            } else {
+                selectedScene = 0;
+            }
+
         }
 
         if (playEffect) playSound("menu-click", 1);
@@ -648,8 +733,8 @@ function checkForMobileUser() {
 
 
 function t(name) {
-    if(name.indexOf("/") != -1) name = name.substr(name.lastIndexOf("/")+1, name.length-1);
-    if(name.indexOf(".") != -1) name = name.substr(0, name.lastIndexOf("."));    
+    if (name.indexOf("/") != -1) name = name.substr(name.lastIndexOf("/") + 1, name.length - 1);
+    if (name.indexOf(".") != -1) name = name.substr(0, name.lastIndexOf("."));
     return textures[name];
 }
 
@@ -898,7 +983,7 @@ function newGame() {
     var miniGamesArray = miniGames.concat(); // Copy array
 
     for (let i = 0; i < miniGamesArray.length; i++) {
-        if (eval("globalOptions." + miniGamesArray[i].varName) || (miniGamesArray[i].wip && !globalOptions.devTools)) {
+        if (eval("!globalOptions." + miniGamesArray[i].varName) || (miniGamesArray[i].wip && !globalOptions.devTools)) {
             miniGamesArray.splice(i, 1);
             i--;
         }
@@ -1105,18 +1190,18 @@ function cleared(ms) {
 }
 
 
-var achievements = [
-    {
-        /* Example */
-        icon: "test.png", displayName: "Short description", varName: "CODE_FOR_ACHIEVEMENT"
-    }
-]
+var achievements = [{
+    /* Example */
+    icon: "test.png",
+    displayName: "Short description",
+    varName: "CODE_FOR_ACHIEVEMENT"
+}]
 
 function achieve(achievement) {
     /* achievement variable does NOT have to be provided, to unlock the default achievement for the mini-game, just call achieve(); */
     /* If you want to unlock another achievement, provide the varName for that achievement */
     if (achievement === undefined) achievement = miniGame.varName;
-    if(unlockedAchievements.indexOf(achievement) == -1){
+    if (unlockedAchievements.indexOf(achievement) == -1) {
         unlockedAchievements.push(achievement);
         saveAchievements();
     }
@@ -1255,7 +1340,7 @@ function draw(sprite, x, y, scale, rotation, opacity) {
      * Draw a texture on screen, provide a scale if you want.
      * You need to provide a scale if you want to change the rotation.
      * You can either submit an Image or a string of the name.
-     * Q: How do I flip a sprite? A: Flipping sprites in a canvas is very resource intensive,
+     * Note: Flipping sprites in a canvas is very resource intensive,
      * please instead make a second flipped sprite.
      */
 

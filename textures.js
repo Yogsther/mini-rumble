@@ -48,4 +48,4 @@ var miniRumbleFont = [
     "fonts/miniRumble_font/z.png"
 ];
 
-miniRumbleFont.forEach(font => {importTexture(font)});
+miniRumbleFont.forEach(font => importTexture(font));
