@@ -29,7 +29,8 @@ var loadingMessages = [
     "Fixsung typos",
     "Buffing the buttons",
     "Cooking spaghetti",
-    "Building bootlegs"
+    "Building bootlegs",
+    "Let's rumble!"
 ]
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 
@@ -44,7 +45,8 @@ var globalOptions = {
     devTools: false,
     disableSound: false,
     disableMusic: false,
-    limitFPS: false
+    limitFPS: false,
+    screensize: "1x"
 }
 
 var miniGames = new Array();
@@ -93,15 +95,20 @@ function loadSettings() {
     if (settings === undefined) return;
     globalOptions = Object.assign(globalOptions, JSON.parse(settings));
     loadWarnings();
+    loadScreenSettings();
+}
+
+function loadScreenSettings(){
+    c.style.zoom = globalOptions.screensize.substr(0, globalOptions.screensize.length-1);
 }
 
 function expandOptions() {
     for (let i = 0; i < miniGames.length; i++) {
-        eval("globalOptions." + miniGames[i].varName + " = false");
+        globalOptions[miniGames[i].varName] = false;
         for (let j = 0; j < optionsRender.options.length; j++) {
-            if (optionsRender.options[j].text == "Disable Gamemodes") {
+            if (optionsRender.options[j].text == "Toggle Gamemodes") {
                 optionsRender.options[j].source.push({
-                    text: "Enable " + miniGames[i].displayName,
+                    text: miniGames[i].displayName,
                     source: miniGames[i].varName,
                     type: "boolean"
                 });
@@ -121,7 +128,7 @@ function loadWarnings() {
     });
     var gamemodesDisabled = 0;
     for (let i = 0; i < miniGames.length; i++) {
-        if (eval("globalOptions." + miniGames[i].varName)) gamemodesDisabled++;
+        if (globalOptions[miniGames[i].varName]) gamemodesDisabled++;
     }
     var msg = " gamemodes are disabled."
     if (gamemodesDisabled < 2) msg = " gamemode is disabled."
@@ -420,60 +427,84 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
-        text: "Disable Gamemodes",
-        source: [ {
-            text: "Enable all gamemodes",
-            source: function() {
-                for(let i = 0; i < miniGames.length; i++){
-                    eval("globalOptions."+miniGames[i].varName+" = true");
-                }
-            },
-            type: "function"
-        },{
-            text: "Disable all gamemodes",
-            source: function() {
-                for(let i = 0; i < miniGames.length; i++){
-                    eval("globalOptions."+miniGames[i].varName+" = false");
-                }
-            },
-            type: "function"
-        }],
-        type: "link"
-    }, {
-        text: "Enable hardcore mode",
-        source: "hardcoreMode",
-        type: "boolean"
-    }, {
-        text: "Display FPS",
-        source: "displayFPS",
-        type: "boolean"
-    }, {
-        text: "Enable Dev-tools",
-        source: "devTools",
-        type: "boolean"
-    }, {
-        text: "Enable sound",
-        source: "disableSound",
-        type: "boolean",
-        flip: true
-    }, {
-        text: "Enable music",
-        source: "disableMusic",
-        type: "boolean",
-        flip: true
-    }, {
-        text: "Lock to 60 FPS",
-        source: "limitFPS",
-        type: "boolean"
-    }],
+            text: "Toggle Gamemodes",
+            source: [{
+                text: "Toggle all gamemodes",
+                source: function () {
+                    var positive = 0;
+                    var negative = 0;
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Check if the majority of the options are either on or off */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
+                            else negative++;
+                        }
+                    }
+
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Toggle all the options */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
+                            saveSettings();
+                        }
+                    }
+                },
+                type: "function"
+            }],
+            type: "link"
+        }, {
+            text: "Enable hardcore mode",
+            source: "hardcoreMode",
+            type: "boolean"
+        }, {
+            text: "Enable sound",
+            source: "disableSound",
+            type: "boolean",
+            flip: true
+        }, {
+            text: "Enable music",
+            source: "disableMusic",
+            type: "boolean",
+            flip: true
+        }, {
+            text: "Display FPS",
+            source: "displayFPS",
+            type: "boolean"
+        },
+        {
+            /* Display text */
+            text: "Screen size",
+            /* globalOptions source */
+            source: "screensize",
+            type: "alternative",
+            alternatives: [
+                /* First option is always default */
+                "1x", "1.2x", "1.5x", "1.8x", "2x"
+            ],
+            logic: function(alternative) {
+                c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length-1);
+            }
+        }, {
+            text: "Lock to 60 FPS",
+            source: "limitFPS",
+            type: "boolean"
+        }, {
+            text: "Enable Dev-tools",
+            source: "devTools",
+            type: "boolean"
+        }
+    ],
     selectedOptions: undefined,
     spriteIndex: 0,
     paint: function () {
 
         var colors = {
-            disabled: "#351d1d",
-            enabled: "#18281c",
-            link: "#162733",
+            disabled: "#ea3f3f",
+            enabled: "#3fea55",
+            buttonColor: "#262626",
+            highLightedButtonColor: "#383636",
+            link: "#ffffff",
+            function: "#ffbf00",
             background: "#111",
             scroll: "#ffbf00",
             border: "#ffbc00"
@@ -505,21 +536,25 @@ var optionsRender = {
                 color: colors.enabled
             }
 
-            if(this.selectedOptions[i].flip){
+            if (this.selectedOptions[i].flip) {
                 button.color = colors.disabled;
             }
+
             if (this.selectedOptions[i].type == 'boolean') {
-                if (eval("!globalOptions." + this.selectedOptions[i].source)) {
+                if (!globalOptions[this.selectedOptions[i].source]) {
                     button.color = colors.disabled
-                    if(this.selectedOptions[i].flip) {
+                    if (this.selectedOptions[i].flip) {
                         button.color = colors.enabled;
                     }
                 }
             }
 
-            if (this.selectedOptions[i].type !== 'boolean') {
+            if (this.selectedOptions[i].type == 'link') {
                 button.color = colors.link
-                // TODO: Other color for functions
+            }
+
+            if (this.selectedOptions[i].type == "function" || this.selectedOptions[i].type == "alternative") {
+                button.color = colors.function
             }
 
             /* Set properties for text */
@@ -534,14 +569,12 @@ var optionsRender = {
 
             if (this.selectedOption % this.selectedOptions.length == i) {
                 // Selected button
-
                 button.x -= this.buttonZoom;
                 button.y -= this.buttonZoom;
                 button.width += this.buttonZoom * 2;
                 button.height += this.buttonZoom * 2;
 
                 // Text
-
                 text.scale = 1;
                 text.x -= 20;
                 text.y -= 0;
@@ -549,12 +582,25 @@ var optionsRender = {
 
                 // Draw border
                 borderWidth = 5;
-                ctx.fillStyle = colors.border;
-                ctx.fillRect(button.x - borderWidth, button.y - borderWidth, button.width + borderWidth * 2, button.height + borderWidth * 2);
+                ctx.fillStyle = colors.disabled;
 
+                if (this.selectedOptions[i].type == "boolean") {
+                    if (this.selectedOptions[i].flip) ctx.fillStyle = colors.enabled;
+                    if (globalOptions[this.selectedOptions[i].source]) {
+                        ctx.fillStyle = colors.enabled;
+                        if (this.selectedOptions[i].flip) ctx.fillStyle = colors.disabled;
+                    }
+                }
+                if (this.selectedOptions[i].type !== "boolean") ctx.fillStyle = colors.border;
+                ctx.fillStyle = button.color
+                ctx.fillRect(button.x - borderWidth, button.y - borderWidth, button.width + borderWidth * 2, button.height + borderWidth * 2);
             }
 
             ctx.fillStyle = button.color;
+            nonSelectedBorderWidth = 3;
+            ctx.fillRect(button.x - nonSelectedBorderWidth, button.y - nonSelectedBorderWidth, button.width + nonSelectedBorderWidth * 2, button.height + nonSelectedBorderWidth * 2);
+            ctx.fillStyle = colors.buttonColor;
+            if (this.selectedOption % this.selectedOptions.length == i) ctx.fillStyle = colors.highLightedButtonColor;
             ctx.fillRect(button.x, button.y, button.width, button.height);
             type(text.display, text.x, text.y);
             // Status
@@ -563,17 +609,22 @@ var optionsRender = {
                     text: "OFF",
                     color: "#912f2f"
                 };
-                if(this.selectedOptions[i].flip) statusText.text = "ON";
-                
-                if (eval("globalOptions." + this.selectedOptions[i].source)){
+                if (this.selectedOptions[i].flip) statusText.text = "ON";
+
+                if (globalOptions[this.selectedOptions[i].source]) {
                     statusText.text = "ON";
-                    if(this.selectedOptions[i].flip) statusText.text = "OFF";
+                    if (this.selectedOptions[i].flip) statusText.text = "OFF";
                 }
-                
+
                 ctx.textAlign = "right";
                 ctx.fillStyle = statusText.color;
                 type(statusText.text, text.x + 300 * (text.otherScale), text.y)
             }
+
+        if(this.selectedOptions[i].type == "alternative"){
+            type(globalOptions[this.selectedOptions[i].source], text.x + 300 * (text.otherScale), text.y)
+        }
+
         }
         type("Z: Back X: Select", 510, 460, 1);
     },
@@ -594,16 +645,19 @@ var optionsRender = {
             // Toggle option
             playEffect = true;
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "boolean") {
-                eval("globalOptions." + this.selectedOptions[this.selectedOption % this.selectedOptions.length].source + "= !globalOptions." + this.selectedOptions[this.selectedOption % this.selectedOptions.length].source);
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = !globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
             } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "link") {
                 oldSelectedOption = this.selectedOption
                 this.selectedOption = 0;
                 this.selectedOptions = this.selectedOptions[oldSelectedOption % this.selectedOptions.length].source;
-            } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "function"){
+            } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "function") {
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].source();
             }
+            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[0];
+            }
 
-            saveSettings();
+            
         }
         if (key.is(keys.back)) {
             // Go back to manu
@@ -614,10 +668,35 @@ var optionsRender = {
             } else {
                 selectedScene = 0;
             }
+        }
 
+        if(key.is(keys.right)){
+            /* Increase option */
+            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+                playEffect = true;
+                var currentOption = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+                var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
+                currentSelectionIndex++;
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
+                this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+            }
+        }
+
+        if(key.is(keys.left)){
+            /* Increase option */
+            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+                playEffect = true;
+                var currentOption = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+                var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
+                currentSelectionIndex--;
+                if(currentSelectionIndex < 0) currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length-1;
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
+                this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+            }
         }
 
         if (playEffect) playSound("menu-click", 1);
+        saveSettings();
     }
 }
 
@@ -983,7 +1062,7 @@ function newGame() {
     var miniGamesArray = miniGames.concat(); // Copy array
 
     for (let i = 0; i < miniGamesArray.length; i++) {
-        if (eval("!globalOptions." + miniGamesArray[i].varName) || (miniGamesArray[i].wip && !globalOptions.devTools)) {
+        if (!globalOptions[miniGamesArray[i].varName] || (miniGamesArray[i].wip && !globalOptions.devTools)) {
             miniGamesArray.splice(i, 1);
             i--;
         }

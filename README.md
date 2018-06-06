@@ -10,9 +10,9 @@ Documentation & API:
 
 ##### What is it?
 
-Mini Rumble is a mini-game collection with a varity of games. The Engine is dynamic and makes it easy to add new games. Making your own mini-game for Mini Rumble is easy with the rich documentation and easy-to-use API (Coming soon).
+Mini Rumble is a mini-game collection with a varity of games. The Engine is dynamic and makes it easy to add new games. Making your own mini-game for Mini Rumble is easy with the rich documentation and easy-to-use API.
 
-Currently the game is avalible to play online, but will later also be avalible as a desctop application. Using the desctop application will increase performance and allow for quicker 
+Currently the game is avalible to play online, but will later also be avalible as a desctop application.
 
 ##### Controlls:
 
@@ -29,6 +29,7 @@ Currently the game is avalible to play online, but will later also be avalible a
 - [x]  Mobile Support
 - [x]  Publish documentation and API 
 - [ ]  10 minigames (9/10)
+- [ ]  Implement boss-games
 - [ ]  Package Electron app
 - [ ]  Controller Support
 - [ ]  1.0 Build
