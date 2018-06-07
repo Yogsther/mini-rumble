@@ -11,3 +11,9 @@ TODO: 
 - Sexy loading screens with random messages [DONE, CAN BE IMPROVED]
 
 - Warning for online leaderboards not tracking when gamemodes are disabled. [DONE]
+
+- Add support for more characters to the miniRumble font. [IN PROGRESS]
+
+- Add icons for all minigames. [IN PROGRESS]
+
+- Add achievements for all minigames. [IN PROGRESS]
