@@ -1648,7 +1648,8 @@ function render() {
         if (size > maxSize) size = maxSize;
         ctx.font = size + "px mario-kart"
         var text = miniGame.introText.toUpperCase();
-        ctx.fillText(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2);
+        //ctx.fillText(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2);
+        type(text.substr(0, openingProgress), (canvas.width / 2), canvas.height / 2 - 50, 5, openingProgress, 30, "center");
         if (Date.now() - lastOpeningDate > 50) {
             openingProgress++;
             lastOpeningDate = Date.now();
@@ -1724,12 +1725,12 @@ function render() {
 
     // Render FPS
     if (globalOptions.displayFPS) {
-        ctx.fillStyle = "rgba(0,0,0,0.6)";
-        ctx.fillRect(555, 0, 80, 30);
+        /* ctx.fillStyle = "rgba(0,0,0,0.6)";
+        ctx.fillRect(555, 0, 80, 30); */
         ctx.font = "20px mario-maker";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
-        type("fps: " + Math.round(fps), 560, 10, 1);
+        type("fps: " + Math.round(fps), 620, 10, 1, undefined, undefined, "right");
     }
 
 

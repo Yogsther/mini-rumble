@@ -201,7 +201,8 @@ var typeMaster = {
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
             ctx.font = "20px mario-maker";
-            ctx.fillText((this.completedWords + 1) + "/" + this.wordsToType, canvas.width / 2, 100);
+            //ctx.fillText((this.completedWords + 1) + "/" + this.wordsToType, canvas.width / 2, 100);
+            type((this.completedWords + 1) + "/" + this.wordsToType, canvas.width / 2, 100, 3, undefined, undefined, "center");
         }
 
         var fontSize = 350 / this.word.length;
@@ -255,6 +256,7 @@ var typeMaster = {
             var jump = 0;
             if (this.cleared && i == Math.round(this.jumpProgress) % this.word.length) jump = -10;
             ctx.fillText(this.word[i], text.x + (i * text.spacing) - (text.spacing * (this.word.length / 2)), text.y + jump + extraY);
+            //type(this.word[i], text.x + (i * text.spacing) - (text.spacing * (this.word.length / 2)), text.y + jump + extraY - 100, fontSize/20, undefined, undefined, "left");
 
         }
 
