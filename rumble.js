@@ -447,7 +447,7 @@ var optionsRender = {
         type: "alternative",
         alternatives: [
             /* First option is always default */
-            "0", "1", "2", "3", "4", "5", "10", "15", "20", "30", "40", "50", "100", "500", "999"
+            "0", "1", "2", "3", "4", "5", "10", "15", "20", "30"
         ]
     }, {
         text: "Sound:",
@@ -611,17 +611,17 @@ var optionsRender = {
                 ctx.textAlign = "right";
                 ctx.fillStyle = statusText.color;
                 if (this.selectedOption % this.selectedOptions.length == i) {
-                    type(" [" + statusText.text + "] ", text.x + 260 * (text.otherScale), text.y);
+                    type(" [" + statusText.text + "] ", text.x + 380 * (text.otherScale) - 30, text.y, undefined, undefined, undefined, "right");
                 } else {
-                    type("  " + statusText.text + "  ", text.x + 260 * (text.otherScale), text.y);
+                    type("  " + statusText.text + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
 
             if (this.selectedOptions[i].type == "alternative") {
                 if (this.selectedOption % this.selectedOptions.length == i) {
-                    type("< " + globalOptions[this.selectedOptions[i].source] + " >", text.x + 260 * (text.otherScale), text.y);
+                    type("< " + globalOptions[this.selectedOptions[i].source] + " >", text.x + 380 * (text.otherScale) - 30, text.y, undefined, undefined, undefined, "right");
                 } else {
-                    type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 260 * (text.otherScale), text.y);
+                    type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
 
@@ -654,7 +654,13 @@ var optionsRender = {
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].source();
             }
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
+                var currentOption = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+                var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
+                currentSelectionIndex++;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[0];
+                try{
+                    this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(0);
+                } catch(e){}
             }
 
 
@@ -678,7 +684,9 @@ var optionsRender = {
                 var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
                 currentSelectionIndex++;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
+                try{
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+            } catch(e){}
             }
         }
 
@@ -691,7 +699,9 @@ var optionsRender = {
                 currentSelectionIndex--;
                 if (currentSelectionIndex < 0) currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length - 1;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
+                try{
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+            } catch(e){}
             }
         }
 

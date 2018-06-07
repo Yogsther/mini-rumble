@@ -15,6 +15,7 @@ var gatherFortnite = {
         this.dif = dif;
         this.amountOfMaterials = (dif + 2) * 2;
         this.turningSpeed = (dif +1) * 1.2;
+        if(this.turningSpeed > 2) this.turningSpeed = 2;
         this.materials = new Array();
         this.player = {
             x: canvas.width / 2,
@@ -143,6 +144,7 @@ var gatherFortnite = {
         }
         
         var speed = 3 * (1+this.dif);
+        if(speed > 7) speed = 7; // Cap
         if (keyDown(keys.left)) {
             this.player.x -= speed;
             this.player.direction = 3;
