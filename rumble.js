@@ -2,9 +2,6 @@
  * Mini-Rumble Game Engine, core
  */
 
-/* Debug options */
-var instaStart = false; // !! BROKEN, DONT USE - TODO: FIX /* Insert gamemode variable here to instastart. Devmode needs to be enables aswell! */
-var initialDifficulty = 0; /* This needs to be 0 whenever a commit is made! */
 /* These are already enabled if Dev-mode is enabled! */
 var disableGameOver = false;
 var logCoordinates = false;
@@ -46,7 +43,8 @@ var globalOptions = {
     disableSound: false,
     disableMusic: false,
     limitFPS: false,
-    screensize: "1.0x"
+    screensize: "1.0x",
+    initialDifficulty: 0
 }
 
 var miniGames = new Array();
@@ -442,6 +440,16 @@ var optionsRender = {
         source: "hardcoreMode",
         type: "boolean"
     }, {
+        /* Display text */
+        text: "Initial difficulty:",
+        /* globalOptions source */
+        source: "initialDifficulty",
+        type: "alternative",
+        alternatives: [
+            /* First option is always default */
+            "0", "1", "2", "3", "4", "5", "10", "15", "20", "30", "40", "50", "100", "500", "999"
+        ]
+    }, {
         text: "Sound:",
         source: "disableSound",
         type: "boolean",
@@ -467,8 +475,9 @@ var optionsRender = {
         type: "alternative",
         alternatives: [
             /* First option is always default */
-            "1.0x", "1.2x", "1.5x", "1.8x", "2.0x"
+            "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
         ],
+        /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
         logic: function (alternative) {
             c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
         }
@@ -486,7 +495,7 @@ var optionsRender = {
             enabled: "#3fea55",
             buttonColor: "#262626",
             highLightedButtonColor: "#383636",
-            link: "#ffffff",
+            link: "#26abff",
             function: "#ffbf00",
             background: "#111",
             scroll: "#ffbf00",
@@ -1022,7 +1031,7 @@ function keyDown(keys) {
 
 function startGame() {
     /* First start of the game, total reset. */
-    window.difficulty = initialDifficulty;
+    window.difficulty = globalOptions.initialDifficulty;
     window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
@@ -1506,12 +1515,12 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     /* Determine width of the text */
     text.forEach(letter => {
         if (['i', '.', '!', ':', ';'].indexOf(letter) != -1) textWidth += 3;
-            else if (['m', 'w'].indexOf(letter) != -1) textWidth += 9;
-                else textWidth += 7;
+        else if (['m', 'w'].indexOf(letter) != -1) textWidth += 9;
+        else textWidth += 7;
     })
-    
-    if(align == "center")   offset = textWidth/2;
-    if(align == "right")    offset = textWidth;
+
+    if (align == "center") offset = textWidth / 2;
+    if (align == "right") offset = textWidth;
 
     text.forEach(letter => {
         /* Draw out letter by letter */
@@ -1542,7 +1551,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
                         jump = jump * jumpHeight;
                     }
                 }
-                draw(finalLetter, position - offset*size, y - jump, size);
+                draw(finalLetter, position - offset * size, y - jump, size);
             }
         }
         position += spacing * size;
