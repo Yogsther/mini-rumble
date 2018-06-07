@@ -335,21 +335,6 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             this.progress += 0.05;
             if (this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 10);
             else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
-
-            /* for (let j = 0; j < text.length; j++) {
-                if (this.progress == j && i == this.selectedButton % this.buttonTitles.length) jump = 10;
-                type(text[j], tilt + this.buttonPositions.x + (j * 40 * this.buttonScale) - globalOffset + 80 * this.buttonScale, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) - jump + 53);
-                if (text[j] == "I") globalOffset += 12;
-            } */
-
-
-            /* ctx.fillStyle = "#111";
-            ctx.font = "20px mario-maker",
-            ctx.textAlign = "right";
-            ctx.fillText("Z: Back X: Select", 630, 470);
-            ctx.fillStyle = "rgba(0,0,0,0.3)";
-            ctx.textAlign = "left";
-            ctx.fillText(version, 15, 30); */
             type("Z: Back X: Select", 510, 460, 1)
             type(version, 10, 10, 1);
 
@@ -1496,7 +1481,7 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
     ctx.restore();
 }
 
-function type(text, x, y, size, jumpIndex, jumpHeight) {
+function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
     special = { in: [':', '.', '!', '?', ';', ',', '_', '-', '/', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
         translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
@@ -1506,8 +1491,21 @@ function type(text, x, y, size, jumpIndex, jumpHeight) {
     letterIndex = 0;
     jump = 0;
     /* Account for unassigned variables */
-    if (jumpHeight == undefined) jumpHeight = 15;
-    if (size == undefined) size = 2;
+    if (jumpHeight === undefined) jumpHeight = 15;
+    if (size === undefined) size = 2;
+    if (align === undefined) align = "left";
+
+    var textWidth = 0;
+    var offset = 0;
+    /* Determine width of the text */
+    text.forEach(letter => {
+        if (['i', '.', '!', ':', ';'].indexOf(letter) != -1) textWidth += 3;
+            else if (['m', 'w'].indexOf(letter) != -1) textWidth += 9;
+                else textWidth += 7;
+    })
+    
+    if(align == "center")   offset = textWidth/2;
+    if(align == "right")    offset = textWidth;
 
     text.forEach(letter => {
         /* Draw out letter by letter */
@@ -1538,13 +1536,14 @@ function type(text, x, y, size, jumpIndex, jumpHeight) {
                         jump = jump * jumpHeight;
                     }
                 }
-                draw(finalLetter, position, y - jump, size);
+                draw(finalLetter, position - offset*size, y - jump, size);
             }
         }
         position += spacing * size;
         letterIndex++;
     })
 }
+
 
 
 function startOpeningAnimation() {
