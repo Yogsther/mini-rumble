@@ -46,7 +46,7 @@ var globalOptions = {
     disableSound: false,
     disableMusic: false,
     limitFPS: false,
-    screensize: "1x"
+    screensize: "1.0x"
 }
 
 var miniGames = new Array();
@@ -98,17 +98,17 @@ function loadSettings() {
     loadScreenSettings();
 }
 
-function loadScreenSettings(){
-    c.style.zoom = globalOptions.screensize.substr(0, globalOptions.screensize.length-1);
+function loadScreenSettings() {
+    c.style.zoom = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1);
 }
 
 function expandOptions() {
     for (let i = 0; i < miniGames.length; i++) {
         globalOptions[miniGames[i].varName] = false;
         for (let j = 0; j < optionsRender.options.length; j++) {
-            if (optionsRender.options[j].text == "Toggle Gamemodes") {
+            if (optionsRender.options[j].text == "Toggle Minigames") {
                 optionsRender.options[j].source.push({
-                    text: miniGames[i].displayName,
+                    text: miniGames[i].displayName + ":",
                     source: miniGames[i].varName,
                     type: "boolean"
                 });
@@ -427,73 +427,71 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
-            text: "Toggle Gamemodes",
-            source: [{
-                text: "Toggle all gamemodes",
-                source: function () {
-                    var positive = 0;
-                    var negative = 0;
-                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                        /* Check if the majority of the options are either on or off */
-                        if (optionsRender.selectedOptions[i].type == "boolean") {
-                            if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
-                            else negative++;
-                        }
+        text: "Toggle Minigames",
+        source: [{
+            text: "Toggle all minigames",
+            source: function () {
+                var positive = 0;
+                var negative = 0;
+                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                    /* Check if the majority of the options are either on or off */
+                    if (optionsRender.selectedOptions[i].type == "boolean") {
+                        if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
+                        else negative++;
                     }
+                }
 
-                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                        /* Toggle all the options */
-                        if (optionsRender.selectedOptions[i].type == "boolean") {
-                            globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
-                            saveSettings();
-                        }
+                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                    /* Toggle all the options */
+                    if (optionsRender.selectedOptions[i].type == "boolean") {
+                        globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
+                        saveSettings();
                     }
-                },
-                type: "function"
-            }],
-            type: "link"
-        }, {
-            text: "Enable hardcore mode",
-            source: "hardcoreMode",
-            type: "boolean"
-        }, {
-            text: "Enable sound",
-            source: "disableSound",
-            type: "boolean",
-            flip: true
-        }, {
-            text: "Enable music",
-            source: "disableMusic",
-            type: "boolean",
-            flip: true
-        }, {
-            text: "Display FPS",
-            source: "displayFPS",
-            type: "boolean"
-        },
-        {
-            /* Display text */
-            text: "Screen size",
-            /* globalOptions source */
-            source: "screensize",
-            type: "alternative",
-            alternatives: [
-                /* First option is always default */
-                "1x", "1.2x", "1.5x", "1.8x", "2x"
-            ],
-            logic: function(alternative) {
-                c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length-1);
-            }
-        }, {
-            text: "Lock to 60 FPS",
-            source: "limitFPS",
-            type: "boolean"
-        }, {
-            text: "Enable Dev-tools",
-            source: "devTools",
-            type: "boolean"
+                }
+            },
+            type: "function"
+        }],
+        type: "link"
+    }, {
+        text: "Hardcore mode:",
+        source: "hardcoreMode",
+        type: "boolean"
+    }, {
+        text: "Sound:",
+        source: "disableSound",
+        type: "boolean",
+        flip: true
+    }, {
+        text: "Music:",
+        source: "disableMusic",
+        type: "boolean",
+        flip: true
+    }, {
+        text: "Display FPS:",
+        source: "displayFPS",
+        type: "boolean"
+    }, {
+        text: "Lock to 60 FPS:",
+        source: "limitFPS",
+        type: "boolean"
+    }, {
+        /* Display text */
+        text: "Screen size:",
+        /* globalOptions source */
+        source: "screensize",
+        type: "alternative",
+        alternatives: [
+            /* First option is always default */
+            "1.0x", "1.2x", "1.5x", "1.8x", "2.0x"
+        ],
+        logic: function (alternative) {
+            c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
         }
-    ],
+    }, {
+        text: "Dev-tools:",
+        source: "devTools",
+        type: "boolean"
+    }],
     selectedOptions: undefined,
     spriteIndex: 0,
     paint: function () {
@@ -618,12 +616,20 @@ var optionsRender = {
 
                 ctx.textAlign = "right";
                 ctx.fillStyle = statusText.color;
-                type(statusText.text, text.x + 300 * (text.otherScale), text.y)
+                if (this.selectedOption % this.selectedOptions.length == i) {
+                    type(" [" + statusText.text + "] ", text.x + 260 * (text.otherScale), text.y);
+                } else {
+                    type("  " + statusText.text + "  ", text.x + 260 * (text.otherScale), text.y);
+                }
             }
 
-        if(this.selectedOptions[i].type == "alternative"){
-            type(globalOptions[this.selectedOptions[i].source], text.x + 300 * (text.otherScale), text.y)
-        }
+            if (this.selectedOptions[i].type == "alternative") {
+                if (this.selectedOption % this.selectedOptions.length == i) {
+                    type("< " + globalOptions[this.selectedOptions[i].source] + " >", text.x + 260 * (text.otherScale), text.y);
+                } else {
+                    type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 260 * (text.otherScale), text.y);
+                }
+            }
 
         }
         type("Z: Back X: Select", 510, 460, 1);
@@ -653,11 +659,11 @@ var optionsRender = {
             } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "function") {
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].source();
             }
-            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+            if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[0];
             }
 
-            
+
         }
         if (key.is(keys.back)) {
             // Go back to manu
@@ -670,9 +676,9 @@ var optionsRender = {
             }
         }
 
-        if(key.is(keys.right)){
+        if (key.is(keys.right)) {
             /* Increase option */
-            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+            if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
                 playEffect = true;
                 var currentOption = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
                 var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
@@ -682,14 +688,14 @@ var optionsRender = {
             }
         }
 
-        if(key.is(keys.left)){
+        if (key.is(keys.left)) {
             /* Increase option */
-            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative"){
+            if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
                 playEffect = true;
                 var currentOption = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
                 var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
                 currentSelectionIndex--;
-                if(currentSelectionIndex < 0) currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length-1;
+                if (currentSelectionIndex < 0) currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length - 1;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
                 this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
             }
@@ -1498,8 +1504,8 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
 function type(text, x, y, size, jumpIndex, jumpHeight) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
-    special = { in: [':', '.', '!', '?', ';', ',', '_', '-', '/', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
+    special = { in: [':', '.', '!', '?', ';', ',', '_', '-', '/', '[', ']', '<', '>', '(', ')', '+', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", "0_bracket_L", "0_bracket_R", "0_less", "0_more", "0_parenthesis_L", "0_parenthesis_R", "0_plus", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */
@@ -1724,7 +1730,7 @@ function render() {
         ctx.font = "20px mario-maker";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
-        ctx.fillText("fps: " + Math.round(fps), 560, 20);
+        type("fps: " + Math.round(fps), 560, 10, 1);
     }
 
 
