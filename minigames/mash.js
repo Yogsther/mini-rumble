@@ -23,6 +23,7 @@ var mash = {
         "mash/nom_3.mp3", 
         "mash/nom_4.mp3"
     ],
+    themeColor: "#784b2f",
     introText: "Eat!",
     /* Intro text is the text displayed before the mini-game, should contain a short instruction for the minigame. */
     init: function (dif) {

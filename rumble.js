@@ -44,7 +44,8 @@ var globalOptions = {
     disableMusic: false,
     limitFPS: false,
     screensize: "1.0x",
-    initialDifficulty: 0
+    initialDifficulty: 0,
+    atmosphericGlow: true
 }
 
 var miniGames = new Array();
@@ -282,7 +283,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     paint: function () {
         ctx.textAlign = "left"
         /* Draw background */
-        fill("#000")
+        fill("#111")
         this.spriteIndex++;
         // Draw logo
         drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
@@ -334,7 +335,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             if (this.selectedButton % this.buttonColors.length == i) type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4, this.progress % 10);
             else type(this.buttonTitles[i], tilt + this.buttonPositions.x + (40 * this.buttonScale) - globalOffset + 80 * this.buttonScale - 20, (this.buttonPositions.y - 10) + (i * this.buttonSpacing) + 15, 4);
             type("Z: Back X: Select", 510, 460, 1)
-            type(version, 10, 10, 1);
+            type(version, 20, 20, 1);
 
             // Draw board
             this.pinIndex += .09;
@@ -459,6 +460,10 @@ var optionsRender = {
         source: "disableMusic",
         type: "boolean",
         flip: true
+    }, {
+        text: "Atmospheric Glow",
+        source: "atmosphericGlow",
+        type: "boolean"
     }, {
         text: "Display FPS:",
         source: "displayFPS",
@@ -768,21 +773,14 @@ function loadFinalStuff() {
     importTextures();
     importSounds();
     ready = true;
-    instaLoad();
 }
 
-function instaLoad() {
-    if (instaStart !== false && globalOptions.devTools) {
-        miniGames = [instaStart]
-        startGame();
-    }
-}
 
 
 
 function renderLoadingScreen() {
 
-    ctx.fillStyle = "black";
+    ctx.fillStyle = "#111";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
 
@@ -1038,10 +1036,26 @@ function keyDown(keys) {
     return false;
 }
 
+function changeThemeColor(color){
+    if(!globalOptions.atmosphericGlow) return;
+    c.style.boxShadow = "0px 0px 10px black,  0px 0px 50px " + color;
+    var hex = hexToRgb(color);
+    document.body.style.background = "rgb(" + hex.r /10 + "," + hex.g /10 + "," + hex.b /10 + ")";
+
+    function hexToRgb(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+            r: parseInt(result[1], 16),
+            g: parseInt(result[2], 16),
+            b: parseInt(result[3], 16)
+        } : null;
+    }
+}
+
 
 function startGame() {
     /* First start of the game, total reset. */
-    window.difficulty = globalOptions.initialDifficulty;
+    window.difficulty = Number(globalOptions.initialDifficulty);
     window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
@@ -1092,6 +1106,8 @@ function newGame() {
     }
     drawOpening();
     miniGame = miniGamesArray[Math.floor(Math.random() * miniGamesArray.length)];
+    if(miniGame.themeColor !== undefined) changeThemeColor(miniGame.themeColor);
+        else changeThemeColor("#000000");
     inGame = true;
 }
 
@@ -1121,6 +1137,7 @@ function loadLast() {
     /**
      * Load mobile controlls and attach event listeners (Only if onMobile!)
      */
+    changeThemeColor("#000000");
     if (!onMobile) return;
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
@@ -1211,6 +1228,8 @@ function endGame() {
     try {
         clearTimeout(finalTimeout);
     } catch (e) {}
+
+    changeThemeColor("#000000")
 }
 
 function click(code, char) {
@@ -1375,6 +1394,7 @@ function failed(ms) {
             disableKeyboard = false;
             miniGame = undefined;
             showClearedScreen("Game Over!", "#8c2424");
+            
             s("hurt").playbackRate = .2;
             s("hurt").play();
             s("hurt").onended = () => {
@@ -1387,6 +1407,7 @@ function failed(ms) {
                     backgroundSound.currentTime = 0;
                     //setTimeout(()=> {clearInterval(slowDown);}, 250);
                 } catch (e) {}
+                changeThemeColor("#000000")
                 failedCalled = false;
                 disableInputs = false
                 inGame = false;
@@ -1581,6 +1602,7 @@ function startOpeningAnimation() {
 var showingClearedScreen = false;
 
 function showClearedScreen(text, color) {
+    changeThemeColor(color)
     window.clearedProgress = 0;
     window.lastClearedProgressIncrease = Date.now();
     window.clearedColor = color;
@@ -1749,7 +1771,7 @@ function render() {
         ctx.font = "20px mario-maker";
         ctx.fillStyle = "white";
         ctx.textAlign = "left";
-        type("fps: " + Math.round(fps), 620, 10, 1, undefined, undefined, "right");
+        type("fps: " + Math.round(fps), 620, 20, 1, undefined, undefined, "right");
     }
 
 

@@ -2,6 +2,7 @@ var gatherFortnite = {
     varName: "gatherFortnite",
     displayName: "Wood Gather",
     timed: true,
+    themeColor: "#469e38",
     textures: [
         "gather/tricerathot.png", 
         "gather/wood.png", 
@@ -44,7 +45,6 @@ var gatherFortnite = {
             var x = Math.floor(Math.random() * (canvas.width - (this.padding*2))) + this.padding;
                 y = Math.floor(Math.random() * (353  - (this.padding*2))) + this.padding;
             this.materials[i] = {x: x, y: y, collected: false};
-            console.log(x, y);
         }
     },
     paint: function () {

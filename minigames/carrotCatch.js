@@ -4,6 +4,7 @@ var carrotCatch = {
     displayName: "Carrot Catch",
     icon: "gameicons/carrotCatch_icon.png",
     timed: false,
+    themeColor: "#00689e",
     textures: [
         "carrot_catch/carrot.png", 
         "carrot_catch/rabbit_closed.png", 
