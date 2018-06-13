@@ -29,10 +29,10 @@ var loadingMessages = [
     "Building bootlegs",
     "Let's rumble!"
 ]
+
 var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
 
 renderLoadingScreen();
-
 
 var warningSigns = new Array();
 
@@ -172,9 +172,12 @@ var ready = false;
 
 var onlineRender = {
     animationProgress: 0,
-    buttons: ["Join", "Leave"],
+    buttons: ["Browse", "Create"],
     buttonZoom: [0, 0],
+    highlightPos: 205,
+    titleProgression: 0,
     selectedButton: 0,
+    selectionProgress : 0,
     paint: function () {
         fill("#111");
 
@@ -183,42 +186,51 @@ var onlineRender = {
         spacing = .005;
         scale = 10;
 
-        ctx.fillStyle = "#304560";
+        ctx.fillStyle = "#296489";
         ctx.fillRect(0, 0, canvas.width, 100);
 
-        this.animationProgress += speed;
+        this.animationProgress -= speed;
         for (let i = 0; i < dots; i++) {
-            ctx.fillStyle = "#5678a5";
+            ctx.fillStyle = "#4ba5dd";
             var y = (Math.sin(this.animationProgress + (spacing * i)) * scale) + 60;
             ctx.fillRect((canvas.width / dots) * i, y, (canvas.width / dots), 110 - y);
         }
 
         // Online text
-        type("Online!", 50, 70)
-
+        type("Online!", 23, 23, 5, this.titleProgression % 13, 20);
+        this.titleProgression += .1;
 
         /* Buttons */
 
-        for (let i = 0; i < this.buttons.length; i++) {
-            var zoom = 0;
-            var zoomSpeed = 3
-            if (this.selectedButton % this.buttons.length == i) {
-                if (this.buttonZoom[i] < 10) this.buttonZoom[i] += zoomSpeed;
-            } else {
-                if (this.buttonZoom[i] > 0) this.buttonZoom[i] -= zoomSpeed;
-            }
-            zoom = this.buttonZoom[i]
-            ctx.fillStyle = "#7092d1";
-            ctx.fillRect(25 - zoom, 140 + (i * (100 + 20)) - zoom, 200 + zoom * 2, 100 + zoom * 2);
-            type(this.buttons[i], 25 + (200 / 2) - (zoom / 2) + 5, 140 + (i * (100 + 20)) - zoom)
+        drawButton(105, 160, "Browse")
+        drawButton(335, 160, "Create")
 
+        /* Draw selection highlighter */
+        
+        this.selectionProgress+=.4;
+        states = [205, 435]; // Center of buttons
+        desiredState = states[this.selectedButton%2];
+        highlightSpeed = 30;
+        if(desiredState > this.highlightPos) this.highlightPos+=highlightSpeed;
+        if(desiredState < this.highlightPos) this.highlightPos-=highlightSpeed; 
+        if(Math.abs(desiredState - this.highlightPos) < 35) this.highlightPos = desiredState; // Ensure perfect end position
+        drawC("online_selection", this.highlightPos, 280 + Math.sin(this.selectionProgress) * 4, 5);
+
+
+        function drawButton(x, y, text) {
+            borderWidth = 5;
+            ctx.fillStyle = "#99d6ff";
+            ctx.fillRect(x-borderWidth, y-borderWidth, 200 + borderWidth*2, 90 + borderWidth*2) // Border
+            ctx.fillStyle = "#5690b5";
+            ctx.fillRect(x, y, 200, 90) // Button   
+            type(text, x + 100, y + 27, 3, 0, 0, "center");
         }
 
 
     },
     logic(key) {
-        if (key.is(keys.down)) this.selectedButton++;
-        if (key.is(keys.up)) {
+        if (key.is(keys.right)) this.selectedButton++;
+        if (key.is(keys.left)) {
             this.selectedButton--;
             if (this.selectedButton < 0) this.selectedButton += this.buttons.length;
         }
@@ -663,9 +675,9 @@ var optionsRender = {
                 var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
                 currentSelectionIndex++;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[0];
-                try{
+                try {
                     this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(0);
-                } catch(e){}
+                } catch (e) {}
             }
 
 
@@ -689,9 +701,9 @@ var optionsRender = {
                 var currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.indexOf(currentOption);
                 currentSelectionIndex++;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
-                try{
-                this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
-            } catch(e){}
+                try {
+                    this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+                } catch (e) {}
             }
         }
 
@@ -704,9 +716,9 @@ var optionsRender = {
                 currentSelectionIndex--;
                 if (currentSelectionIndex < 0) currentSelectionIndex = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length - 1;
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives[currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length];
-                try{
-                this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
-            } catch(e){}
+                try {
+                    this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
+                } catch (e) {}
             }
         }
 
@@ -876,6 +888,8 @@ function importTextures() {
         importTexture(texture);
     });
 
+    importTexture("rumble/online_selection.png");
+
     window.overlaySprites = [
         importSpriteSheet("rumble/overlay/overlay_XX.png", 20),
         importTexture("rumble/overlay_mystery.png"),
@@ -1036,11 +1050,11 @@ function keyDown(keys) {
     return false;
 }
 
-function changeThemeColor(color){
-    if(!globalOptions.atmosphericGlow) return;
+function changeThemeColor(color) {
+    if (!globalOptions.atmosphericGlow) return;
     c.style.boxShadow = "0px 0px 10px black,  0px 0px 50px " + color;
     var hex = hexToRgb(color);
-    document.body.style.background = "rgb(" + hex.r /10 + "," + hex.g /10 + "," + hex.b /10 + ")";
+    document.body.style.background = "rgb(" + hex.r / 10 + "," + hex.g / 10 + "," + hex.b / 10 + ")";
 
     function hexToRgb(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
@@ -1106,8 +1120,8 @@ function newGame() {
     }
     drawOpening();
     miniGame = miniGamesArray[Math.floor(Math.random() * miniGamesArray.length)];
-    if(miniGame.themeColor !== undefined) changeThemeColor(miniGame.themeColor);
-        else changeThemeColor("#000000");
+    if (miniGame.themeColor !== undefined) changeThemeColor(miniGame.themeColor);
+    else changeThemeColor("#000000");
     inGame = true;
 }
 
@@ -1394,7 +1408,7 @@ function failed(ms) {
             disableKeyboard = false;
             miniGame = undefined;
             showClearedScreen("Game Over!", "#8c2424");
-            
+
             s("hurt").playbackRate = .2;
             s("hurt").play();
             s("hurt").onended = () => {

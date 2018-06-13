@@ -40,11 +40,13 @@ var wizard_hunt = {
         texture: t("lantern")
       }
 
+      this.editMode = false;
+
       this.pastLocations = [];
       this.walkCycle = 0;
 
       this.map = new Array();
-      for(let i = 0; i < 100; i++){
+      for(let i = 0; i < 200; i++){
         this.map[i] = Math.floor(Math.random() * 4); 
       }
       
@@ -97,7 +99,12 @@ var wizard_hunt = {
         if(this.player.speed > 5){
           this.pastLocations.push({x: this.player.x, y: this.player.y, sprite: sprite});
         }
-        draw(sprite, this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
+        if(this.editMode){
+          // Draw object instead reee
+        } else {
+          draw(sprite, this.player.x - this.camera.x + c.width/2, this.player.y - this.camera.y + c.height/2);
+        }
+        
         /* Draw light pattern */
         drawC("light", 67 + this.lantern.x - this.camera.x + c.width/2, 84 + this.lantern.y - this.camera.y + c.height/2, 2);
         /* Draw lantern sprite */
@@ -112,6 +119,15 @@ var wizard_hunt = {
         draw("compass", 20, (c.height - t("compass").height) - 20);
         draw("pointer", 20, (c.height - t("compass").height) - 20, 1, this.pointerRotation - 90);
         
+
+        if(globalOptions.devTools){
+
+          type("- Map editor -", 400, 10, 1.5, 0, 0, "left");
+          type("K - Place object", 400, 30, 1.5, 0, 0, "left");
+          type("<J L> - Change object", 400, 50, 1.5, 0, 0, "left");
+          type("T - Toggle editor", 400, 70, 1.5, 0, 0, "left");
+          
+        }
         
     },
     loop: function(){
@@ -171,8 +187,8 @@ var wizard_hunt = {
       } else {
         var player = {x: this.player.x, y: this.player.y, texture: "wizard"};
         var col = checkCollision(player, this.lantern);
-        console.log(col)
         if(col){
+          if(!this.lantern.picked) changeThemeColor("#ffbd00");
           this.lantern.picked = true;
           this.lantern.x = this.player.x;
           this.lantern.y = this.player.y;
@@ -185,6 +201,16 @@ var wizard_hunt = {
       if(key.is(keys.action)){
         this.player.speed = 15;
         setTimeout(() => {this.player.speed = 5}, 200);
+      }
+      if(key.code == 84) this.editMode = !this.editMode;
+      if(key.code == 75){
+        // Place object
+      }
+      if(key.code == 76){
+        // Switch forward
+      }
+      if(key.code == 74){
+        // Switch backward
       }
     }
   }
