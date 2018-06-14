@@ -5,19 +5,23 @@
     <meta charset="UTF-8">
     <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>Mini-Rumble</title>
-    <link rel="icon" href="favicon.ico?v=1.1"> 
+    <link rel="icon" href="favicon.ico?v=1.1">
     <link rel="manifest" href="manifest.json">
+    <!-- Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.3/socket.io.js"></script>
 </head>
 
 <body>
 
     <!-- Mobile keyboard support for typing mini-games -->
-    <span id="keyboard-input"> <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)"></span>
+    <span id="keyboard-input">
+        <input type="text" id="keyboard-controlls" oninput="detectMobileInput(this.value)">
+    </span>
 
     <!-- Game canvas -->
     <canvas id="canvas" width="640" height="480"></canvas>
@@ -26,6 +30,8 @@
 
     <!-- Game Engine -->
     <script src="rumble.js"></script>
+    <!-- Online script -->
+    <script src="online.js"></script>
     <!-- Import extra textures -->
     <script src="textures.js"></script>
     <!-- All mini-games -->
@@ -44,4 +50,5 @@
     <script src="minigames/nitroRace.js"></script>
 
 </body>
+
 </html>

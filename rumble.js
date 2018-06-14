@@ -12,6 +12,8 @@ const canvas = c = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 
+var isOnline = false; // If the user is connected to official servers.
+
 /* All overlay textures, can be multible sprites to form a spritesheet. */
 
 var loadingScreenDotJump = 0;
@@ -177,7 +179,9 @@ var onlineRender = {
     highlightPos: 205,
     titleProgression: 0,
     selectedButton: 0,
-    selectionProgress : 0,
+    scene: 0,
+    lobbySelect: 0,
+    selectionProgress: 0,
     paint: function () {
         fill("#111");
 
@@ -200,41 +204,100 @@ var onlineRender = {
         type("Online!", 23, 23, 5, this.titleProgression % 13, 20);
         this.titleProgression += .1;
 
-        /* Buttons */
+        if (this.scene == 0) {
+            /* Buttons */
 
-        drawButton(105, 160, "Browse")
-        drawButton(335, 160, "Create")
+            drawButton(105, 160, "Browse")
+            drawButton(335, 160, "Create")
 
-        /* Draw selection highlighter */
-        
-        this.selectionProgress+=.4;
-        states = [205, 435]; // Center of buttons
-        desiredState = states[this.selectedButton%2];
-        highlightSpeed = 30;
-        if(desiredState > this.highlightPos) this.highlightPos+=highlightSpeed;
-        if(desiredState < this.highlightPos) this.highlightPos-=highlightSpeed; 
-        if(Math.abs(desiredState - this.highlightPos) < 35) this.highlightPos = desiredState; // Ensure perfect end position
-        drawC("online_selection", this.highlightPos, 280 + Math.sin(this.selectionProgress) * 4, 5);
+            /* Draw selection highlighter */
+
+            
+            states = [205, 435]; // Center of buttons
+            desiredState = states[this.selectedButton % 2];
+            highlightSpeed = 30;
+            if (desiredState > this.highlightPos) this.highlightPos += highlightSpeed;
+            if (desiredState < this.highlightPos) this.highlightPos -= highlightSpeed;
+            if (Math.abs(desiredState - this.highlightPos) < 35) this.highlightPos = desiredState; // Ensure perfect end position
+            drawC("online_selection", this.highlightPos, 280 + Math.sin(this.selectionProgress) * 4, 5);
+        }
+        if(this.scene == 1){
+            /* Draw lobby list */
+            ctx.fillStyle = "#99d6ff";
+            ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
+            ctx.fillStyle = "#5690b5";
+            ctx.fillRect(105, 140, 430, 320);
+
+            for(let i = 0; i < games.length; i++){
+                var selectionOffset = 0;
+                if(this.lobbySelect % games.length == i) selectionOffset = 10;
+                type(games[i].title, 130 + selectionOffset, 160 + i * 30);
+            }
+            drawC("online_selection", 120 + Math.sin(this.selectionProgress) * 4, 173 + this.lobbySelect % games.length * 30, 3, 90);
+        }
+
+        if(this.scene == 2){
+            // Lobby scene
+            ctx.fillStyle = "#99d6ff";
+            ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
+            ctx.fillStyle = "#5690b5";
+            ctx.fillRect(105, 140, 430, 320);
+
+            for(let i = 0; i < game.users.length; i++){
+                type(game.users[i].username, 130, 160 + i * 30);
+            }
+
+        }
+
+        this.selectionProgress += .4;
+
 
 
         function drawButton(x, y, text) {
             borderWidth = 5;
             ctx.fillStyle = "#99d6ff";
-            ctx.fillRect(x-borderWidth, y-borderWidth, 200 + borderWidth*2, 90 + borderWidth*2) // Border
+            ctx.fillRect(x - borderWidth, y - borderWidth, 200 + borderWidth * 2, 90 + borderWidth * 2) // Border
             ctx.fillStyle = "#5690b5";
             ctx.fillRect(x, y, 200, 90) // Button   
             type(text, x + 100, y + 27, 3, 0, 0, "center");
         }
-
-
     },
     logic(key) {
-        if (key.is(keys.right)) this.selectedButton++;
-        if (key.is(keys.left)) {
+        if (key.is(keys.right) && this.scene == 0) this.selectedButton++;
+        if (key.is(keys.left) && this.scene == 0) {
+            if (this.selectedButton == 0) this.selectedButton += this.buttons.length;
             this.selectedButton--;
-            if (this.selectedButton < 0) this.selectedButton += this.buttons.length;
         }
-        if (key.is(keys.back)) selectedScene = 0;
+        if (key.is(keys.back)){
+            if(this.scene == 0) selectedScene = 0;
+            if(this.scene == 1) this.scene = 0;
+            if(this.scene == 2){
+                this.scene = 0;
+                disconnect();
+            }
+        }
+        if(key.is(keys.down) && this.scene == 1){
+            this.lobbySelect++;
+        }
+        if(key.is(keys.up) && this.scene == 1){
+            if(this.lobbySelect == 0) this.lobbySelect = games.length;
+            this.lobbySelect--;
+        }
+        if (key.is(keys.action)) {
+            if (this.selectedButton == 1) {
+                requestCreateLobby();
+            }
+
+            if(this.scene == 1){
+                joinLobby(this.lobbySelect % games.length);
+            }
+
+            if(this.selectedButton == 0 && this.scene == 0){
+                this.scene = 1;
+                this.lobbySelect = 0;
+                browse();
+            }
+        }
     }
 }
 
@@ -278,6 +341,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         [209, 83, 66],
         [209, 104, 66]
     ],
+    enabledState: [true, false, true],
     buttonTitles: [
         "Play",
         "Online",
@@ -293,6 +357,9 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     buttonExtension: [0, 0, 0],
     buttonSpacing: 80,
     paint: function () {
+        /* Enable or disable the online button */
+        if (isOnline) this.enabledState[1] = true;
+        else this.enabledState[1] = false;
         ctx.textAlign = "left"
         /* Draw background */
         fill("#111")
@@ -319,9 +386,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
             if (this.selectedButton % this.buttonColors.length == i) {
                 ctx.fillStyle = "#800020"
+                if (!this.enabledState[i]) ctx.fillStyle = "#2d2d2d"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.5)";
             } else {
                 ctx.fillStyle = "#400020"
+                if (!this.enabledState[i]) ctx.fillStyle = "#212020"
                 //ctx.fillStyle = "rgba(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ",0.3)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing) + 10, 450 * this.buttonScale + 20, 80 * this.buttonScale);
@@ -329,9 +398,11 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             /* Draw button */
             if (this.selectedButton % this.buttonColors.length == i) {
                 ctx.fillStyle = "#c00020"
+                if (!this.enabledState[i]) ctx.fillStyle = "#515151"
                 //ctx.fillStyle = "rgb(" + this.buttonColors[i][0] + ", " + this.buttonColors[i][1] + ", " + this.buttonColors[i][2] + ")";
             } else {
                 ctx.fillStyle = "#800020"
+                if (!this.enabledState[i]) ctx.fillStyle = "#424242"
                 //ctx.fillStyle = "rgba(17, 17, 17, 1)";
             }
             ctx.fillRect(this.buttonPositions.x + tilt - 50, this.buttonPositions.y + (i * this.buttonSpacing), 450 * this.buttonScale + 20, 80 * this.buttonScale);
@@ -396,7 +467,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         if (key.is(keys.action)) {
             playEffect = true;
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
-            if (this.selectedButton % this.buttonColors.length == 1) selectedScene = 2 /* Play button */
+            if (this.selectedButton % this.buttonColors.length == 1 && isOnline) selectedScene = 2 /* Online button */
             if (this.selectedButton % this.buttonColors.length == 2) {
                 selectedScene = 1; /* Display options */
                 optionsRender.selectedOption = 0;
