@@ -13,6 +13,7 @@ const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
 
 var isOnline = false; // If the user is connected to official servers.
+var inOnlineGame = false; // If the user is playing in an online game.
 
 /* All overlay textures, can be multible sprites to form a spritesheet. */
 
@@ -47,12 +48,15 @@ var globalOptions = {
     limitFPS: false,
     screensize: "1.0x",
     initialDifficulty: 0,
-    atmosphericGlow: true
+    atmosphericGlow: true,
+    username: "User_" + Math.round(Math.random() * 10000),
+    lobbyName: ""
 }
 
 var miniGames = new Array();
 var activeMinigames = miniGames.slice();
 var unlockedAchievements = [];
+var showFasterAnimation = false;
 
 var backgroundSound = undefined;
 var playingMenuMusic = false;
@@ -105,7 +109,7 @@ function loadScreenSettings() {
 
 function expandOptions() {
     for (let i = 0; i < miniGames.length; i++) {
-        globalOptions[miniGames[i].varName] = false;
+        globalOptions[miniGames[i].varName] = true;
         for (let j = 0; j < optionsRender.options.length; j++) {
             if (optionsRender.options[j].text == "Toggle Minigames") {
                 optionsRender.options[j].source.push({
@@ -157,7 +161,7 @@ var timer = 0;
 
 /* All texture name to be imported during the importTextures process. */
 var miniGameIcons = []
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/hardcore_logo.png"]
+var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/hardcore_logo.png", "rumble/input_field.png"]
 var textures = new Object();
 var sounds = new Object();
 
@@ -212,7 +216,7 @@ var onlineRender = {
 
             /* Draw selection highlighter */
 
-            
+
             states = [205, 435]; // Center of buttons
             desiredState = states[this.selectedButton % 2];
             highlightSpeed = 30;
@@ -221,30 +225,46 @@ var onlineRender = {
             if (Math.abs(desiredState - this.highlightPos) < 35) this.highlightPos = desiredState; // Ensure perfect end position
             drawC("online_selection", this.highlightPos, 280 + Math.sin(this.selectionProgress) * 4, 5);
         }
-        if(this.scene == 1){
+        if (this.scene == 1) {
             /* Draw lobby list */
             ctx.fillStyle = "#99d6ff";
             ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
             ctx.fillStyle = "#5690b5";
             ctx.fillRect(105, 140, 430, 320);
 
-            for(let i = 0; i < games.length; i++){
+            for (let i = 0; i < games.length; i++) {
                 var selectionOffset = 0;
-                if(this.lobbySelect % games.length == i) selectionOffset = 10;
+                if (this.lobbySelect % games.length == i) selectionOffset = 10;
                 type(games[i].title, 130 + selectionOffset, 160 + i * 30);
             }
             drawC("online_selection", 120 + Math.sin(this.selectionProgress) * 4, 173 + this.lobbySelect % games.length * 30, 3, 90);
         }
 
-        if(this.scene == 2){
+        if (this.scene == 2) {
             // Lobby scene
             ctx.fillStyle = "#99d6ff";
             ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
             ctx.fillStyle = "#5690b5";
             ctx.fillRect(105, 140, 430, 320);
 
-            for(let i = 0; i < game.users.length; i++){
-                type(game.users[i].username, 130, 160 + i * 30);
+            type(game.title, 520, 150, undefined, undefined, undefined, "right");
+            for (let i = 0; i < game.users.length; i++) {
+                type(game.users[i].username, 130, 190 + i * 30);
+            }
+
+            type("X: Start game", 630, 450, undefined, undefined, undefined, "right");
+        }
+
+        if(this.scene == 3){
+            // Scoreboard endgame scene
+            ctx.fillStyle = "#99d6ff";
+            ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
+            ctx.fillStyle = "#5690b5";
+            ctx.fillRect(105, 140, 430, 320);
+            type("Game Over", c.width/2, 150, 4, undefined, undefined, "center")
+
+            for(let i = 0; i < scoreboard.length; i++){
+                type((i+1) + ". " + scoreboard[i], 255, 210 + (i*30), 2, undefined, undefined, "left");
             }
 
         }
@@ -268,31 +288,37 @@ var onlineRender = {
             if (this.selectedButton == 0) this.selectedButton += this.buttons.length;
             this.selectedButton--;
         }
-        if (key.is(keys.back)){
-            if(this.scene == 0) selectedScene = 0;
-            if(this.scene == 1) this.scene = 0;
-            if(this.scene == 2){
+        if (key.is(keys.back)) {
+            if (this.scene == 3) this.scene = 2;
+            if (this.scene == 0) selectedScene = 0;
+            if (this.scene == 1) this.scene = 0;
+            if (this.scene == 2) {
                 this.scene = 0;
                 disconnect();
             }
         }
-        if(key.is(keys.down) && this.scene == 1){
+        if (key.is(keys.down) && this.scene == 1) {
             this.lobbySelect++;
         }
-        if(key.is(keys.up) && this.scene == 1){
-            if(this.lobbySelect == 0) this.lobbySelect = games.length;
+        if (key.is(keys.up) && this.scene == 1) {
+            if (this.lobbySelect == 0) this.lobbySelect = games.length;
             this.lobbySelect--;
         }
         if (key.is(keys.action)) {
-            if (this.selectedButton == 1) {
+            if(this.scene == 3) this.scene = 2;
+            if (this.selectedButton % 2 == 1 && this.scene == 0) {
                 requestCreateLobby();
             }
 
-            if(this.scene == 1){
+            if (this.scene == 2) {
+                onlineInitGame()
+            }
+
+            if (this.scene == 1) {
                 joinLobby(this.lobbySelect % games.length);
             }
 
-            if(this.selectedButton == 0 && this.scene == 0){
+            if (this.selectedButton % 2 == 0 && this.scene == 0) {
                 this.scene = 1;
                 this.lobbySelect = 0;
                 browse();
@@ -494,86 +520,96 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
-        text: "Toggle Minigames",
-        source: [{
-            text: "Toggle all minigames",
-            source: function () {
-                var positive = 0;
-                var negative = 0;
-                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                    /* Check if the majority of the options are either on or off */
-                    if (optionsRender.selectedOptions[i].type == "boolean") {
-                        if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
-                        else negative++;
+            text: "Toggle Minigames",
+            source: [{
+                text: "Toggle all minigames",
+                source: function () {
+                    var positive = 0;
+                    var negative = 0;
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Check if the majority of the options are either on or off */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
+                            else negative++;
+                        }
                     }
-                }
 
-                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                    /* Toggle all the options */
-                    if (optionsRender.selectedOptions[i].type == "boolean") {
-                        globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
-                        saveSettings();
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Toggle all the options */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
+                            saveSettings();
+                        }
                     }
-                }
-            },
-            type: "function"
-        }],
-        type: "link"
-    }, {
-        text: "Hardcore mode:",
-        source: "hardcoreMode",
-        type: "boolean"
-    }, {
-        /* Display text */
-        text: "Initial difficulty:",
-        /* globalOptions source */
-        source: "initialDifficulty",
-        type: "alternative",
-        alternatives: [
-            /* First option is always default */
-            "0", "1", "2", "3", "4", "5", "10", "15", "20", "30"
-        ]
-    }, {
-        text: "Sound:",
-        source: "disableSound",
-        type: "boolean",
-        flip: true
-    }, {
-        text: "Music:",
-        source: "disableMusic",
-        type: "boolean",
-        flip: true
-    }, {
-        text: "Atmospheric Glow",
-        source: "atmosphericGlow",
-        type: "boolean"
-    }, {
-        text: "Display FPS:",
-        source: "displayFPS",
-        type: "boolean"
-    }, {
-        text: "Lock to 60 FPS:",
-        source: "limitFPS",
-        type: "boolean"
-    }, {
-        /* Display text */
-        text: "Screen size:",
-        /* globalOptions source */
-        source: "screensize",
-        type: "alternative",
-        alternatives: [
-            /* First option is always default */
-            "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
-        ],
-        /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
-        logic: function (alternative) {
-            c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
+                },
+                type: "function"
+            }],
+            type: "link"
+        },
+        {
+            text: "Username",
+            source: "username",
+            type: "text"
+        },{
+            text: "Lobby name",
+            source: "lobbyName",
+            type: "text"
+        }, {
+            text: "Hardcore mode:",
+            source: "hardcoreMode",
+            type: "boolean"
+        }, {
+            /* Display text */
+            text: "Initial difficulty:",
+            /* globalOptions source */
+            source: "initialDifficulty",
+            type: "alternative",
+            alternatives: [
+                /* First option is always default */
+                "0", "1", "2", "3", "4", "5", "10", "15", "20", "30"
+            ]
+        }, {
+            text: "Sound:",
+            source: "disableSound",
+            type: "boolean",
+            flip: true
+        }, {
+            text: "Music:",
+            source: "disableMusic",
+            type: "boolean",
+            flip: true
+        }, {
+            text: "Atmospheric Glow",
+            source: "atmosphericGlow",
+            type: "boolean"
+        }, {
+            text: "Display FPS:",
+            source: "displayFPS",
+            type: "boolean"
+        }, {
+            text: "Lock to 60 FPS:",
+            source: "limitFPS",
+            type: "boolean"
+        }, {
+            /* Display text */
+            text: "Screen size:",
+            /* globalOptions source */
+            source: "screensize",
+            type: "alternative",
+            alternatives: [
+                /* First option is always default */
+                "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
+            ],
+            /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
+            logic: function (alternative) {
+                c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
+            }
+        }, {
+            text: "Dev-tools:",
+            source: "devTools",
+            type: "boolean"
         }
-    }, {
-        text: "Dev-tools:",
-        source: "devTools",
-        type: "boolean"
-    }],
+    ],
     selectedOptions: undefined,
     spriteIndex: 0,
     paint: function () {
@@ -633,7 +669,7 @@ var optionsRender = {
                 button.color = colors.link
             }
 
-            if (this.selectedOptions[i].type == "function" || this.selectedOptions[i].type == "alternative") {
+            if (this.selectedOptions[i].type == "function" || this.selectedOptions[i].type == "alternative" || this.selectedOptions[i].type == "text") {
                 button.color = colors.function
             }
 
@@ -712,19 +748,46 @@ var optionsRender = {
                     type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
+            if(this.selectedOptions[i].type == "text"){
+                if (this.selectedOption % this.selectedOptions.length == i) {
+                    type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 40, text.y, undefined, undefined, undefined, "right");
+                } else {
+                    type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 30, text.y, undefined, undefined, undefined, "right");
+                }
+                
+            }
 
+        }
+        if(this.typing){
+            draw("input_field", 0, 0, 10);
+            var typingText = globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source];
+            if(Math.round(Date.now()/500) % 2 == 0) typingText+="_"; // Add blinking underscore, time based.
+            type(typingText, 152, 210, 4);
         }
         type("Z: Back X: Select", 510, 460, 1);
     },
     logic: function (key) {
         var playEffect = false;
 
-        if (key.is(keys.down)) {
+        if(this.typing){
+            if(key.char.toLowerCase() == "backspace"){
+                globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source] = globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].substr(0, globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].length-1);
+                saveSettings();
+                return;
+            }
+            
+            if(key.char.length == 1 && globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].length < 11) globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source]+=key.char;
+            saveSettings();
+            if(key.code == 32) return; // Suppress space
+            if(key.code == 88) return; // Suppress X
+        }
+
+        if (key.is(keys.down) && !this.typing) {
             this.selectedOption++;
             playEffect = true;
             if (this.selectedOption > this.selectedOptions.length - 1) this.selectedOption = 0;
         }
-        if (key.is(keys.up)) {
+        if (key.is(keys.up) && !this.typing) {
             this.selectedOption--;
             playEffect = true;
             if (this.selectedOption < 0) this.selectedOption = this.selectedOptions.length - 1;
@@ -732,6 +795,9 @@ var optionsRender = {
         if (key.is(keys.action)) {
             // Toggle option
             playEffect = true;
+            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "text"){
+                this.typing = !this.typing;
+            }
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "boolean") {
                 globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = !globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
             } else if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "link") {
@@ -753,7 +819,7 @@ var optionsRender = {
 
 
         }
-        if (key.is(keys.back)) {
+        if (key.is(keys.back) && !this.typing) {
             // Go back to manu
             playEffect = true;
             if (this.selectedOptions !== this.options) {
@@ -764,7 +830,7 @@ var optionsRender = {
             }
         }
 
-        if (key.is(keys.right)) {
+        if (key.is(keys.right) && !this.typing) {
             /* Increase option */
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
                 playEffect = true;
@@ -778,7 +844,7 @@ var optionsRender = {
             }
         }
 
-        if (key.is(keys.left)) {
+        if (key.is(keys.left) && !this.typing) {
             /* Increase option */
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "alternative") {
                 playEffect = true;
@@ -1140,6 +1206,8 @@ function changeThemeColor(color) {
 
 function startGame() {
     /* First start of the game, total reset. */
+    inOnlineGame = false;
+    if (!globalOptions.devTools && !inOnlineGame) globalOptions.disableGameOver = false;
     window.difficulty = Number(globalOptions.initialDifficulty);
     window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
     inGame = true;
@@ -1280,6 +1348,7 @@ function detectMobileInput(value) {
 }
 
 function endGame() {
+    if (inOnlineGame) disconnect();
     try {
         backgroundSound.pause();
         backgroundSound.playbackRate = 1;
@@ -1352,18 +1421,19 @@ document.addEventListener("keydown", e => {
 
 function cleared(ms) {
 
+    if (inOnlineGame) socket.emit("cleared");
     if (ms == undefined) ms = 0;
     globalOptions.disableGameOver = true;
 
     window.setClearedTimeout = setTimeout(() => {
         disableKeyboard = false;
-        score++;
+        if (!inOnlineGame) score++;
         var sound = "yoshi-mount";
         var display = {
             text: "Cleared!",
             color: "#38ed4a"
         }
-        if ((score % 3 == 0) || (globalOptions.hardcoreMode)) {
+        if ((score % 3 == 0 && !inOnlineGame) || (globalOptions.hardcoreMode && !inOnlineGame) || showFasterAnimation) {
             sound = "faster";
             difficulty++;
             if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate = (1 + (difficulty / 20));
@@ -1374,7 +1444,8 @@ function cleared(ms) {
             }
         }
         playSound(sound);
-        showClearedScreen(display.text, display.color);
+        showClearedScreen(display.text, display.color, inOnlineGame);
+        if (inOnlineGame) return;
         window.newGameTimout = setTimeout(() => {
             newGame();
             globalOptions.disableGameOver = false;
@@ -1438,7 +1509,7 @@ function fill(color) {
 function drawOverlay() {
     var timePassed = (Date.now() - timer) / 1000;
     var timeLeft = Math.ceil(gameLength - timePassed);
-    if (timeLeft < 0 && !globalOptions.disableGameOver && timed) {
+    if (!timeLeft > 0 && miniGame.timed && !globalOptions.disableGameOver) {
         if (miniGame.timedWin) {
             cleared();
         } else {
@@ -1467,7 +1538,8 @@ function drawOverlay() {
 var failedCalled = false;
 
 function failed(ms) {
-    if (globalOptions.devTools) return;
+    if (inOnlineGame) socket.emit("failed");
+    if (globalOptions.devTools && !inOnlineGame) return;
     if (failedCalled) return;
     failedCalled = true;
     if (ms == undefined) ms = 0;
@@ -1493,9 +1565,15 @@ function failed(ms) {
                     //setTimeout(()=> {clearInterval(slowDown);}, 250);
                 } catch (e) {}
                 changeThemeColor("#000000")
+
                 failedCalled = false;
                 disableInputs = false
+                if (inOnlineGame) {
+
+                }
                 inGame = false;
+
+
                 playingMenuMusic = false;
             }, 400);
         }, ms)
@@ -1503,17 +1581,18 @@ function failed(ms) {
         lives--;
         window.liveTimout = setTimeout(() => {
             disableKeyboard = false;
-            showClearedScreen(lives + " left!", "#e5376b");
+            showClearedScreen(lives + " left!", "#e5376b", true);
+
             window.updateTimout = setTimeout(() => {
                 disableInputs = false
+                failedCalled = false;
                 playSound("hurt");
                 globalOptions.disableGameOver = false;
-                failedCalled = false;
+                if (inOnlineGame) return;
                 cleared(700);
             }, 400);
         }, ms)
     }
-
 }
 
 function log() {
@@ -1686,14 +1765,17 @@ function startOpeningAnimation() {
 
 var showingClearedScreen = false;
 
-function showClearedScreen(text, color) {
+function showClearedScreen(text, color, infinite) {
     changeThemeColor(color)
     window.clearedProgress = 0;
     window.lastClearedProgressIncrease = Date.now();
     window.clearedColor = color;
     window.clearedText = text;
     window.clearedStartTime = Date.now();
+    if (infinite === undefined) infinite = false;
+    window.clearedScreenInfinite = infinite
     showingClearedScreen = true;
+
 }
 
 var disableInputs = false;
@@ -1811,6 +1893,7 @@ function render() {
         if ((timePassed - 900) > 0) {
             opacity = Math.round((((timePassed - 1000)) / 200) * 100) / 100;
         }
+        if (clearedScreenInfinite) opacity = 0;
 
         clearedProgress += speed;
         ctx.fillStyle = "#111";
@@ -1818,6 +1901,7 @@ function render() {
             var x = (canvas.width * -1) + (clearedProgress * curtainSpeed)
             if (x > 0) x = 0;
         }
+
         ctx.fillRect(0, x, canvas.width, canvas.height);
         ctx.fillRect(0, x * -1, canvas.width, canvas.height);
 
@@ -1845,7 +1929,7 @@ function render() {
             }
         }
 
-        if (timePassed >= duration) showingClearedScreen = false;
+        if (timePassed >= duration && !clearedScreenInfinite) showingClearedScreen = false;
         fill("rgba(17,17,17," + opacity + ")");
     }
 
