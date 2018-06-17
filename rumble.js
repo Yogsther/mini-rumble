@@ -48,23 +48,27 @@ renderLoadingScreen();
 var warningSigns = new Array();
 
 var globalOptions = {
-    hardcoreMode: false,
-    displayFPS: false,
-    devTools: false,
-    disableSound: false,
-    disableMusic: false,
-    limitFPS: false,
-    screensize: "1.0x",
-    screenPosition: 5,
-    initialDifficulty: 0,
-    atmosphericGlow: true,
+    //Online options
     username: "User_" + Math.round(random() * 10000),
     lobbyName: "",
     password: "",
-    startingLives: 3,
     scramble: false,
+    maxPlayers: "No limit",
+    //Graphics and Display options
+    atmosphericGlow: true,
     renderParticles: true,
-    maxPlayers: "No limit"
+    displayFPS: false,
+    limitFPS: false,
+    screensize: "1.0x",
+    screenPosition: 5,
+    //Game options
+    startingLives: 3,
+    hardcoreMode: false,
+    initialDifficulty: 0,
+    devTools: false,
+    disableSound: false,
+    disableMusic: false,
+
 }
 
 var miniGames = new Array();
@@ -195,7 +199,7 @@ var textureNames = [
     "rumble/alt_ts/D/mini_logo_D.png",
     "rumble/alt_ts/D/rumble_logo_D.png",
     "rumble/alt_ts/D/hardcore_logo_D.png",
-    "rumble/lobby_lives.png", 
+    "rumble/lobby_lives.png",
     "rumble/lobby_scramble.png",
     "rumble/lobby_hardcore.png",
     "rumble/lobby_vanilla.png",
@@ -278,7 +282,7 @@ var onlineRender = {
                 /* Catergori tags, show what kind of rules are set for the lobby / game */
                 if (this.lobbySelect % games.length == i) selectionOffset += 10;
                 games[i].tags.forEach(tag => {
-                    draw("lobby_"+tag, 130 + selectionOffset, 160 + i * 30, 1);
+                    draw("lobby_" + tag, 130 + selectionOffset, 160 + i * 30, 1);
                     selectionOffset += 30;
                 })
 
@@ -485,7 +489,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
                 drawC("hardcore_logo_D", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
             }
         } else {
-            
+
             drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
             //Changes the titlescreen if hardcore mode is enabled
             if (!globalOptions.hardcoreMode) {
@@ -619,111 +623,110 @@ var optionsRender = {
     selectedOption: 0,
     startPoint: 0,
     options: [{
-        text: "Toggle Minigames",
-        source: [{
-            text: "Toggle all minigames",
-            source: function () {
-                var positive = 0;
-                var negative = 0;
-                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                    /* Check if the majority of the options are either on or off */
-                    if (optionsRender.selectedOptions[i].type == "boolean") {
-                        if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
-                        else negative++;
+            text: "Toggle Minigames",
+            source: [{
+                text: "Toggle all minigames",
+                source: function () {
+                    var positive = 0;
+                    var negative = 0;
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Check if the majority of the options are either on or off */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            if (globalOptions[optionsRender.selectedOptions[i].source]) positive++;
+                            else negative++;
+                        }
                     }
-                }
 
-                for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
-                    /* Toggle all the options */
-                    if (optionsRender.selectedOptions[i].type == "boolean") {
-                        globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
-                        saveSettings();
+                    for (let i = 0; i < optionsRender.selectedOptions.length; i++) {
+                        /* Toggle all the options */
+                        if (optionsRender.selectedOptions[i].type == "boolean") {
+                            globalOptions[optionsRender.selectedOptions[i].source] = positive < negative;
+                            saveSettings();
+                        }
                     }
-                }
-            },
-            type: "function"
-        }],
-        type: "link"
-    }, {
-
-        text: "Online options",
-        source: [{
-                text: "Username",
-                source: "username",
-                type: "text"
-            }, {
-                text: "Lobby name",
-                source: "lobbyName",
-                type: "text"
-            }, {
-                text: "Lobby password",
-                source: "password",
-                type: "text"
-            },
-            {
-                text: "Scramble RNG",
-                source: "scramble",
-                type: "boolean"
-            }, {
-                text: "Max players",
-                source: "maxPlayers",
-                type: "alternative",
-                alternatives: ["No limit", 2, 3, 5, 10, 20, 30],
+                },
+                type: "function"
             }],
+            type: "link"
+        }, {
+
+            text: "Online options",
+            source: [{
+                    text: "Username",
+                    source: "username",
+                    type: "text"
+                }, {
+                    text: "Lobby name",
+                    source: "lobbyName",
+                    type: "text"
+                }, {
+                    text: "Lobby password",
+                    source: "password",
+                    type: "text"
+                },
+                {
+                    text: "Scramble RNG",
+                    source: "scramble",
+                    type: "boolean"
+                }, {
+                    text: "Max players",
+                    source: "maxPlayers",
+                    type: "alternative",
+                    alternatives: ["No limit", 2, 3, 5, 10, 20, 30],
+                }
+            ],
             type: "link"
         },
         {
             text: "Graphics and Display",
             type: "link",
-            source: [
-                {
-                    text: "Atmospheric Glow",
-                    source: "atmosphericGlow",
-                    type: "boolean"
-                }, {
-                    text: "Render particles",
-                    source: "renderParticles",
-                    type: "boolean"
-                }, {
-                    text: "Display FPS",
-                    source: "displayFPS",
-                    type: "boolean"
-                }, {
-                    text: "Lock to 60 FPS",
-                    source: "limitFPS",
-                    type: "boolean"
-                }, {
-                    /* Display text */
-                    text: "Screen size",
-                    /* globalOptions source */
-                    source: "screensize",
-                    type: "alternative",
-                    alternatives: [
-                        /* First option is always default */
-                        "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
-                    ],
-                    /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
-                    logic: function (alternative) {
-                        loadScreenSettings();
-                    }
-                }, {
-                    text:"Screen Position",
-                    source: "screenPosition",
-                    type: "alternative",
-                    alternatives: [
-                        "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0" 
-                    ],
-                    logic: function (alternative) {
-                        canvas.style.top = this.alternatives[alternative] + "vh";
-                    }
+            source: [{
+                text: "Atmospheric Glow",
+                source: "atmosphericGlow",
+                type: "boolean"
+            }, {
+                text: "Render particles",
+                source: "renderParticles",
+                type: "boolean"
+            }, {
+                text: "Display FPS",
+                source: "displayFPS",
+                type: "boolean"
+            }, {
+                text: "Lock to 60 FPS",
+                source: "limitFPS",
+                type: "boolean"
+            }, {
+                /* Display text */
+                text: "Screen size",
+                /* globalOptions source */
+                source: "screensize",
+                type: "alternative",
+                alternatives: [
+                    /* First option is always default */
+                    "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
+                ],
+                /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
+                logic: function (alternative) {
+                    loadScreenSettings();
                 }
-            ]
+            }, {
+                text: "Screen Position",
+                source: "screenPosition",
+                type: "alternative",
+                alternatives: [
+                    "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0"
+                ],
+                logic: function (alternative) {
+                    canvas.style.top = this.alternatives[alternative] + "vh";
+                }
+            }]
         }, {
             text: "Starting lives",
             source: "startingLives",
             type: "alternative",
             alternatives: [3, 5, 10, 30, 50, 100, 999, 1, 2]
-        },{
+        }, {
             text: "Hardcore mode:",
             source: "hardcoreMode",
             type: "boolean"
@@ -747,11 +750,12 @@ var optionsRender = {
             source: "disableMusic",
             type: "boolean",
             flip: true
-        },{
-        text: "Dev-tools",
-        source: "devTools",
-        type: "boolean"
-    }],
+        }, {
+            text: "Dev-tools",
+            source: "devTools",
+            type: "boolean"
+        }
+    ],
     selectedOptions: undefined,
     spriteIndex: 0,
     paint: function () {
@@ -1392,7 +1396,7 @@ function startGame() {
         backgroundSound.play();
         /* Music visualizer */
 
-        try{
+        try {
             context = new AudioContext();
             src = context.createMediaElementSource(backgroundSound);
             window.analyser = context.createAnalyser();
@@ -1401,8 +1405,8 @@ function startGame() {
             analyser.fftSize = 32;
             var bufferLength = analyser.frequencyBinCount;
             window.dataArray = new Uint8Array(bufferLength);
-        } catch(e){}
-        
+        } catch (e) {}
+
     }
 
     showClearedScreen("Ready? Go!", "#66a0ff");
@@ -1526,9 +1530,9 @@ function detectMobileInput(value) {
 }
 
 function endGame() {
-    try{
+    try {
         analyser.disconnect();
-    } catch(e){}
+    } catch (e) {}
     if (inOnlineGame) disconnect();
     try {
         backgroundSound.pause();
@@ -1982,11 +1986,8 @@ function render() {
             playingMenuMusic = true;
             try {
                 backgroundSound.pause();
-            } catch (e) {}if (globalOptions.initialDifficulty == "90's") {
-                backgroundSound = s(altMusic[Math.floor(random() * altMusic.length)]);
-            } else {
-                backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
-            }
+            } catch (e) {}
+            backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
             backgroundSound.currentTime = 0;
             backgroundSound.volume = .2;
             backgroundSound.loop = true;
@@ -2026,33 +2027,35 @@ function render() {
         renders[selectedScene].paint(); // Paint menu
     }
 
-    if(inGame){
-        if(!globalOptions.disableMusic && !globalOptions.disableSound){
+    if (inGame) {
+        if (!globalOptions.disableMusic && !globalOptions.disableSound) {
             // Update data
-            try{
+            try {
                 analyser.getByteFrequencyData(dataArray);
                 // Calculate avrage
                 var arrSum = 0;
-                dataArray.forEach(bit => { arrSum+=bit })
-                var avrage = arrSum/dataArray.length;
-    
-                if(avrage < lowestFrequency && avrage > 60) lowestFrequency = avrage;
-                glowIntensity = (avrage-lowestFrequency-5) * 2;
-                if(glowIntensity < 0) glowIntensity = 0;
-    
-                if (globalOptions.atmosphericGlow){
+                dataArray.forEach(bit => {
+                    arrSum += bit
+                })
+                var avrage = arrSum / dataArray.length;
+
+                if (avrage < lowestFrequency && avrage > 60) lowestFrequency = avrage;
+                glowIntensity = (avrage - lowestFrequency - 5) * 2;
+                if (glowIntensity < 0) glowIntensity = 0;
+
+                if (globalOptions.atmosphericGlow) {
                     c.style.boxShadow = "0px 0px 10px black,  0px 0px " + glowIntensity + "px " + themeColor;
                     var hex = hexToRgb(themeColor);
                     document.body.style.background = "rgb(" + hex.r / 10 + "," + hex.g / 10 + "," + hex.b / 10 + ")";
                 }
-            } catch(e){}
+            } catch (e) {}
         }
     }
     if (inGame && !showingOpeningAnimation && !showingClearedScreen) {
         miniGame.loop()
         miniGame.paint()
         drawOverlay(); // Draw overlay last (on top)
-        
+
     }
     if (showingOpeningAnimation) {
         ctx.fillStyle = "#111";
