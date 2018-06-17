@@ -64,7 +64,7 @@ function startOnlineGame(gameData) {
     window.overlaySprite = overlaySprites[Math.floor(random() * overlaySprites.length)];
     inGame = true;
     inOnlineGame = true;
-    window.lives = 3;
+    window.lives = gameData.lives;
     
     if (!globalOptions.disableSound && !globalOptions.disableMusic && playingMenuMusic) {
         backgroundSound.pause();

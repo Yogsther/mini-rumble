@@ -86,6 +86,7 @@ var mash = {
         /*x: 216, y: 282 */
 
         var yStart = 312;
+        if(globalOptions.renderParticles){
         for (let i = 0; i < this.particles.length; i++) {
             var particle = this.particles[i];
 
@@ -98,6 +99,7 @@ var mash = {
             ctx.fillStyle = particle.color;
             ctx.fillRect(x, y, 15, 15);
         }
+    }
 
     },
     loop: function () {
@@ -144,11 +146,12 @@ var mash = {
         }
     },
     chew: function () {
-        this.particlesToSpawn += 5;
+        if(globalOptions.renderParticles)this.particlesToSpawn += 5;
         this.currentX += t(this.sandwich[0]).width * .4;
         playSound(this.sounds[Math.floor(random() * this.sounds.length)]);
     },
     spawnParticle: function () {
+        if(!globalOptions.renderParticles) return;
         var particleColors = ["#db2b2b", "#2ece29", "#af2b8c", "#f9ab36", "#cc861e"];
         var goLeft = false;
         if (random() > .5) goLeft = true;
