@@ -39,7 +39,7 @@ var carrotCatch = {
         ctx.drawImage(t("carrot"), this.carrotPosition.x, this.carrotPosition.y, t("carrot").width * this.carrotScale, t("carrot").height * this.carrotScale)
         if (this.carrotCatchSuccess) {
             // Draw rabbit
-            ctx.drawImage(textures["rabbit_closed_woke"], 62, 134, t(this.rabbitTexture).width * this.rabbitScale, t(this.rabbitTexture).height * this.rabbitScale)
+            ctx.drawImage(textures["rabbit_closed"], 62, 134, t(this.rabbitTexture).width * this.rabbitScale, t(this.rabbitTexture).height * this.rabbitScale)
         }
     },
     loop: function () {
