@@ -6,7 +6,7 @@
     display: block;
     width: 100%;
     zoom: 1;
-    top: 30px;
+    top: 0vh;
     max-width: 640px;
     transition: all .5s;
     image-rendering: optimizeSpeed;             /* Older versions of FF          */

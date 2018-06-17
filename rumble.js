@@ -54,6 +54,7 @@ var globalOptions = {
     disableMusic: false,
     limitFPS: false,
     screensize: "1.0x",
+    screenPosition: 5,
     initialDifficulty: 0,
     atmosphericGlow: true,
     username: "User_" + Math.round(random() * 10000),
@@ -130,6 +131,7 @@ function loadSettings() {
 
 function loadScreenSettings() {
     c.style.zoom = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1);
+    canvas.style.top = globalOptions.screenPosition + "vh";
 }
 
 function expandOptions() {
@@ -707,7 +709,17 @@ var optionsRender = {
                     logic: function (alternative) {
                         c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
                     }
-                }, 
+                }, {
+                    text:"Screen Position",
+                    source: "screenPosition",
+                    type: "alternative",
+                    alternatives: [
+                        "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0" 
+                    ],
+                    logic: function (alternative) {
+                        canvas.style.top = this.alternatives[alternative] + "vh";
+                    }
+                }
             ]
         },{
             text: "Hardcore mode:",
@@ -1947,8 +1959,11 @@ function render() {
             playingMenuMusic = true;
             try {
                 backgroundSound.pause();
-            } catch (e) {}
-            backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
+            } catch (e) {}if (globalOptions.initialDifficulty == "90's") {
+                backgroundSound = s(altMusic[Math.floor(random() * altMusic.length)]);
+            } else {
+                backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
+            }
             backgroundSound.currentTime = 0;
             backgroundSound.volume = .2;
             backgroundSound.loop = true;
