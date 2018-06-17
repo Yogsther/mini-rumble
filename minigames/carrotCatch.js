@@ -25,7 +25,7 @@ var carrotCatch = {
         this.carrotCatchSuccess = undefined;
         this.carrotStopped = false;
         this.rabbitTexture = "rabbit_open"
-        this.carrotTime = Math.floor(Math.random() * 2000) + 900; // Can be between 900 -> 2900 ms
+        this.carrotTime = Math.floor(random() * 2000) + 900; // Can be between 900 -> 2900 ms
     },
     paint: function () {
         // Fill background

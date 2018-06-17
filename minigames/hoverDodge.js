@@ -28,7 +28,7 @@ var hoverDodge = {
         var minimSpace = 400;
         var maximumSpace = 800;
         for(let i = 0; i < amountOfPolls; i++){
-            var position = Math.floor(Math.random() * (maximumSpace - minimSpace) + minimSpace) + lastPollPosition;
+            var position = Math.floor(random() * (maximumSpace - minimSpace) + minimSpace) + lastPollPosition;
             this.polls.push(position);
             lastPollPosition = position;
         }

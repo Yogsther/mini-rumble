@@ -52,7 +52,7 @@ var mines = {
 			console.log("setup started")
 			for (let y = 0; y < this.stage.length; y++) {
 				for (let x = 0; x < this.stage[y].length; x++) {
-					if (Math.random() < 0.2) {
+					if (random() < 0.2) {
 						this.stage[y][x] = {
 							revealed: false,
 							mine: true,

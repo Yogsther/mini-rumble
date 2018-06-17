@@ -6,21 +6,6 @@ var game = new Object();
 socket.on("connect", () => { isOnline = true });
 socket.on("disconnect", () => { isOnline = false });
 
-function requestCreateLobby(){
-    socket.emit("createLobby", {
-        username: globalOptions.username,
-        settings: globalOptions,
-        lobbyName: globalOptions.lobbyName
-    })
-}
-
-function joinLobby(id){
-    socket.emit("join", {id: games[id].id, username: globalOptions.username})
-}
-
-function browse(){
-    socket.emit("browse");
-}
 
 socket.on("list", list => {
     games = list;
@@ -41,8 +26,27 @@ socket.on("joined", recivedGame => {
 })
 
 socket.on("startGame", gameData => {
+    seed = gameData.seed;
     startOnlineGame(gameData);
 })
+
+function requestCreateLobby(){
+    socket.emit("createLobby", {
+        username: globalOptions.username,
+        settings: globalOptions,
+        lobbyName: globalOptions.lobbyName,
+        password: globalOptions.password
+    })
+}
+
+function joinLobby(id){
+    socket.emit("join", {id: games[id].id, username: globalOptions.username, password: lobbyPassword})
+}
+
+function browse(){
+    socket.emit("browse");
+}
+
 
 function disconnect(){
     socket.emit("leave");
@@ -57,14 +61,14 @@ function onlineInitGame(){
 function startOnlineGame(gameData) {
     /* First start of the game, total reset. */
     window.difficulty = 0;
-    window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
+    window.overlaySprite = overlaySprites[Math.floor(random() * overlaySprites.length)];
     inGame = true;
     inOnlineGame = true;
     window.lives = 3;
     
     if (!globalOptions.disableSound && !globalOptions.disableMusic && playingMenuMusic) {
         backgroundSound.pause();
-        backgroundSound = s(titleSounds[Math.floor(Math.random() * titleSounds.length)]);
+        backgroundSound = s(titleSounds[Math.floor(random() * titleSounds.length)]);
         backgroundSound.volume = .2;
         backgroundSound.loop = true;
         backgroundSound.playbackRate = 1;

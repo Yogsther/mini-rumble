@@ -6,6 +6,12 @@
 var disableGameOver = false;
 var logCoordinates = false;
 
+/* Seeded random function so that in online-play, all users have the same experience. */
+var seed = Math.random()*100000; // Generate a random number, for singleplayer.
+function random() {
+    var x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
+}
 
 /* Engine variables */
 const canvas = c = document.getElementById("canvas");
@@ -14,6 +20,7 @@ ctx.imageSmoothingEnabled = false;
 
 var isOnline = false; // If the user is connected to official servers.
 var inOnlineGame = false; // If the user is playing in an online game.
+var lobbyPassword = "";
 
 /* All overlay textures, can be multible sprites to form a spritesheet. */
 
@@ -33,7 +40,7 @@ var loadingMessages = [
     "Let's rumble!"
 ]
 
-var currentLoadPackageMessage = loadingMessages[Math.floor(Math.random() * loadingMessages.length)];
+var currentLoadPackageMessage = loadingMessages[Math.floor(random() * loadingMessages.length)];
 
 renderLoadingScreen();
 
@@ -49,8 +56,9 @@ var globalOptions = {
     screensize: "1.0x",
     initialDifficulty: 0,
     atmosphericGlow: true,
-    username: "User_" + Math.round(Math.random() * 10000),
-    lobbyName: ""
+    username: "User_" + Math.round(random() * 10000),
+    lobbyName: "",
+    password: ""
 }
 
 var miniGames = new Array();
@@ -60,6 +68,15 @@ var showFasterAnimation = false;
 
 var backgroundSound = undefined;
 var playingMenuMusic = false;
+
+
+
+
+
+function sigmoid(t) {
+    return 1 / (1 + Math.pow(Math.E, -t));
+}
+
 
 var soundEffects = [
     "rumble/sfx/yoshi-mount.mp3",
@@ -184,6 +201,7 @@ var onlineRender = {
     titleProgression: 0,
     selectedButton: 0,
     scene: 0,
+    typing: false,
     lobbySelect: 0,
     selectionProgress: 0,
     paint: function () {
@@ -226,7 +244,7 @@ var onlineRender = {
             drawC("online_selection", this.highlightPos, 280 + Math.sin(this.selectionProgress) * 4, 5);
         }
         if (this.scene == 1) {
-            /* Draw lobby list */
+            /* Draw lobby list; Browse */
             ctx.fillStyle = "#99d6ff";
             ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
             ctx.fillStyle = "#5690b5";
@@ -237,7 +255,18 @@ var onlineRender = {
                 if (this.lobbySelect % games.length == i) selectionOffset = 10;
                 type(games[i].title, 130 + selectionOffset, 160 + i * 30);
             }
+
+
             drawC("online_selection", 120 + Math.sin(this.selectionProgress) * 4, 173 + this.lobbySelect % games.length * 30, 3, 90);
+
+            if (this.typing) {
+                draw("input_field", 0, 0, 10);
+                window.typingText = lobbyPassword
+                if (Math.round(Date.now() / 500) % 2 == 0) type(typingText + "_", 152, 210, 4);
+                else type(typingText, 152, 210, 4);
+            }
+
+            
         }
 
         if (this.scene == 2) {
@@ -255,16 +284,16 @@ var onlineRender = {
             type("X: Start game", 630, 450, undefined, undefined, undefined, "right");
         }
 
-        if(this.scene == 3){
+        if (this.scene == 3) {
             // Scoreboard endgame scene
             ctx.fillStyle = "#99d6ff";
             ctx.fillRect(105 - 5, 140 - 5, 430 + 10, 320 + 10);
             ctx.fillStyle = "#5690b5";
             ctx.fillRect(105, 140, 430, 320);
-            type("Game Over", c.width/2, 150, 4, undefined, undefined, "center")
+            type("Game Over", c.width / 2, 150, 4, undefined, undefined, "center")
 
-            for(let i = 0; i < scoreboard.length; i++){
-                type((i+1) + ". " + scoreboard[i], 255, 210 + (i*30), 2, undefined, undefined, "left");
+            for (let i = 0; i < scoreboard.length; i++) {
+                type((i + 1) + ". " + scoreboard[i], 255, 210 + (i * 30), 2, undefined, undefined, "left");
             }
 
         }
@@ -283,12 +312,25 @@ var onlineRender = {
         }
     },
     logic(key) {
+
+        if (this.typing) {
+            if (key.char.toLowerCase() == "backspace") {
+                lobbyPassword = lobbyPassword.substr(0, lobbyPassword.length - 1);
+                return;
+            }
+
+            if (key.char.length == 1 && lobbyPassword.length < 11) lobbyPassword += key.char;
+            saveSettings();
+            if (key.code == 32) return; // Suppress space
+            if (key.code == 88) return; // Suppress X
+        }
+
         if (key.is(keys.right) && this.scene == 0) this.selectedButton++;
         if (key.is(keys.left) && this.scene == 0) {
             if (this.selectedButton == 0) this.selectedButton += this.buttons.length;
             this.selectedButton--;
         }
-        if (key.is(keys.back)) {
+        if (key.is(keys.back) && !this.typing) {
             if (this.scene == 3) this.scene = 2;
             if (this.scene == 0) selectedScene = 0;
             if (this.scene == 1) this.scene = 0;
@@ -297,15 +339,16 @@ var onlineRender = {
                 disconnect();
             }
         }
-        if (key.is(keys.down) && this.scene == 1) {
+        if (key.is(keys.down) && this.scene == 1 && !this.typing) {
             this.lobbySelect++;
         }
-        if (key.is(keys.up) && this.scene == 1) {
+        if (key.is(keys.up) && this.scene == 1 && !this.typing) {
             if (this.lobbySelect == 0) this.lobbySelect = games.length;
             this.lobbySelect--;
         }
         if (key.is(keys.action)) {
-            if(this.scene == 3) this.scene = 2;
+
+            if (this.scene == 3) this.scene = 2;
             if (this.selectedButton % 2 == 1 && this.scene == 0) {
                 requestCreateLobby();
             }
@@ -315,6 +358,14 @@ var onlineRender = {
             }
 
             if (this.scene == 1) {
+                if (games[this.lobbySelect % games.length].tags.indexOf("locked") != -1) {
+                    this.typing = !this.typing;
+                    if (!this.typing) {
+                        lobbyPassword = typingText;
+                    } else {
+                        return; // Don't join lobby until password has been typed.
+                    }
+                }
                 joinLobby(this.lobbySelect % games.length);
             }
 
@@ -379,6 +430,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         x: -50,
         y: 220
     },
+    typing: false,
     buttonScale: .8,
     buttonExtension: [0, 0, 0],
     buttonSpacing: 80,
@@ -481,6 +533,8 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
     logic: function (key) {
         var playEffect = false;
 
+
+
         if (key.is(keys.down)) {
             this.selectedButton++;
             playEffect = true;
@@ -491,6 +545,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
             if (this.selectedButton < 0) this.selectedButton = this.buttonColors.length - 1;
         }
         if (key.is(keys.action)) {
+
             playEffect = true;
             if (this.selectedButton % this.buttonColors.length == 0) startGame(); /* Play button */
             if (this.selectedButton % this.buttonColors.length == 1 && isOnline) selectedScene = 2 /* Online button */
@@ -550,9 +605,13 @@ var optionsRender = {
             text: "Username",
             source: "username",
             type: "text"
-        },{
+        }, {
             text: "Lobby name",
             source: "lobbyName",
+            type: "text"
+        }, {
+            text: "Lobby password",
+            source: "password",
             type: "text"
         }, {
             text: "Hardcore mode:",
@@ -748,20 +807,20 @@ var optionsRender = {
                     type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
-            if(this.selectedOptions[i].type == "text"){
+            if (this.selectedOptions[i].type == "text") {
                 if (this.selectedOption % this.selectedOptions.length == i) {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 40, text.y, undefined, undefined, undefined, "right");
                 } else {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 30, text.y, undefined, undefined, undefined, "right");
                 }
-                
+
             }
 
         }
-        if(this.typing){
+        if (this.typing) {
             draw("input_field", 0, 0, 10);
-            var typingText = globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source];
-            if(Math.round(Date.now()/500) % 2 == 0) typingText+="_"; // Add blinking underscore, time based.
+            var typingText = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+            if (Math.round(Date.now() / 500) % 2 == 0) typingText += "_"; // Add blinking underscore, time based.
             type(typingText, 152, 210, 4);
         }
         type("Z: Back X: Select", 510, 460, 1);
@@ -769,17 +828,17 @@ var optionsRender = {
     logic: function (key) {
         var playEffect = false;
 
-        if(this.typing){
-            if(key.char.toLowerCase() == "backspace"){
-                globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source] = globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].substr(0, globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].length-1);
+        if (this.typing) {
+            if (key.char.toLowerCase() == "backspace") {
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source].substr(0, globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source].length - 1);
                 saveSettings();
                 return;
             }
-            
-            if(key.char.length == 1 && globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source].length < 11) globalOptions[this.selectedOptions[this.selectedOption%this.selectedOptions.length].source]+=key.char;
+
+            if (key.char.length == 1 && globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source].length < 11) globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] += key.char;
             saveSettings();
-            if(key.code == 32) return; // Suppress space
-            if(key.code == 88) return; // Suppress X
+            if (key.code == 32) return; // Suppress space
+            if (key.code == 88) return; // Suppress X
         }
 
         if (key.is(keys.down) && !this.typing) {
@@ -795,7 +854,7 @@ var optionsRender = {
         if (key.is(keys.action)) {
             // Toggle option
             playEffect = true;
-            if(this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "text"){
+            if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "text") {
                 this.typing = !this.typing;
             }
             if (this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "boolean") {
@@ -1209,7 +1268,7 @@ function startGame() {
     inOnlineGame = false;
     if (!globalOptions.devTools && !inOnlineGame) globalOptions.disableGameOver = false;
     window.difficulty = Number(globalOptions.initialDifficulty);
-    window.overlaySprite = overlaySprites[Math.floor(Math.random() * overlaySprites.length)];
+    window.overlaySprite = overlaySprites[Math.floor(random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
         window.lives = 3;
@@ -1220,7 +1279,7 @@ function startGame() {
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound.pause();
-        backgroundSound = s(titleSounds[Math.floor(Math.random() * titleSounds.length)]);
+        backgroundSound = s(titleSounds[Math.floor(random() * titleSounds.length)]);
         backgroundSound.volume = .2;
         backgroundSound.loop = true;
         backgroundSound.playbackRate = 1;
@@ -1258,7 +1317,7 @@ function newGame() {
         return;
     }
     drawOpening();
-    miniGame = miniGamesArray[Math.floor(Math.random() * miniGamesArray.length)];
+    miniGame = miniGamesArray[Math.floor(random() * miniGamesArray.length)];
     if (miniGame.themeColor !== undefined) changeThemeColor(miniGame.themeColor);
     else changeThemeColor("#000000");
     inGame = true;
@@ -1802,7 +1861,7 @@ function render() {
             try {
                 backgroundSound.pause();
             } catch (e) {}
-            backgroundSound = s(mainMenuMusic[Math.floor(Math.random() * mainMenuMusic.length)]);
+            backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
             backgroundSound.currentTime = 0;
             backgroundSound.volume = .2;
             backgroundSound.loop = true;

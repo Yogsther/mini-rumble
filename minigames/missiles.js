@@ -46,7 +46,7 @@ var missiles = {
       this.width = 54;
       this.height = 27;
       this.direction;
-      this.fuse = Date.now() + Math.floor(Math.random() * 100);
+      this.fuse = Date.now() + Math.floor(random() * 100);
       this.running = false;
       this.exploded = false;
       if (this.x <= 0) {
@@ -72,7 +72,7 @@ var missiles = {
             }
           }
         } else {
-          if (Math.random() < 0.01) {
+          if (random() < 0.01) {
             this.running = true;
           }
         }
@@ -191,12 +191,12 @@ var missiles = {
     if (Date.now() - this.missileFreq > this.lastUpdate) {
       this.lastUpdate = Date.now();
       let x;
-      if (Math.random() > 0.5) {
+      if (random() > 0.5) {
         x = -57; 
       } else {
         x = canvas.width;
       }
-      this.missiles.push(new this.Missile(x, (this.groundLevel - 200) + ((1 - Math.pow(Math.random(), 2)) * 180)));
+      this.missiles.push(new this.Missile(x, (this.groundLevel - 200) + ((1 - Math.pow(random(), 2)) * 180)));
     }
     for (let i = 0; i < this.missiles.length; i++) {
       this.missiles[i].run();

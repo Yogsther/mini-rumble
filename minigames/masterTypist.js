@@ -195,7 +195,7 @@ var typeMaster = {
         this.nextWord = undefined;
         this.wordsToType = (dif + 1);
         this.completedWords = 0;
-        this.wordStart = Math.floor(Math.random() * this.words.length);
+        this.wordStart = Math.floor(random() * this.words.length);
 
 
         this.word = this.words[this.wordStart];
@@ -217,38 +217,38 @@ var typeMaster = {
 
         var plural = false;
 
-        if (Math.random() > .5) this.past = true;
+        if (random() > .5) this.past = true;
         else this.past = false;
 
         /* Define next word */
         if (order[this.completedWords % order.length] == "determiner") {
-            if (Math.random() > .5) plural = true; // 50/50 its plural for maximum variation
-            this.nextWord = this.library[order[this.completedWords + 2 % order.length]][Math.floor(Math.random() * this.library[order[this.completedWords + 2 % order.length]].length)];
-            this.nextAdjective = this.library.adjective[Math.floor(Math.random() * this.library.adjective.length)];
+            if (random() > .5) plural = true; // 50/50 its plural for maximum variation
+            this.nextWord = this.library[order[this.completedWords + 2 % order.length]][Math.floor(random() * this.library[order[this.completedWords + 2 % order.length]].length)];
+            this.nextAdjective = this.library.adjective[Math.floor(random() * this.library.adjective.length)];
             if (plural) this.nextWord = this.nextWord + "s";
 
-            if (plural) this.word = this.library.determinerPlural[Math.floor(Math.random() * this.library.determinerPlural.length)];
-            else this.word = this.library.determiner[Math.floor(Math.random() * this.library.determiner.length)];
+            if (plural) this.word = this.library.determinerPlural[Math.floor(random() * this.library.determinerPlural.length)];
+            else this.word = this.library.determiner[Math.floor(random() * this.library.determiner.length)];
 
             if (vowels.indexOf(this.nextAdjective[0].toLowerCase()) != -1 && this.word == "a") this.word = "an";
         } else if (order[this.completedWords % order.length] == "noun") {
             this.word = this.nextWord;
         } else if (order[this.completedWords % order.length] == "conjunction") {
             
-            if (Math.random() > .5) this.past = true;
+            if (random() > .5) this.past = true;
             else this.past = false;
 
-            if (!this.past) this.word = this.library.conjunctionPast[Math.floor(Math.random() * this.library.conjunctionPast.length)]
-            else this.word = this.library.conjunction[Math.floor(Math.random() * this.library.conjunction.length)]
+            if (!this.past) this.word = this.library.conjunctionPast[Math.floor(random() * this.library.conjunctionPast.length)]
+            else this.word = this.library.conjunction[Math.floor(random() * this.library.conjunction.length)]
            
         } else if (order[this.completedWords % order.length] == "verb") {
-            if (this.past) this.word = this.library.verbPast[Math.floor(Math.random() * this.library.verbPast.length)]
-            else this.word = this.library.verb[Math.floor(Math.random() * this.library.verb.length)]
+            if (this.past) this.word = this.library.verbPast[Math.floor(random() * this.library.verbPast.length)]
+            else this.word = this.library.verb[Math.floor(random() * this.library.verb.length)]
 
         } else if (order[this.completedWords % order.length] == "adjective") {
             this.word = this.nextAdjective;
         } else {
-            this.word = this.library[order[this.completedWords % order.length]][Math.floor(Math.random() * this.library[order[this.completedWords % order.length]].length)];
+            this.word = this.library[order[this.completedWords % order.length]][Math.floor(random() * this.library[order[this.completedWords % order.length]].length)];
         }
 
 
@@ -329,7 +329,7 @@ var typeMaster = {
         if (key.char.toLowerCase() == "shift") return;
         if (key.char.toLowerCase() == this.word[this.progress].toLowerCase()) {
             this.progress++;
-            playSound(this.sounds[Math.floor(Math.random() * this.sounds.length)]);
+            playSound(this.sounds[Math.floor(random() * this.sounds.length)]);
             if (this.progress >= this.word.length && !this.cleared) {
                 this.completedWords++;
                 if (this.wordsToType == this.completedWords) {

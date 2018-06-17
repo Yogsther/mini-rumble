@@ -47,7 +47,7 @@ var wizard_hunt = {
 
       this.map = new Array();
       for(let i = 0; i < 200; i++){
-        this.map[i] = Math.floor(Math.random() * 4); 
+        this.map[i] = Math.floor(random() * 4); 
       }
       
       this.pointerRotation = 0;

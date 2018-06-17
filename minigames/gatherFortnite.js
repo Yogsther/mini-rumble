@@ -42,8 +42,8 @@ var gatherFortnite = {
     },
     populateMaterials: function(){
         for(let i = 0; i < this.amountOfMaterials; i++){
-            var x = Math.floor(Math.random() * (canvas.width - (this.padding*2))) + this.padding;
-                y = Math.floor(Math.random() * (353  - (this.padding*2))) + this.padding;
+            var x = Math.floor(random() * (canvas.width - (this.padding*2))) + this.padding;
+                y = Math.floor(random() * (353  - (this.padding*2))) + this.padding;
             this.materials[i] = {x: x, y: y, collected: false};
         }
     },

@@ -146,17 +146,17 @@ var mash = {
     chew: function () {
         this.particlesToSpawn += 5;
         this.currentX += t(this.sandwich[0]).width * .4;
-        playSound(this.sounds[Math.floor(Math.random() * this.sounds.length)]);
+        playSound(this.sounds[Math.floor(random() * this.sounds.length)]);
     },
     spawnParticle: function () {
         var particleColors = ["#db2b2b", "#2ece29", "#af2b8c", "#f9ab36", "#cc861e"];
         var goLeft = false;
-        if (Math.random() > .5) goLeft = true;
+        if (random() > .5) goLeft = true;
         this.particles.push({
             progress: 0,
-            color: particleColors[Math.floor(Math.random() * particleColors.length)],
+            color: particleColors[Math.floor(random() * particleColors.length)],
             goLeft: goLeft,
-            punch: Math.floor(Math.random() * 50)
+            punch: Math.floor(random() * 50)
         });
     }
 }
