@@ -124,10 +124,8 @@ function loadSettings() {
 }
 
 function loadScreenSettings() {
-
-    c.style.marginTop = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) * 100 + "px"
     c.style.transform = "scale(" + globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) + ")";
-    canvas.style.top = globalOptions.screenPosition + "vh";
+    canvas.style.marginTop = globalOptions.screenPosition + "vh";
 
 }
 
@@ -714,7 +712,7 @@ var optionsRender = {
                         "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0" 
                     ],
                     logic: function (alternative) {
-                        canvas.style.top = this.alternatives[alternative] + "vh";
+                        loadScreenSettings();
                     }
                 }
             ]
