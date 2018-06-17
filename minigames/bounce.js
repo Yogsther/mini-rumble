@@ -5,6 +5,7 @@ var bounce = {
     icon: "gameicons/bounce_icon.png",
     timed: true,
     timedWin: true,
+    themeColor: "#f4427d",
     textures: [],
     introText: "Bounce!",
     init: function (dif) {

@@ -76,6 +76,17 @@ function startOnlineGame(gameData) {
     }
     playingMenuMusic = false;
 
+     try{
+            context = new AudioContext();
+            src = context.createMediaElementSource(backgroundSound);
+            window.analyser = context.createAnalyser();
+            src.connect(analyser);
+            analyser.connect(context.destination);
+            analyser.fftSize = 32;
+            var bufferLength = analyser.frequencyBinCount;
+            window.dataArray = new Uint8Array(bufferLength);
+        } catch(e){}
+
     if(gameData.score == 0){
         showClearedScreen("Online? Go!", "#ffbc00");
         window.startTimout = setTimeout(() => {

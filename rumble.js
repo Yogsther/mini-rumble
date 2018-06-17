@@ -21,9 +21,10 @@ ctx.imageSmoothingEnabled = false;
 var isOnline = false; // If the user is connected to official servers.
 var inOnlineGame = false; // If the user is playing in an online game.
 var lobbyPassword = "";
+var glowIntensity = 1;
+var lowestFrequency = 200;
 
 /* All overlay textures, can be multible sprites to form a spritesheet. */
-
 var loadingScreenDotJump = 0;
 var loadingMessages = [
     "Get ready!",
@@ -61,7 +62,8 @@ var globalOptions = {
     password: "",
     startingLives: 3,
     scramble: false,
-    renderParticles: true
+    renderParticles: true,
+    maxPlayers: "No limit"
 }
 
 var miniGames = new Array();
@@ -71,14 +73,6 @@ var showFasterAnimation = false;
 
 var backgroundSound = undefined;
 var playingMenuMusic = false;
-
-
-
-
-
-function sigmoid(t) {
-    return 1 / (1 + Math.pow(Math.E, -t));
-}
 
 
 var soundEffects = [
@@ -129,7 +123,8 @@ function loadSettings() {
 }
 
 function loadScreenSettings() {
-    c.style.zoom = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1);
+    c.style.marginTop = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) * 100 + "px"
+    c.style.transform = "scale(" + globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) + ")";
 }
 
 function expandOptions() {
@@ -666,10 +661,10 @@ var optionsRender = {
                 source: "scramble",
                 type: "boolean"
             }, {
-                text: "Starting lives",
-                source: "startingLives",
+                text: "Max players",
+                source: "maxPlayers",
                 type: "alternative",
-                alternatives: [3, 5, 10, 30, 50, 100, 999, 1, 2]
+                alternatives: ["No limit", 2, 3, 5, 10, 20, 30],
             }],
             type: "link"
         },
@@ -705,10 +700,15 @@ var optionsRender = {
                     ],
                     /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
                     logic: function (alternative) {
-                        c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
+                        loadScreenSettings();
                     }
                 }, 
             ]
+        }, {
+            text: "Starting lives",
+            source: "startingLives",
+            type: "alternative",
+            alternatives: [3, 5, 10, 30, 50, 100, 999, 1, 2]
         },{
             text: "Hardcore mode:",
             source: "hardcoreMode",
@@ -1325,20 +1325,25 @@ function keyDown(keys) {
     return false;
 }
 
+
+
+
+function hexToRgb(hex) {
+    var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : null;
+}
+
 function changeThemeColor(color) {
+    window.themeColor = color;
     if (!globalOptions.atmosphericGlow) return;
-    c.style.boxShadow = "0px 0px 10px black,  0px 0px 50px " + color;
+    c.style.boxShadow = "0px 0px 10px black,  0px 0px " + glowIntensity + "px " + color;
     var hex = hexToRgb(color);
     document.body.style.background = "rgb(" + hex.r / 10 + "," + hex.g / 10 + "," + hex.b / 10 + ")";
 
-    function hexToRgb(hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return result ? {
-            r: parseInt(result[1], 16),
-            g: parseInt(result[2], 16),
-            b: parseInt(result[3], 16)
-        } : null;
-    }
 }
 
 
@@ -1354,7 +1359,7 @@ function startGame() {
     window.overlaySprite = overlaySprites[Math.floor(random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
-        window.lives = 3;
+        window.lives = globalOptions.startingLives;
     } else {
         window.lives = 1;
         //difficulty = 3;
@@ -1371,6 +1376,19 @@ function startGame() {
         backgroundSound.loop = true;
         backgroundSound.playbackRate = 1;
         backgroundSound.play();
+        /* Music visualizer */
+
+        try{
+            context = new AudioContext();
+            src = context.createMediaElementSource(backgroundSound);
+            window.analyser = context.createAnalyser();
+            src.connect(analyser);
+            analyser.connect(context.destination);
+            analyser.fftSize = 32;
+            var bufferLength = analyser.frequencyBinCount;
+            window.dataArray = new Uint8Array(bufferLength);
+        } catch(e){}
+        
     }
 
     showClearedScreen("Ready? Go!", "#66a0ff");
@@ -1494,6 +1512,9 @@ function detectMobileInput(value) {
 }
 
 function endGame() {
+    try{
+        analyser.disconnect();
+    } catch(e){}
     if (inOnlineGame) disconnect();
     try {
         backgroundSound.pause();
@@ -1987,10 +2008,34 @@ function render() {
     if (!inGame) {
         renders[selectedScene].paint(); // Paint menu
     }
+
+    if(inGame){
+        if(!globalOptions.disableMusic && !globalOptions.disableSound){
+            // Update data
+            try{
+                analyser.getByteFrequencyData(dataArray);
+                // Calculate avrage
+                var arrSum = 0;
+                dataArray.forEach(bit => { arrSum+=bit })
+                var avrage = arrSum/dataArray.length;
+    
+                if(avrage < lowestFrequency && avrage > 60) lowestFrequency = avrage;
+                glowIntensity = (avrage-lowestFrequency-5) * 2;
+                if(glowIntensity < 0) glowIntensity = 0;
+    
+                if (globalOptions.atmosphericGlow){
+                    c.style.boxShadow = "0px 0px 10px black,  0px 0px " + glowIntensity + "px " + themeColor;
+                    var hex = hexToRgb(themeColor);
+                    document.body.style.background = "rgb(" + hex.r / 10 + "," + hex.g / 10 + "," + hex.b / 10 + ")";
+                }
+            } catch(e){}
+        }
+    }
     if (inGame && !showingOpeningAnimation && !showingClearedScreen) {
         miniGame.loop()
         miniGame.paint()
         drawOverlay(); // Draw overlay last (on top)
+        
     }
     if (showingOpeningAnimation) {
         ctx.fillStyle = "#111";

@@ -7,7 +7,8 @@ var carrotCatch = {
     themeColor: "#00689e",
     textures: [
         "carrot_catch/carrot.png", 
-        "carrot_catch/rabbit_closed.png", 
+        "carrot_catch/rabbit_closed.png",
+        "carrot_catch/rabbit_closed_woke.png", 
         "carrot_catch/rabbit_open.png", 
         "carrot_catch/sunny_grass.png"
     ],
@@ -38,7 +39,7 @@ var carrotCatch = {
         ctx.drawImage(t("carrot"), this.carrotPosition.x, this.carrotPosition.y, t("carrot").width * this.carrotScale, t("carrot").height * this.carrotScale)
         if (this.carrotCatchSuccess) {
             // Draw rabbit
-            ctx.drawImage(t(this.rabbitTexture), 62, 134, t(this.rabbitTexture).width * this.rabbitScale, t(this.rabbitTexture).height * this.rabbitScale)
+            ctx.drawImage(textures["rabbit_closed_woke"], 62, 134, t(this.rabbitTexture).width * this.rabbitScale, t(this.rabbitTexture).height * this.rabbitScale)
         }
     },
     loop: function () {

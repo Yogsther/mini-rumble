@@ -5,10 +5,11 @@
     position: relative;
     display: block;
     width: 100%;
-    zoom: 1;
+    transform: scale(1);
     top: 30px;
     max-width: 640px;
     transition: all .5s;
+    transition: box-shadow .00s;
     image-rendering: optimizeSpeed;             /* Older versions of FF          */
     image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
     image-rendering: -webkit-optimize-contrast; /* Safari                        */
@@ -34,6 +35,7 @@
 body{
     margin: 0px;
     background: #111;
+    overflow: hidden;
 }
 
 #dpad{
