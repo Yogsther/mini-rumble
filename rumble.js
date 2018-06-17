@@ -98,6 +98,11 @@ var titleSounds = [
     "rumble/bg_music/KingDedede.mp3",
     "rumble/bg_music/DiggaLeg.mp3"
 ];
+var altMusic = [
+    "rumble/alt_music/D/dejaVu.mp3",
+    "rumble/alt_music/D/gasGasGas.mp3",
+    "rumble/alt_music/D/runningInThe90s.mp3"
+]
 
 function loadAchievements() {
     window.unlockedAchievements = localStorage.getItem("achievements");
@@ -181,7 +186,23 @@ var timer = 0;
 
 /* All texture name to be imported during the importTextures process. */
 var miniGameIcons = []
-var textureNames = ["rumble/mini_logo.png", "rumble/rumble_logo.png", "rumble/table.png", "rumble/hardcore_logo.png", "rumble/input_field.png", "rumble/lobby_hardcore.png", "rumble/lobby_locked.png", "rumble/lobby_vanilla.png", "rumble/lobby_lives.png", "rumble/lobby_scramble.png"]
+
+var textureNames = [
+    "rumble/mini_logo.png",
+    "rumble/rumble_logo.png",
+    "rumble/table.png",
+    "rumble/hardcore_logo.png",
+    "rumble/input_field.png",
+    "rumble/alt_ts/D/mini_logo_D.png",
+    "rumble/alt_ts/D/rumble_logo_D.png",
+    "rumble/alt_ts/D/hardcore_logo_D.png",
+    "rumble/lobby_lives.png", 
+    "rumble/lobby_scramble.png",
+    "rumble/lobby_hardcore.png",
+    "rumble/lobby_vanilla.png",
+    "rumble/lobby_locked.png"
+]
+
 var textures = new Object();
 var sounds = new Object();
 
@@ -258,7 +279,7 @@ var onlineRender = {
                 /* Catergori tags, show what kind of rules are set for the lobby / game */
                 if (this.lobbySelect % games.length == i) selectionOffset += 10;
                 games[i].tags.forEach(tag => {
-                    draw("lobby_"+tag, 130 + selectionOffset, 160 + i * 30, 2);
+                    draw("lobby_"+tag, 130 + selectionOffset, 160 + i * 30, 1);
                     selectionOffset += 30;
                 })
 
@@ -272,7 +293,7 @@ var onlineRender = {
             if (this.typing) {
                 draw("input_field", 0, 0, 10);
                 window.typingText = lobbyPassword
-                if (Math.round(Date.now() / 500) % 2 == 0) type(typingText + "_", 152, 210, 4);
+                if (Math.round(Date.now() / 500) % 2 == 0) type(typingText + "|", 152, 210, 4);
                 else type(typingText, 152, 210, 4);
             }
         }
@@ -289,7 +310,7 @@ var onlineRender = {
                 type(game.users[i].username, 130, 190 + i * 30);
             }
 
-            type("X: Start game", 630, 450, undefined, undefined, undefined, "right");
+            type("X: Start game", 620, 450, undefined, undefined, undefined, "right");
         }
 
         if (this.scene == 3) {
@@ -456,12 +477,23 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         fill("#111")
         this.spriteIndex++;
         // Draw logo
-        drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
-        //Changes the titlescreen if hardcore mode is enabled
-        if (!globalOptions.hardcoreMode) {
-            drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+        if (globalOptions.initialDifficulty == "90's") {
+            drawC("rumble_logo_D", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
+            //Changes the titlescreen if hardcore mode is enabled
+            if (!globalOptions.hardcoreMode) {
+                drawC("mini_logo_D", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            } else {
+                drawC("hardcore_logo_D", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            }
         } else {
-            drawC("hardcore_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            
+            drawC("rumble_logo", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
+            //Changes the titlescreen if hardcore mode is enabled
+            if (!globalOptions.hardcoreMode) {
+                drawC("mini_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            } else {
+                drawC("hardcore_logo", c.width / 2, 50 + (Math.sin((this.spriteIndex + 10) * .08) * 5), .8);
+            }
         }
 
         /* Draw buttons */
@@ -638,70 +670,70 @@ var optionsRender = {
                 source: "startingLives",
                 type: "alternative",
                 alternatives: [3, 5, 10, 30, 50, 100, 999, 1, 2]
-            }
-        ],
-        type: "link"
-    }, {
-        text: "Graphics and Display",
-        type: "link",
-        source: [
-            {
-                text: "Atmospheric Glow",
-                source: "atmosphericGlow",
-                type: "boolean"
-            }, {
-                text: "Render particles",
-                source: "renderParticles",
-                type: "boolean"
-            }, {
-                text: "Display FPS",
-                source: "displayFPS",
-                type: "boolean"
-            }, {
-                text: "Lock to 60 FPS",
-                source: "limitFPS",
-                type: "boolean"
-            }, {
-                /* Display text */
-                text: "Screen size",
-                /* globalOptions source */
-                source: "screensize",
-                type: "alternative",
-                alternatives: [
-                    /* First option is always default */
-                    "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
-                ],
-                /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
-                logic: function (alternative) {
-                    c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
-                }
-            }, 
-        ]
-    }, {
-        text: "Hardcore mode:",
-        source: "hardcoreMode",
-        type: "boolean"
-    }, {
-        /* Display text */
-        text: "Initial difficulty:",
-        /* globalOptions source */
-        source: "initialDifficulty",
-        type: "alternative",
-        alternatives: [
-            /* First option is always default */
-            "0", "1", "2", "3", "4", "5", "10", "15", "20", "30"
-        ]
-    }, {
-        text: "Sound:",
-        source: "disableSound",
-        type: "boolean",
-        flip: true
-    }, {
-        text: "Music:",
-        source: "disableMusic",
-        type: "boolean",
-        flip: true
-    },{
+            }],
+            type: "link"
+        },
+        {
+            text: "Graphics and Display",
+            type: "link",
+            source: [
+                {
+                    text: "Atmospheric Glow",
+                    source: "atmosphericGlow",
+                    type: "boolean"
+                }, {
+                    text: "Render particles",
+                    source: "renderParticles",
+                    type: "boolean"
+                }, {
+                    text: "Display FPS",
+                    source: "displayFPS",
+                    type: "boolean"
+                }, {
+                    text: "Lock to 60 FPS",
+                    source: "limitFPS",
+                    type: "boolean"
+                }, {
+                    /* Display text */
+                    text: "Screen size",
+                    /* globalOptions source */
+                    source: "screensize",
+                    type: "alternative",
+                    alternatives: [
+                        /* First option is always default */
+                        "1.0x", "1.25x", "1.5x", "1.75x", "2.0x"
+                    ],
+                    /* Logic function is not mandatory, it's only used if you want something to happen when it's changed. */
+                    logic: function (alternative) {
+                        c.style.zoom = this.alternatives[alternative].substr(0, this.alternatives[alternative].length - 1);
+                    }
+                }, 
+            ]
+        },{
+            text: "Hardcore mode:",
+            source: "hardcoreMode",
+            type: "boolean"
+        }, {
+            /* Display text */
+            text: "Initial difficulty:",
+            /* globalOptions source */
+            source: "initialDifficulty",
+            type: "alternative",
+            alternatives: [
+                /* First option is always default */
+                "0", "1", "2", "3", "4", "5", "10", "15", "20", "30", "90's"
+            ]
+        }, {
+            text: "Sound:",
+            source: "disableSound",
+            type: "boolean",
+            flip: true
+        }, {
+            text: "Music:",
+            source: "disableMusic",
+            type: "boolean",
+            flip: true
+        },{
         text: "Dev-tools",
         source: "devTools",
         type: "boolean"
@@ -844,6 +876,13 @@ var optionsRender = {
                     type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
+            if (this.selectedOptions[i].source == "initialDifficulty") {
+                if (globalOptions.initialDifficulty == "90's") {
+                    this.selectedOptions[i].text = "Initial D:";
+                } else {
+                    this.selectedOptions[i].text = "Initial Difficulty:";
+                }
+            }
             if (this.selectedOptions[i].type == "text") {
                 if (this.selectedOption % this.selectedOptions.length == i) {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 40, text.y, undefined, undefined, undefined, "right");
@@ -857,7 +896,7 @@ var optionsRender = {
         if (this.typing) {
             draw("input_field", 0, 0, 10);
             var typingText = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
-            if (Math.round(Date.now() / 500) % 2 == 0) typingText += "_"; // Add blinking underscore, time based.
+            if (Math.round(Date.now() / 500) % 2 == 0) typingText += "|"; // Add blinking underscore, time based.
             type(typingText, 152, 210, 4);
         }
         type("Z: Back X: Select", 510, 460, 1);
@@ -1152,6 +1191,9 @@ function importSounds() {
     soundEffects.forEach(sound => {
         importSound(sound);
     })
+    altMusic.forEach(sound => {
+        importSound(sound);
+    })
     miniGames.forEach(minigame => {
         if (minigame.sounds != undefined) {
             minigame.sounds.forEach(sound => {
@@ -1304,7 +1346,11 @@ function startGame() {
     /* First start of the game, total reset. */
     inOnlineGame = false;
     if (!globalOptions.devTools && !inOnlineGame) globalOptions.disableGameOver = false;
-    window.difficulty = Number(globalOptions.initialDifficulty);
+    if (globalOptions.initialDifficulty == "90's") {
+        window.difficulty = 3;
+    } else {
+        window.difficulty = Number(globalOptions.initialDifficulty);
+    }
     window.overlaySprite = overlaySprites[Math.floor(random() * overlaySprites.length)];
     inGame = true;
     if (!globalOptions.hardcoreMode) {
@@ -1316,7 +1362,11 @@ function startGame() {
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound.pause();
-        backgroundSound = s(titleSounds[Math.floor(random() * titleSounds.length)]);
+        if (globalOptions.initialDifficulty == "90's") {
+            backgroundSound = s(altMusic[Math.floor(random() * altMusic.length)]);
+        } else {
+            backgroundSound = s(titleSounds[Math.floor(random() * titleSounds.length)]);
+        }
         backgroundSound.volume = .2;
         backgroundSound.loop = true;
         backgroundSound.playbackRate = 1;
@@ -1789,8 +1839,8 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
 function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
-    special = { in: [':', '.', '!', '?', ';', ',', '_', '-', '/', '[', ']', '<', '>', '(', ')', '+', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ['0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", "0_bracket_L", "0_bracket_R", "0_less", "0_more", "0_parenthesis_L", "0_parenthesis_R", "0_plus", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
+    special = { in: ["'", ':', '.', '!', '?', ';', ',', '_', '-', '/', '\\', '[', ']', '<', '>', '(', ')', '+', '|', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ["0_apostrophe", '0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", "0_backslash", "0_bracket_L", "0_bracket_R", "0_less", "0_more", "0_parenthesis_L", "0_parenthesis_R", "0_plus", "0_vbar", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */
@@ -1805,7 +1855,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     var offset = 0;
     /* Determine width of the text */
     text.forEach(letter => {
-        if (['i', '.', '!', ':', ';'].indexOf(letter) != -1) textWidth += 3;
+        if (["'", 'i', '.', ',', '!', ':', ';', '|'].indexOf(letter) != -1) textWidth += 3;
         else if (['m', 'w'].indexOf(letter) != -1) textWidth += 9;
         else textWidth += 7;
     })
@@ -1818,7 +1868,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
         /* Special spacing for some characters */
         spacing = 7;
         /* Thinner letters */
-        if (['i', '.', '!', ':', ';'].indexOf(letter) != -1) spacing = 3;
+        if (["'", 'i', '.', ',', '!', ':', ';', '|'].indexOf(letter) != -1) spacing = 3;
         /* Wider letters */
         if (['m', 'w'].indexOf(letter) != -1) spacing = 9;
         if (letter != " ") {
