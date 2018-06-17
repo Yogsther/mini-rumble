@@ -6,7 +6,7 @@
     display: block;
     width: 100%;
     transform: scale(1);
-    top: 30px;
+    top: 5vh;
     max-width: 640px;
     transition: all .5s;
     transition: box-shadow .00s;
