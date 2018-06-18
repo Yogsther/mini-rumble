@@ -128,10 +128,8 @@ function loadSettings() {
 }
 
 function loadScreenSettings() {
-
-    c.style.marginTop = globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) * 100 + "px"
     c.style.transform = "scale(" + globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) + ")";
-    canvas.style.top = globalOptions.screenPosition + "vh";
+    canvas.style.marginTop = globalOptions.screenPosition + "vh";
 
 }
 
@@ -672,7 +670,16 @@ var optionsRender = {
                     text: "Max players",
                     source: "maxPlayers",
                     type: "alternative",
+<<<<<<< HEAD
                     alternatives: ["No limit", 2, 3, 5, 10, 20, 30],
+=======
+                    alternatives: [
+                        "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0" 
+                    ],
+                    logic: function (alternative) {
+                        loadScreenSettings();
+                    }
+>>>>>>> 2b9d2686abcdb6af0423d440f534f2e7b178ba06
                 }
             ],
             type: "link"

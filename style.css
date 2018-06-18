@@ -5,11 +5,11 @@
     position: relative;
     display: block;
     width: 100%;
+    transform-origin: top center;
     transform: scale(1);
-    top: 5vh;
+    margin-top: 5vh;
     max-width: 640px;
-    transition: all .5s;
-    transition: box-shadow .00s;
+    transition: margin .2s ease-in-out, transform .2s ease-in-out, box-shadow 0s;
     image-rendering: optimizeSpeed;             /* Older versions of FF          */
     image-rendering: -moz-crisp-edges;          /* FF 6.0+                       */
     image-rendering: -webkit-optimize-contrast; /* Safari                        */
