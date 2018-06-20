@@ -48,12 +48,20 @@ renderLoadingScreen();
 var warningSigns = new Array();
 
 var globalOptions = {
+
+    //Game options
+    startingLives: 3,
+    hardcoreMode: false,
+    initialDifficulty: 0,
+    devTools: false,
+    
     //Online options
     username: "User_" + Math.round(random() * 10000),
     lobbyName: "",
     password: "",
     scramble: false,
     maxPlayers: "No limit",
+
     //Graphics and Display options
     atmosphericGlow: true,
     renderParticles: true,
@@ -61,11 +69,9 @@ var globalOptions = {
     limitFPS: false,
     screensize: "1.0x",
     screenPosition: 5,
-    //Game options
-    startingLives: 3,
-    hardcoreMode: false,
-    initialDifficulty: 0,
-    devTools: false,
+
+    //Audio options
+    audioVolume: .5,
     disableSound: false,
     disableMusic: false,
 
@@ -670,22 +676,14 @@ var optionsRender = {
                     text: "Max players",
                     source: "maxPlayers",
                     type: "alternative",
-<<<<<<< HEAD
                     alternatives: ["No limit", 2, 3, 5, 10, 20, 30],
-=======
-                    alternatives: [
-                        "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0" 
-                    ],
-                    logic: function (alternative) {
-                        loadScreenSettings();
-                    }
->>>>>>> 2b9d2686abcdb6af0423d440f534f2e7b178ba06
+
                 }
             ],
             type: "link"
         },
         {
-            text: "Graphics and Display",
+            text: "Graphics & Display",
             type: "link",
             source: [{
                 text: "Atmospheric Glow",
@@ -725,7 +723,7 @@ var optionsRender = {
                     "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "0"
                 ],
                 logic: function (alternative) {
-                    canvas.style.top = this.alternatives[alternative] + "vh";
+                    loadScreenSettings();
                 }
             }]
         }, {
@@ -748,13 +746,17 @@ var optionsRender = {
                 "0", "1", "2", "3", "4", "5", "10", "15", "20", "30", "90's"
             ]
         }, {
-            text: "Sound:",
-            source: "disableSound",
+            text: "Volume",
+            source: "audioVolume",
+            type: "slider"
+        }, {
+            text: "Music",
+            source: "disableMusic",
             type: "boolean",
             flip: true
         }, {
-            text: "Music:",
-            source: "disableMusic",
+            text: "Sound",
+            source: "disableSound",
             type: "boolean",
             flip: true
         }, {
@@ -901,22 +903,32 @@ var optionsRender = {
                     type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
-            if (this.selectedOptions[i].source == "initialDifficulty") {
-                if (globalOptions.initialDifficulty == "90's") {
-                    this.selectedOptions[i].text = "Initial D:";
-                } else {
-                    this.selectedOptions[i].text = "Initial Difficulty:";
-                }
-            }
+            
             if (this.selectedOptions[i].type == "text") {
                 if (this.selectedOption % this.selectedOptions.length == i) {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 40, text.y, undefined, undefined, undefined, "right");
                 } else {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 30, text.y, undefined, undefined, undefined, "right");
                 }
-
             }
 
+            if (this.selectedOptions[i].type == "slider") {
+                ctx.fillstyle = "#555";
+                ctx.fillRect(text.x + 250, text.y, 1 * 250, 10);
+                ctx.fillStyle = "#fff";
+                ctx.fillRect(text.x + 250, text.y , globalOptions[this.selectedOptions[i].source] * 250, 10);
+                if (this.selectedOption % this.selectedOptions.length == i) {
+                    type(globalOptions[this.selectedOptions[i].source] * 100 + "%", text.x + 250, text.y)
+                }
+            }
+
+            if (this.selectedOptions[i].source == "initialDifficulty") {
+                if (globalOptions.initialDifficulty == "90's") {
+                    this.selectedOptions[i].text = "Initial D";
+                } else {
+                    this.selectedOptions[i].text = "Initial Difficulty";
+                }
+            }
         }
         if (this.typing) {
             draw("input_field", 0, 0, 10);
@@ -1885,8 +1897,8 @@ function drawC(sprite, x, y, scale, rotation, opacity) {
 
 function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     alpha = "abcdefghijklmnopqrstuvwxyz";
-    special = { in: ["'", ':', '.', '!', '?', ';', ',', '_', '-', '/', '\\', '[', ']', '<', '>', '(', ')', '+', '|', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
-        translate: ["0_apostrophe", '0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", "0_backslash", "0_bracket_L", "0_bracket_R", "0_less", "0_more", "0_parenthesis_L", "0_parenthesis_R", "0_plus", "0_vbar", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
+    special = { in: ['&', "'", ':', '.', '!', '?', ';', ',', '_', '-', '/', '\\', '[', ']', '<', '>', '(', ')', '%', '+', '|', "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+        translate: ["0_and", "0_apostrophe", '0_colon', "0_dot", "0_e_mark", "0_q_mark", "0_s_colon", "0_comma", "0_underscore", "0_dash", "0_slash", "0_backslash", "0_bracket_L", "0_bracket_R", "0_less", "0_more", "0_parenthesis_L", "0_parenthesis_R", "0_pct", "0_plus", "0_vbar", '0_0', '0_1', '0_2', '0_3', '0_4', '0_5', '0_6', '0_7', '0_8', '0_9']
     }
     text = text.toLowerCase().split(""); /* Split text into a char-array */
     position = x; /* Where to write the next letter, increases for each letter a varied amount. */
@@ -1902,7 +1914,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
     /* Determine width of the text */
     text.forEach(letter => {
         if (["'", 'i', '.', ',', '!', ':', ';', '|'].indexOf(letter) != -1) textWidth += 3;
-        else if (['m', 'w'].indexOf(letter) != -1) textWidth += 9;
+        else if (['&', 'm', 'w'].indexOf(letter) != -1) textWidth += 9;
         else textWidth += 7;
     })
 
@@ -1916,7 +1928,7 @@ function type(text, x, y, size, jumpIndex, jumpHeight, align) {
         /* Thinner letters */
         if (["'", 'i', '.', ',', '!', ':', ';', '|'].indexOf(letter) != -1) spacing = 3;
         /* Wider letters */
-        if (['m', 'w'].indexOf(letter) != -1) spacing = 9;
+        if (['&', 'm', 'w'].indexOf(letter) != -1) spacing = 9;
         if (letter != " ") {
             finalLetter = "";
             if (alpha.indexOf(letter) != -1) {
