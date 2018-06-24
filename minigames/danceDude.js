@@ -2,6 +2,7 @@ var danceDude = {
 	varName: "danceDude",
 	displayName: "Dance Dude",
 	icon: "gameicons/danceDude_icon.png",
+	themeColor: "#fff",
 	timed: false,
 	introText: "Dance!",
 	textures: [

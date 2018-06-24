@@ -1,7 +1,8 @@
 var nitroRace = {
 	varName: "nitroRace",
 	displayName: "Nitro Race",
-	icon: "gameicons/wip_icon.png",
+	icon: "",
+	themeColor: "#4286f4",
 	timed: false,
 	introText: "Race!",
 	textures: [
@@ -23,21 +24,24 @@ var nitroRace = {
 		this.dif = dif;
 		this.player = {
 			x: canvas.width / 2,
-			y: canvas.height / 2,
-			//player distance from start
-			distance: 0,
+			y: (canvas.height / 2) + 80,
 			scale: 4,
-			//player direction
-			dir: 0,
-			//player velocity
-			vel: 0,
-			//player acceleration/deacceleration
-			acc: 0.05,
-			deacc: 0.1
+			distance: 0, //player distance from start
+			dir: 0, //player direction
+			vel: 0, //player velocity
+			acc: 0.05, //player acceleration
+			deacc: 0.1, //player deacceleration
+			hp: 100 //player hitpoints
 		}
+		this.walls = new Array();
 		this.wall = {
-			x: 120,
-			y: -1000
+			x: (Math.random() * 192) + 120,
+			y: -1000,
+			texture: "nitro_wall",
+			amount: 10 + (dif * 2)
+		}
+		for (let i = 0; i < this.wall.amount; i++) {
+			var y = -1000 * i;
 		}
 		this.goal = {
 			y: -50000,
@@ -45,7 +49,7 @@ var nitroRace = {
 		}
 	},
 	paint: function () {
-		fill("#087c2d");
+		fill("#111");
 
 		//Draw road
 		draw("nitro_road", 0, (this.player.distance % 480) - 480, 4);
@@ -60,12 +64,18 @@ var nitroRace = {
 		drawC("nitro_player", this.player.x, this.player.y, this.player.scale, this.player.dir);
 		
 		
-
+		/*Draw Hud*/
+		ctx.fillStyle = "#111";
+		ctx.fillRect(0, 390, 170, 90);
 		//Draw speedometer
-		type(Math.floor(this.player.vel * 10) + " km/h", 50, 400, 2);
+		type(Math.floor(this.player.vel * 10) + " km/h", 10, 408, 2);
+		//Draw HP
+		type("HP", 10, 444, 2);
+		ctx.fillStyle = "#80ff80";
+		ctx.fillRect(50, 452, this.player.hp, 10);
+		
 	},
 	loop: function () {
-		console.log(this.player.vel);
 		this.player.distance += this.player.vel;
 		this.player.x += this.player.dir * 0.25;
 		this.goal.y = this.goal.distance + this.player.distance;

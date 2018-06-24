@@ -1,6 +1,7 @@
 var bitBoy = {
 	varName: "bitBoy",
 	displayName: "Bit Boy",
+	themeColor: "#fff",
 	timed: false,
 	timedWin: false,
 	introText: "It's a me!",

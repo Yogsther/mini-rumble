@@ -54,7 +54,7 @@ var globalOptions = {
     hardcoreMode: false,
     initialDifficulty: 0,
     devTools: false,
-    
+
     //Online options
     username: "User_" + Math.round(random() * 10000),
     lobbyName: "",
@@ -71,7 +71,7 @@ var globalOptions = {
     screenPosition: 5,
 
     //Audio options
-    audioVolume: .5,
+    audioVolume: 50,
     disableSound: false,
     disableMusic: false,
 
@@ -107,7 +107,10 @@ var altMusic = [
     "rumble/alt_music/D/dejaVu.mp3",
     "rumble/alt_music/D/gasGasGas.mp3",
     "rumble/alt_music/D/runningInThe90s.mp3"
-]
+];
+
+var running = globalOptions.initialDifficulty;
+var drift = false;
 
 function loadAchievements() {
     window.unlockedAchievements = localStorage.getItem("achievements");
@@ -130,6 +133,7 @@ function loadSettings() {
     if (settings === undefined) return;
     globalOptions = Object.assign(globalOptions, JSON.parse(settings));
     loadWarnings();
+    loadOtherSettings();
     loadScreenSettings();
 }
 
@@ -137,6 +141,19 @@ function loadScreenSettings() {
     c.style.transform = "scale(" + globalOptions.screensize.substr(0, globalOptions.screensize.length - 1) + ")";
     canvas.style.marginTop = globalOptions.screenPosition + "vh";
 
+}
+
+function loadAudioSettings() {
+    backgroundSound.volume = globalOptions.audioVolume / 100;
+}
+
+function loadOtherSettings() {
+    running = globalOptions.initialDifficulty;
+    if (running == "90's") {
+        drift = true;
+    } else {
+        drift = false;
+    }
 }
 
 function expandOptions() {
@@ -195,6 +212,7 @@ var timer = 0;
 var miniGameIcons = []
 
 var textureNames = [
+    /*
     "rumble/mini_logo.png",
     "rumble/rumble_logo.png",
     "rumble/table.png",
@@ -203,12 +221,15 @@ var textureNames = [
     "rumble/alt_ts/D/mini_logo_D.png",
     "rumble/alt_ts/D/rumble_logo_D.png",
     "rumble/alt_ts/D/hardcore_logo_D.png",
+    
     "rumble/lobby_lives.png",
     "rumble/lobby_scramble.png",
     "rumble/lobby_hardcore.png",
     "rumble/lobby_vanilla.png",
     "rumble/lobby_locked.png"
+    */
 ]
+
 
 var textures = new Object();
 var sounds = new Object();
@@ -451,6 +472,7 @@ function getAchievement(varName) {
  */
 
 var menuRender = /* Main Menu render and Logic (index: 0) */ {
+
     spriteIndex: 0,
     pinIndex: 0,
     lastUpdate: Date.now(),
@@ -484,7 +506,7 @@ var menuRender = /* Main Menu render and Logic (index: 0) */ {
         fill("#111")
         this.spriteIndex++;
         // Draw logo
-        if (globalOptions.initialDifficulty == "90's") {
+        if (drift) {
             drawC("rumble_logo_D", c.width / 2, 140 + (Math.sin(this.spriteIndex * .08) * 8), .8);
             //Changes the titlescreen if hardcore mode is enabled
             if (!globalOptions.hardcoreMode) {
@@ -744,11 +766,14 @@ var optionsRender = {
             alternatives: [
                 /* First option is always default */
                 "0", "1", "2", "3", "4", "5", "10", "15", "20", "30", "90's"
-            ]
+            ],
+            logic: function (alternative) {
+                loadOtherSettings();
+            }
         }, {
             text: "Volume",
             source: "audioVolume",
-            type: "slider"
+            type: "slider",
         }, {
             text: "Music",
             source: "disableMusic",
@@ -776,6 +801,7 @@ var optionsRender = {
             highLightedButtonColor: "#383636",
             link: "#26abff",
             function: "#ffbf00",
+            slider: "#33c9e0",
             background: "#111",
             scroll: "#ffbf00",
             border: "#ffbc00"
@@ -828,6 +854,9 @@ var optionsRender = {
                 button.color = colors.function
             }
 
+            if (this.selectedOptions[i].type == "slider") {
+                button.color = colors.slider;
+            }
             /* Set properties for text */
             var text = {
                 display: this.selectedOptions[i].text,
@@ -903,7 +932,7 @@ var optionsRender = {
                     type("  " + globalOptions[this.selectedOptions[i].source] + "  ", text.x + 380 * (text.otherScale), text.y, undefined, undefined, undefined, "right");
                 }
             }
-            
+
             if (this.selectedOptions[i].type == "text") {
                 if (this.selectedOption % this.selectedOptions.length == i) {
                     type(globalOptions[this.selectedOptions[i].source], text.x + 380 * (text.otherScale) - 40, text.y, undefined, undefined, undefined, "right");
@@ -913,17 +942,20 @@ var optionsRender = {
             }
 
             if (this.selectedOptions[i].type == "slider") {
-                ctx.fillstyle = "#555";
-                ctx.fillRect(text.x + 250, text.y, 1 * 250, 10);
-                ctx.fillStyle = "#fff";
-                ctx.fillRect(text.x + 250, text.y , globalOptions[this.selectedOptions[i].source] * 250, 10);
+                button.color = colors.slider;
+                ctx.fillStyle = "#111";
+                ctx.fillRect(text.x + 260, text.y, 100, 26);
+                ctx.fillStyle = "#33c9e0";
+                ctx.fillRect(text.x + 260, text.y, globalOptions[this.selectedOptions[i].source], 26);
                 if (this.selectedOption % this.selectedOptions.length == i) {
-                    type(globalOptions[this.selectedOptions[i].source] * 100 + "%", text.x + 250, text.y)
+                    type("< " + globalOptions[this.selectedOptions[i].source] + "%" + " >", text.x + 307, text.y, undefined, undefined, undefined, "center")
+                } else {
+                    type(globalOptions[this.selectedOptions[i].source] + "%", text.x + 307, text.y, undefined, undefined, undefined, "center")
                 }
             }
 
             if (this.selectedOptions[i].source == "initialDifficulty") {
-                if (globalOptions.initialDifficulty == "90's") {
+                if (drift) {
                     this.selectedOptions[i].text = "Initial D";
                 } else {
                     this.selectedOptions[i].text = "Initial Difficulty";
@@ -1014,6 +1046,13 @@ var optionsRender = {
                     this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
                 } catch (e) {}
             }
+            if ((this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "slider") && (globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] < 100)) {
+                playEffect = true;
+                var currentValue = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+                currentValue += 1;
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = currentValue;
+                loadAudioSettings();
+            }
         }
 
         if (key.is(keys.left) && !this.typing) {
@@ -1029,6 +1068,13 @@ var optionsRender = {
                     this.selectedOptions[this.selectedOption % this.selectedOptions.length].logic(currentSelectionIndex % this.selectedOptions[this.selectedOption % this.selectedOptions.length].alternatives.length);
                 } catch (e) {}
             }
+            if ((this.selectedOptions[this.selectedOption % this.selectedOptions.length].type == "slider") && (globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] > 0)) {
+                playEffect = true;
+                var currentValue = globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source];
+                currentValue -= 1;
+                globalOptions[this.selectedOptions[this.selectedOption % this.selectedOptions.length].source] = currentValue;
+                loadAudioSettings();
+            }
         }
 
         if (playEffect) playSound("menu-click", 1);
@@ -1041,8 +1087,10 @@ var optionsRender = {
 
 window.onload = () => {
     ready = false;
-    checkForMobileUser()
+    checkForMobileUser();
     loadSettings();
+    if (globalOptions.devTools) console.log("[DEV-TOOLS: ON]");
+    checkForGamepad();
     loadAchievements();
     getAmountOfCommits();
     loadFinalStuff();
@@ -1138,7 +1186,39 @@ function checkForMobileUser() {
     }
 }
 
+var gamepadConnected = false;
 
+function checkForGamepad() {
+    if (globalOptions.devTools) {
+        console.log("_____Gamepad Status_____");
+        let gamepads = navigator.getGamepads();
+
+        for (let i = 0; i < gamepads.length; i++) {
+            console.log("Gamepad " + i + ":");
+
+            if (gamepads[i] === null) {
+                console.log("[null]");
+                console.log("");
+                continue;
+            }
+
+            if (!gamepads[i].connected) {
+                console.log("[disconnected]");
+                console.log("");
+                continue;
+            }
+
+            console.log("     Index: " + gamepads[i].index);
+            console.log("     ID: " + gamepads[i].id);
+            console.log("     Axes: " + gamepads[i].axes.length);
+            console.log("     Buttons: " + gamepads[i].buttons.length);
+            console.log("     Mapping: " + gamepads[i].mapping);
+            console.log("");
+            gamepadConnected = true;
+        }
+        console.log("________________________");
+    }
+}
 
 function t(name) {
     if (name.indexOf("/") != -1) name = name.substr(name.lastIndexOf("/") + 1, name.length - 1);
@@ -1197,7 +1277,7 @@ function importTextures() {
         importTexture(texture);
     });
 
-    importTexture("rumble/online_selection.png");
+    //importTexture("rumble/online_selection.png");
 
     window.overlaySprites = [
         importSpriteSheet("rumble/overlay/overlay_XX.png", 20),
@@ -1388,7 +1468,7 @@ function startGame() {
     /* First start of the game, total reset. */
     inOnlineGame = false;
     if (!globalOptions.devTools && !inOnlineGame) globalOptions.disableGameOver = false;
-    if (globalOptions.initialDifficulty == "90's") {
+    if (drift) {
         window.difficulty = 3;
     } else {
         window.difficulty = Number(globalOptions.initialDifficulty);
@@ -1404,12 +1484,12 @@ function startGame() {
     playingMenuMusic = false;
     if (!globalOptions.disableSound && !globalOptions.disableMusic) {
         backgroundSound.pause();
-        if (globalOptions.initialDifficulty == "90's") {
+        if (drift) {
             backgroundSound = s(altMusic[Math.floor(random() * altMusic.length)]);
         } else {
             backgroundSound = s(titleSounds[Math.floor(random() * titleSounds.length)]);
         }
-        backgroundSound.volume = .2;
+        backgroundSound.volume = globalOptions.audioVolume / 100;
         backgroundSound.loop = true;
         backgroundSound.playbackRate = 1;
         backgroundSound.play();
@@ -1477,6 +1557,7 @@ canvas.addEventListener("click", e => {
 
 
 function buttonClick(id) {
+
     var keys = [38, 40, 37, 39, 88, 90];
     var translate = ["up", "down", "left", "right", "x", "z"];
     for (let i = 0; i < translate.length; i++) {
@@ -1640,7 +1721,7 @@ function cleared(ms) {
         if ((score % 3 == 0 && !inOnlineGame) || (globalOptions.hardcoreMode && !inOnlineGame) || showFasterAnimation) {
             sound = "faster";
             difficulty++;
-            if (!globalOptions.disableSound && !globalOptions.disableMusic) backgroundSound.playbackRate = (1 + (difficulty / 20));
+            if (!globalOptions.disableSound && !globalOptions.disableMusic && !drift) backgroundSound.playbackRate = (1 + (difficulty / 20));
 
             display = {
                 text: "Faster!",
@@ -1999,6 +2080,28 @@ function render() {
 
     lastRender = Date.now();
 
+    //gamepad input (xbox 360 gamepad)
+    if (gamepadConnected) {
+        let gamepads = navigator.getGamepads();
+        let gp = gamepads[0];
+
+        //left stick
+        if (gp.axes[0] < -0.5) buttonClick("left");
+        if (gp.axes[0] > 0.5) buttonClick("right");
+        if (gp.axes[1] < -0.5) buttonClick("up");
+        if (gp.axes[1] > 0.5) buttonClick("down");
+
+        //face buttons
+        if (gp.buttons[0].pressed) buttonClick("x"); //A
+        if (gp.buttons[1].pressed) buttonClick("z"); //B
+
+        //D-pad
+        if (gp.buttons[12].pressed) buttonClick("up"); //D-pad up
+        if (gp.buttons[13].pressed) buttonClick("down"); //D-pad down
+        if (gp.buttons[14].pressed) buttonClick("left"); //D-pad left
+        if (gp.buttons[15].pressed) buttonClick("right"); //D-pad right
+    }
+
     if (!inGame) {
         if (!playingMenuMusic && (!globalOptions.disableMusic && !globalOptions.disableSound) && !inGame) {
             /* Play menu music */
@@ -2008,7 +2111,7 @@ function render() {
             } catch (e) {}
             backgroundSound = s(mainMenuMusic[Math.floor(random() * mainMenuMusic.length)]);
             backgroundSound.currentTime = 0;
-            backgroundSound.volume = .2;
+            backgroundSound.volume = globalOptions.audioVolume / 100;
             backgroundSound.loop = true;
             backgroundSound.playbackRate = 1;
             backgroundSound.play();

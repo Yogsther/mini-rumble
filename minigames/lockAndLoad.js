@@ -3,6 +3,7 @@ var lockAndLoad = {
     displayName: "Lock-n-Load",
     introText: "Lock n Load!",
     icon: "gameicons/lockAndLoad_icon.png",
+    themeColor: "#fff",
     timed: true,
     textures: [
         "cock_n_shoot/cock_arm.png",
