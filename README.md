@@ -3,7 +3,7 @@
 ![Banner](https://i.imgur.com/6UlyyTk.png)
 
 Try it out in your browser:
-[mini.livfor.it](http://mini.livfor.it)
+[https://mini.okdev.se/](https://mini.okdev.se/)
 
 Documentation & API: 
 [Mini-Rumble Wiki](https://github.com/Yogsther/mini-rumble/wiki)
